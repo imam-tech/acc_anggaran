@@ -2,10 +2,18 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import hasLoggedIn from "../middleware/hasLoggedIn";
+import ParentLayout from '../layouts/ParentLayout.vue'
+import MenuLayout from '../layouts/MenuLayout.vue'
+import AuthLayout from '../layouts/AuthLayout.vue'
 
 import authRouter from './authRouter';
-import ParentLayout from '../layouts/ParentLayout.vue'
-import AuthLayout from '../layouts/AuthLayout.vue'
+import companyRouter from './companyRouter';
+import projectRouter from './projectRouter';
+import taxRouter from './taxRouter';
+import userRouter from './userRouter';
+import transactionRouter from './transactionRouter';
+import coaRouter from './coaRouter';
+import journalRouter from './journalRouter';
 
 Vue.use(Router)
 
@@ -30,6 +38,41 @@ const router = new Router({
                         middleware: hasLoggedIn,
                         pageTitle: 'Dashboard',
                     },
+                },
+                {
+                    path: 'company',
+                    component: MenuLayout,
+                    children: companyRouter
+                },
+                {
+                    path: 'project',
+                    component: MenuLayout,
+                    children: projectRouter
+                },
+                {
+                    path: 'tax',
+                    component: MenuLayout,
+                    children: taxRouter
+                },
+                {
+                    path: 'user',
+                    component: MenuLayout,
+                    children: userRouter
+                },
+                {
+                    path: 'transaction',
+                    component: MenuLayout,
+                    children: transactionRouter
+                },
+                {
+                    path: 'coa',
+                    component: MenuLayout,
+                    children: coaRouter
+                },
+                {
+                    path: 'journal',
+                    component: MenuLayout,
+                    children: journalRouter
                 }
             ]
         },

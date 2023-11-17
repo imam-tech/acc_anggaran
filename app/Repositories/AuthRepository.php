@@ -16,6 +16,10 @@ class AuthRepository {
                 return resultFunction("Err code AR-L: password of user " . $data['email'] . ' is not correct');
             }
 
+            $permissions = [];
+            foreach ($user->role->rolePermissions as $rolePermission) {
+                $permissions[] = $rolePermission->permission->title;
+            }
 
             Auth::login($user);
             $token = $user->createToken('API Token')->plainTextToken;
@@ -23,7 +27,7 @@ class AuthRepository {
             return resultFunction("", true, [
                 "user" => $user,
                 "role" => $user->role->title,
-                "permissions" => array_column($user->role->rolePermissions->toArray(), 'permission'),
+                "permissions" => $permissions,
                 "token" => $token,
                 "sign_at" => date("Y-m-d H:i:s")
             ]);

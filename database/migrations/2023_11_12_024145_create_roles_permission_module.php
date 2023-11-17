@@ -16,11 +16,13 @@ class CreateRolesPermissionModule extends Migration
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
             $table->string("title");
+            $table->string("display_title");
             $table->timestamps();
         });
         Schema::create('permissions', function (Blueprint $table) {
             $table->id();
             $table->string("title");
+            $table->string("display_title");
             $table->timestamps();
         });
         Schema::create('role_permissions', function (Blueprint $table) {

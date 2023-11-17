@@ -13,6 +13,8 @@ use App\Http\Controllers\AppController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get('/', function () {
+    return redirect('/app');
+});
 Route::get('/app/{any?}', [AppController::class, 'index'])->where('any', '.*');
 Route::get('/auth/{any?}', [AppController::class, 'index'])->where('any', '.*');

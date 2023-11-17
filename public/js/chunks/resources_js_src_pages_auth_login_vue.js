@@ -51,6 +51,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   showConfirmButton: false,
                   timer: 1500
                 }).then(function () {
+                  console.log("permissions", responseLogin.data.permissions);
                   _this.$store.commit('SET_USER', {
                     'name': responseLogin.data.user.name,
                     'email': responseLogin.data.user.email,
@@ -58,11 +59,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     'roles': responseLogin.data.role,
                     'sign_at': responseLogin.data.sign_at
                   });
-                  _this.$store.commit('SET_LOGIN', true);
+                  _this.$store.commit('SET_IS_LOGIN', true);
                   js_cookie__WEBPACK_IMPORTED_MODULE_0__["default"].set('access_token', responseLogin.data.token, {
                     expires: 1
                   });
-                  // this.$router.push('/app');
+                  _this.$router.push('/app');
                 });
               } else {
                 Swal.fire({

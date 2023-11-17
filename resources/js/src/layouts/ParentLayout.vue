@@ -3,7 +3,7 @@
         <Navbar />
         <div id="content-wrapper" class="d-flex flex-column">
 
-            <nav class="navbar navbar-expand navbar-light bg-white topbar static-top shadow">
+            <nav class="navbar navbar-expand navbar-light bg-white topbar static-top shadow ">
 
                 <!-- Sidebar Toggle (Topbar) -->
                 <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -37,13 +37,13 @@
 
             </nav>
             <!-- Main Content -->
-            <div id="">
+            <div class="">
 
                 <!-- Topbar -->
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="p-5">
+                <div class="p-5 mb-5">
                     <router-view/>
                 </div>
                 <!-- /.container-fluid -->
@@ -51,7 +51,7 @@
             <!-- End of Main Content -->
 
             <!-- Footer -->
-            <footer class="sticky-footer bg-white">
+            <footer class="sticky-footer bg-white fixed-bottom">
                 <div class="row">
                     <div class="col-10">
                         <div class="container my-auto">
@@ -60,7 +60,7 @@
                                     font-weight: bold;
                                     font-size: 21px;
                                     color: black;
-                                ">Copyright &copy; edutama.id {{ new Date().getFullYear() }}</span>
+                                ">Copyright &copy; Acc Anggaran {{ new Date().getFullYear() }}</span>
                             </div>
                         </div>
                     </div>

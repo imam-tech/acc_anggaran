@@ -59,6 +59,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(()=>{
+                            console.log("permissions", responseLogin.data.permissions)
                             this.$store.commit('SET_USER', {
                                 'name' : responseLogin.data.user.name,
                                 'email' : responseLogin.data.user.email,
@@ -66,9 +67,9 @@
                                 'roles' : responseLogin.data.role,
                                 'sign_at': responseLogin.data.sign_at
                             })
-                            this.$store.commit('SET_LOGIN', true)
+                            this.$store.commit('SET_IS_LOGIN', true)
                             Cookies.set('access_token', responseLogin.data.token, { expires: 1 })
-                            // this.$router.push('/app');
+                            this.$router.push('/app');
                         })
                     } else {
                         Swal.fire({
