@@ -68,6 +68,15 @@
                                 <th>TOTAL</th>
                                 <td class="text-right">Rp. {{transactionData.total_amount | formatPriceWithDecimal}}</td>
                             </tr>
+                            <tr>
+                                <th>Transaction Method</th>
+                                <td class="text-right">
+                                    {{ transactionData.method }} - {{ transactionData.transaction_date }}</span>
+                                    <button type="button" @click="handleShowMethod()" class="btn-success"  v-if="$store.state.permissions.includes('transaction_cancel_approval')">
+                                        <i class="fas fa-pen-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -141,7 +150,7 @@
                                     </label>
                                 </td>
                             </tr>
-                            <tr  v-if="$store.state.permissions.includes('transaction_cancel_approval')">
+                            <tr v-if="$store.state.permissions.includes('transaction_cancel_approval') && transactionData === 'published'">
                                 <td colspan="2" class="text-right align-content-center" @click="handleForcedStatus()">
                                     <button class="btn btn-info mt-3 mr-3">
                                         Forced Status
@@ -150,6 +159,55 @@
                             </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+                <div class="modal fade" id="setMethodModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Change Transaction Method</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+
+                                <form>
+                                    <div class="row mt-3">
+                                        <div class="col-4">
+                                            <label>Transaction Method<span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    font-style: italic;
+                                ">*) required</span></label>
+                                        </div>
+                                        <div class="col-8">
+                                            <select v-model="formDataMethod.method" class="form-control">
+                                                <option value="" selected>--Select Method--</option>
+                                                <option value="flip">Flip</option>
+                                                <option value="manual">Manual</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3" v-if="formDataMethod.method === 'manual'">
+                                        <div class="col-4">
+                                            <label>Transaction Date<span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    font-style: italic;
+                                ">*) required</span></label>
+                                        </div>
+                                        <div class="col-8">
+                                            <input type="date" class="form-control" v-model="formDataMethod.transaction_date" />
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" @click="handleSubmitEditMethod()">Save changes</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal fade" id="setTaxModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
@@ -484,7 +542,11 @@
                 ppns: [],
                 pphs: [],
                 coas: [],
-                cashflows: []
+                cashflows: [],
+                formDataMethod: {
+                    method: "",
+                    transaction_date: ""
+                }
             }
         },
 
@@ -494,6 +556,9 @@
             this.getDataCoa()
         },
         methods: {
+            handleShowMethod() {
+                $("#setMethodModal").modal("show")
+            },
             async handleForcedStatus() {
                 try {
                     this.$vs.loading()
@@ -574,6 +639,43 @@
                     this.coas = await this.$axios.get('api/coa?is_active=1')
                     this.cashflows = await this.$axios.get('api/coa/cashflow')
                     this.$vs.loading.close()
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            },
+            async handleSubmitEditMethod() {
+                try {
+                    this.$vs.loading()
+                    const respDe = await this.$axios.post(`api/transaction/${this.$route.params.id}/set-method`, this.formDataMethod)
+                    this.$vs.loading.close()
+
+                    if (!respDe.status) {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: respDe.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    } else {
+                        $("#setMethodModal").modal("hide")
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'success',
+                            title: respDe.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(async ()=>{
+                            await this.getData()
+                        })
+                    }
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({

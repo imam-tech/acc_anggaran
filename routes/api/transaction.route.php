@@ -12,4 +12,5 @@ Route:: group(['prefix' => 'transaction', 'middleware' => 'auth:sanctum'], funct
     Route::post('/{id?}/set-tax/{item_id}', [TransactionController::class, 'setTax']);
     Route::post('/{id?}/set-coa/{item_id}', [TransactionController::class, 'setCoa']);
     Route::get('/{id?}/forced-status', [TransactionController::class, 'forcedStatus']);
+    Route::post('/{id?}/set-method/', [TransactionController::class, 'setMethod']);
 });

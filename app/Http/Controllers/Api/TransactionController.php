@@ -30,11 +30,18 @@ class TransactionController extends Controller {
         return response()->json($this->transactionRepo->detail($id));
     }
 
-    public function index() {
-        $taxes = Transaction::with(['project.company', 'userCreatedBy', 'transactionApprovalNulls.user']);
+    public function index(Request $request) {
+        $filters = $request->only(['company_id', 'status']);
+        $transactions = Transaction::with(['project.company', 'userCreatedBy', 'transactionApprovalNulls.user']);
 
-        $taxes = $taxes->orderBy('id', 'desc')->get();
-        return response()->json($taxes);
+        if (!empty($filters['company_id'])) {
+            $transactions = $transactions->where('company_id', $filters['company_id']);
+        }
+        if (!empty($filters['status'])) {
+            $transactions = $transactions->where('current_status', $filters['status']);
+        }
+        $transactions = $transactions->orderBy('id', 'desc')->get();
+        return response()->json($transactions);
     }
 
     public function approval($id, $status, $itemId) {
@@ -55,5 +62,9 @@ class TransactionController extends Controller {
 
     public function forcedStatus($id) {
         return response()->json($this->transactionRepo->forcedStatus($id));
+    }
+
+    public function setMethod($id, Request $request) {
+        return response()->json($this->transactionRepo->setMethod($id, $request->all()));
     }
 }

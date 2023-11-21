@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Company;
 use App\Models\CompanyAdmin;
 use App\Models\Transaction;
+use App\Models\TransactionStatus;
 use Illuminate\Support\Facades\DB;
 
 class CompanyRepository {
@@ -129,6 +130,7 @@ class CompanyRepository {
 
     public function pushPlugin($id, $transactionIds) {
         try {
+            DB::beginTransaction();
             $company = Company::find($id);
             if (!$company) return resultFunction("Err code CR-PP: company not found for ID " .$id);
 
@@ -139,8 +141,17 @@ class CompanyRepository {
             $transactionRepo = new TransactionRepository();
             foreach ($transactions as $transaction) {
                 $transactionRepo->pushToJurnal($transaction);
+                $transaction->current_status = 'completed';
+                $transaction->save();
+
+                $transactionStatus = new TransactionStatus();
+                $transactionStatus->transaction_id = $transaction->id;
+                $transactionStatus->title = 'completed';
+                $transactionStatus->save();
             }
 
+
+            DB::commit();
             return resultFunction("Push transaction successfully", true);
         } catch (\Exception $e) {
             return resultFunction("Err code CR-PP: catch " . $e->getMessage());

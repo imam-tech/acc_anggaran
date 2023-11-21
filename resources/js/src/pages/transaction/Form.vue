@@ -36,11 +36,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Description<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
+                                <label>Description</label>
                                 <textarea class="form-control" v-model="formData.description"></textarea>
                             </div>
                             <hr>
@@ -81,7 +77,7 @@
                             <hr>
                             <div class="row mb-2">
                                 <div class="col-12">
-                                    <button type="button" @click="showAddItem()" class="btn btn-info float-right mt-3 mr-3">
+                                    <button type="button" @click="showAddItem()" class="btn btn-warning float-right mt-3 mr-3">
                                         <i class="fa fa-plus"></i> Items
                                     </button>
                                 </div>
@@ -214,11 +210,7 @@
                                 <input type="text" class="form-control" v-model="formItem.amount">
                             </div>
                             <div class="form-group">
-                                <label>Note<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
+                                <label>Note</label>
                                 <textarea class="form-control" v-model="formItem.note"></textarea>
                             </div>
                             <!--<div class="form-group">-->
@@ -328,6 +320,16 @@
                 this.formData.items = this.formData.items.filter((item, ind) => ind !== index)
             },
             handleAddItem() {
+                if (this.formItem.title === "" || this.formItem.amount === "") {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: "Please fill title and amount",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    return
+                }
                 if (this.formItem.type === "") {
                     this.formData.items.push(this.formItem)
                 } else {

@@ -15,11 +15,12 @@ class CreateJournalsTable extends Migration
     {
         Schema::create('journals', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('company_id');
+            $table->integer('company_id')->nullable();
             $table->string('transaction_uid');
-            $table->string('voucher_no');
-            $table->string('title');
+            $table->string('voucher_no')->nullable();
+            $table->string('title')->nullable();
             $table->timestamp('transaction_date')->nullable();
+            $table->timestamp('attachment')->nullable();
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('rejected_at')->nullable();
             $table->string('rejected_note')->nullable();

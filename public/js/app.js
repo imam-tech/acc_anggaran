@@ -2296,7 +2296,16 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "fas fa-building"
-  }), _vm._v(" "), _c("span", [_vm._v("Company")])])], 1), _vm._v(" "), _c("li", {
+  }), _vm._v(" "), _c("span", [_vm._v("Company")])])], 1), _vm._v(" "), _vm.$store.state.permissions.includes("transaction_push_plugin") ? _c("li", {
+    staticClass: "nav-item"
+  }, [_c("router-link", {
+    staticClass: "nav-link",
+    attrs: {
+      to: "/app/setting"
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-gear"
+  }), _vm._v(" "), _c("span", [_vm._v("Setting")])])], 1) : _vm._e(), _vm._v(" "), _c("li", {
     staticClass: "nav-item"
   }, [_c("router-link", {
     staticClass: "nav-link",
@@ -2341,7 +2350,16 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "fas fa-journal-whills"
-  }), _vm._v(" "), _c("span", [_vm._v("Journal")])])], 1), _vm._v(" "), _c("hr", {
+  }), _vm._v(" "), _c("span", [_vm._v("Journal")])])], 1), _vm._v(" "), _c("li", {
+    staticClass: "nav-item"
+  }, [_c("router-link", {
+    staticClass: "nav-link",
+    attrs: {
+      to: "/app/report"
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-newspaper"
+  }), _vm._v(" "), _c("span", [_vm._v("Report")])])], 1), _vm._v(" "), _c("hr", {
     staticClass: "sidebar-divider d-none d-md-block"
   }), _vm._v(" "), _vm._m(1)]);
 };
@@ -2783,6 +2801,12 @@ vue__WEBPACK_IMPORTED_MODULE_1__["default"].filter('getShortName', function (val
   var acronym = matches.join(''); // JSON
   return acronym.toUpperCase();
 });
+vue__WEBPACK_IMPORTED_MODULE_1__["default"].filter('labelByStatus', function (val) {
+  if (val === 'approved') return "badge badge-success rounded-pill";
+  if (val === 'rejected') return "badge badge-danger rounded-pill";
+  if (val === 'published') return "badge badge-primary rounded-pill";
+  if (val === 'requested') return "badge badge-warning rounded-pill";
+});
 
 /***/ }),
 
@@ -2948,6 +2972,24 @@ var journalRouter = [{
   meta: {
     middleware: _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__["default"]
   }
+}, {
+  path: ':id/detail',
+  name: 'journal-detail',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_src_pages_journal_Detail_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../pages/journal/Detail */ "./resources/js/src/pages/journal/Detail.vue"));
+  },
+  meta: {
+    middleware: _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
+}, {
+  path: 'form/:id',
+  name: 'journal-form',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_src_pages_journal_Form_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../pages/journal/Form */ "./resources/js/src/pages/journal/Form.vue"));
+  },
+  meta: {
+    middleware: _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
 }];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (journalRouter);
 
@@ -2989,6 +3031,78 @@ var projectRouter = [{
 
 /***/ }),
 
+/***/ "./resources/js/src/routers/reportRouter.js":
+/*!**************************************************!*\
+  !*** ./resources/js/src/routers/reportRouter.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../middleware/hasLoggedIn */ "./resources/js/src/middleware/hasLoggedIn.js");
+
+var reportRouter = [{
+  path: '',
+  name: 'report-index',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_src_pages_report_Index_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../pages/report/Index */ "./resources/js/src/pages/report/Index.vue"));
+  },
+  meta: {
+    middleware: _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
+}, {
+  path: 'balance-sheet',
+  name: 'report-balance-sheet',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_src_pages_report_BalanceSheet_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../pages/report/BalanceSheet */ "./resources/js/src/pages/report/BalanceSheet.vue"));
+  },
+  meta: {
+    middleware: _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
+}, {
+  path: 'profit-lose',
+  name: 'report-profit-lose',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_src_pages_report_ProfitLose_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../pages/report/ProfitLose */ "./resources/js/src/pages/report/ProfitLose.vue"));
+  },
+  meta: {
+    middleware: _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
+}, {
+  path: 'cashflow',
+  name: 'report-cashflow',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_src_pages_report_Cashflow_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../pages/report/Cashflow */ "./resources/js/src/pages/report/Cashflow.vue"));
+  },
+  meta: {
+    middleware: _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
+}, {
+  path: 'journal',
+  name: 'report-journal',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_src_pages_report_Journal_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../pages/report/Journal */ "./resources/js/src/pages/report/Journal.vue"));
+  },
+  meta: {
+    middleware: _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
+}, {
+  path: 'general-ledger',
+  name: 'report-general-ledger',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_src_pages_report_GeneralLedger_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../pages/report/GeneralLedger */ "./resources/js/src/pages/report/GeneralLedger.vue"));
+  },
+  meta: {
+    middleware: _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
+}];
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (reportRouter);
+
+/***/ }),
+
 /***/ "./resources/js/src/routers/router.js":
 /*!********************************************!*\
   !*** ./resources/js/src/routers/router.js ***!
@@ -3000,8 +3114,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
-/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
 /* harmony import */ var _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../middleware/hasLoggedIn */ "./resources/js/src/middleware/hasLoggedIn.js");
 /* harmony import */ var _layouts_ParentLayout_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../layouts/ParentLayout.vue */ "./resources/js/src/layouts/ParentLayout.vue");
 /* harmony import */ var _layouts_MenuLayout_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../layouts/MenuLayout.vue */ "./resources/js/src/layouts/MenuLayout.vue");
@@ -3014,6 +3128,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _transactionRouter__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./transactionRouter */ "./resources/js/src/routers/transactionRouter.js");
 /* harmony import */ var _coaRouter__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./coaRouter */ "./resources/js/src/routers/coaRouter.js");
 /* harmony import */ var _journalRouter__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./journalRouter */ "./resources/js/src/routers/journalRouter.js");
+/* harmony import */ var _reportRouter__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./reportRouter */ "./resources/js/src/routers/reportRouter.js");
+/* harmony import */ var _settingRouter__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./settingRouter */ "./resources/js/src/routers/settingRouter.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
@@ -3034,8 +3150,10 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 
 
 
-vue__WEBPACK_IMPORTED_MODULE_12__["default"].use(vue_router__WEBPACK_IMPORTED_MODULE_13__["default"]);
-var router = new vue_router__WEBPACK_IMPORTED_MODULE_13__["default"]({
+
+
+vue__WEBPACK_IMPORTED_MODULE_14__["default"].use(vue_router__WEBPACK_IMPORTED_MODULE_15__["default"]);
+var router = new vue_router__WEBPACK_IMPORTED_MODULE_15__["default"]({
   mode: 'history',
   base: '/',
   scrollBehavior: function scrollBehavior() {
@@ -3084,6 +3202,14 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_13__["default"]({
       path: 'journal',
       component: _layouts_MenuLayout_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
       children: _journalRouter__WEBPACK_IMPORTED_MODULE_11__["default"]
+    }, {
+      path: 'report',
+      component: _layouts_MenuLayout_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
+      children: _reportRouter__WEBPACK_IMPORTED_MODULE_12__["default"]
+    }, {
+      path: 'setting',
+      component: _layouts_MenuLayout_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
+      children: _settingRouter__WEBPACK_IMPORTED_MODULE_13__["default"]
     }]
   }, {
     path: '/auth',
@@ -3119,6 +3245,33 @@ router.beforeEach(function (to, from, next) {
   return next();
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (router);
+
+/***/ }),
+
+/***/ "./resources/js/src/routers/settingRouter.js":
+/*!***************************************************!*\
+  !*** ./resources/js/src/routers/settingRouter.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../middleware/hasLoggedIn */ "./resources/js/src/middleware/hasLoggedIn.js");
+
+var settingRouter = [{
+  path: '',
+  name: 'setting-index',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_src_pages_setting_Index_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../pages/setting/Index */ "./resources/js/src/pages/setting/Index.vue"));
+  },
+  meta: {
+    middleware: _middleware_hasLoggedIn__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
+}];
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (settingRouter);
 
 /***/ }),
 

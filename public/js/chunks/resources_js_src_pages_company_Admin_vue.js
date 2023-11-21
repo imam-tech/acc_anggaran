@@ -20,7 +20,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   data: function data() {
     return {
       transactions: {},
-      checkAllStatus: false
+      checkAllStatus: false,
+      manualTransfer: {
+        amount: 0,
+        transaction: 0
+      },
+      flipTransfer: {
+        amount: 0,
+        transaction: 0
+      }
     };
   },
   mounted: function mounted() {
@@ -48,6 +56,81 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.getData();
   },
   methods: {
+    handlePushPlugin: function handlePushPlugin() {
+      var _this2 = this;
+      var params = [];
+      this.transactions.forEach(function (x) {
+        if (x.is_selected !== undefined) {
+          params.push(x.id);
+        }
+      });
+      if (params.length === 0) {
+        Swal.fire({
+          icon: "error",
+          title: "Opps...",
+          text: "Please check the transaction at least one transaction",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false
+        });
+        return;
+      }
+      Swal.fire({
+        icon: 'warning',
+        title: 'Are You Sure Want To Push?',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        showCloseButton: true,
+        showCancelButton: true
+      }).then(function (result) {
+        if (result.isConfirmed == true) {
+          _this2.$vs.loading();
+          _this2.$axios.post("api/company/".concat(_this2.$route.params.id, "/push-plugin"), params).then(function (response) {
+            _this2.$vs.loading.close();
+            if (response.status) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: response.message,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false
+              }).then( /*#__PURE__*/function () {
+                var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(res) {
+                  return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+                    while (1) switch (_context2.prev = _context2.next) {
+                      case 0:
+                        if (!(res.isConfirmed == true)) {
+                          _context2.next = 3;
+                          break;
+                        }
+                        _context2.next = 3;
+                        return _this2.getData();
+                      case 3:
+                      case "end":
+                        return _context2.stop();
+                    }
+                  }, _callee2);
+                }));
+                return function (_x) {
+                  return _ref2.apply(this, arguments);
+                };
+              }());
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Opps...",
+                text: "Failed To Delete Coa : " + response.message,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false
+              });
+            }
+          });
+        }
+      });
+    },
     handleCheckItem: function handleCheckItem(key) {
       var transactionLocals = [];
       this.transactions.forEach(function (x, i) {
@@ -61,48 +144,64 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.checkAllStatus = false;
     },
     checkBoxAll: function checkBoxAll() {
-      var _this2 = this;
+      var _this3 = this;
       var transactionLocals = [];
       this.transactions.forEach(function (x, i) {
         transactionLocals.push(x);
-        transactionLocals[i].is_selected = !_this2.checkAllStatus;
+        transactionLocals[i].is_selected = !_this3.checkAllStatus;
       });
       this.transactions = transactionLocals;
       console.log("trans", this.transactions);
     },
     getData: function getData() {
-      var _this3 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var respDe;
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
+      var _this4 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+        var respDe, manualTransfers, manualTotal, flipTransfers, flipTotal;
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
             case 0:
-              _context2.prev = 0;
-              _this3.$vs.loading();
-              _context2.next = 4;
-              return _this3.$axios.get("api/transaction?company_id=".concat(_this3.$route.params.id));
+              _context3.prev = 0;
+              _this4.$vs.loading();
+              _context3.next = 4;
+              return _this4.$axios.get("api/transaction?company_id=".concat(_this4.$route.params.id, "&status=approved"));
             case 4:
-              respDe = _context2.sent;
-              _this3.$vs.loading.close();
-              _this3.transactions = respDe;
-              _context2.next = 13;
+              respDe = _context3.sent;
+              _this4.$vs.loading.close();
+              _this4.transactions = respDe;
+              manualTransfers = respDe.filter(function (x) {
+                return x.method === 'manual';
+              });
+              manualTotal = manualTransfers.reduce(function (acc, obj) {
+                return acc + obj['total_amount'];
+              }, 0);
+              _this4.manualTransfer.amount = manualTotal;
+              _this4.manualTransfer.transaction = manualTransfers.length;
+              flipTransfers = respDe.filter(function (x) {
+                return x.method === 'flip';
+              });
+              flipTotal = flipTransfers.reduce(function (acc, obj) {
+                return acc + obj['total_amount'];
+              }, 0);
+              _this4.flipTransfer.amount = flipTotal;
+              _this4.flipTransfer.transaction = flipTransfers.length;
+              _context3.next = 21;
               break;
-            case 9:
-              _context2.prev = 9;
-              _context2.t0 = _context2["catch"](0);
-              _this3.$vs.loading.close();
+            case 17:
+              _context3.prev = 17;
+              _context3.t0 = _context3["catch"](0);
+              _this4.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
-                title: _context2.t0.message,
+                title: _context3.t0.message,
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 13:
+            case 21:
             case "end":
-              return _context2.stop();
+              return _context3.stop();
           }
-        }, _callee2, null, [[0, 9]]);
+        }, _callee3, null, [[0, 17]]);
       }))();
     }
   }
@@ -141,10 +240,48 @@ var render = function render() {
     staticClass: "fa fa-arrow-left"
   }), _vm._v(" Back\n            ")])], 1), _vm._v(" "), _c("div", {
     staticClass: "card-body"
-  }, [_vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _c("h3", {
+  }, [_vm._m(0), _vm._v(" "), _c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-lg-12"
+  }, [_c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-4"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-body shadow-lg"
+  }, [_c("h5", {
+    staticClass: "card-title"
+  }, [_vm._v("Total Manual Transfer")]), _vm._v(" "), _c("div", {
+    staticClass: "d-flex flex-column"
+  }, [_c("span", [_vm._v("\n                                            Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.manualTransfer.amount)) + "\n                                        ")]), _vm._v(" "), _c("span", [_vm._v("\n                                            " + _vm._s(_vm.manualTransfer.transaction) + " Transaction\n                                        ")])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-4"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-body shadow-lg"
+  }, [_c("h5", {
+    staticClass: "card-title"
+  }, [_vm._v("Total By Plugin Flip")]), _vm._v(" "), _c("div", {
+    staticClass: "d-flex flex-column"
+  }, [_c("span", [_vm._v("\n                                            Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.flipTransfer.amount)) + "\n                                        ")]), _vm._v(" "), _c("span", [_vm._v("\n                                            " + _vm._s(_vm.flipTransfer.transaction) + " Transaction\n                                        ")])])])])]), _vm._v(" "), _vm._m(1)])])]), _vm._v(" "), _c("div", {
+    staticClass: "d-flex flex-row mt-5 justify-content-between"
+  }, [_c("h3", {
     staticClass: "h3 text-gray-800 float-left mt-3"
-  }, [_vm._v("Transaction Data")]), _vm._v(" "), _c("div", {
-    staticClass: "table-responsive"
+  }, [_vm._v("Transaction Data")]), _vm._v(" "), _vm.transactions.length > 0 ? _c("button", {
+    staticClass: "btn btn-warning",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.handlePushPlugin();
+      }
+    }
+  }, [_vm._v("Approve")]) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "table-responsive mt-3"
   }, [_c("table", {
     staticClass: "table table-bordered",
     attrs: {
@@ -186,7 +323,7 @@ var render = function render() {
         }
       }
     }
-  })]), _vm._v(" "), _c("th", [_vm._v("Transaction Number")]), _vm._v(" "), _c("th", [_vm._v("Author")]), _vm._v(" "), _c("th", [_vm._v("Company")]), _vm._v(" "), _c("th", [_vm._v("Method")]), _vm._v(" "), _c("th", [_vm._v("Project")]), _vm._v(" "), _c("th", [_vm._v("Title")]), _vm._v(" "), _c("th", [_vm._v("Last Status")]), _vm._v(" "), _c("th", [_vm._v("Total")]), _vm._v(" "), _c("th", [_vm._v("Created At")])])]), _vm._v(" "), _c("tbody", [_c("tr", {
+  })]), _vm._v(" "), _c("th", [_vm._v("Transaction Number")]), _vm._v(" "), _c("th", [_vm._v("Author")]), _vm._v(" "), _c("th", [_vm._v("Company")]), _vm._v(" "), _c("th", [_vm._v("Method")]), _vm._v(" "), _c("th", [_vm._v("Title")]), _vm._v(" "), _c("th", [_vm._v("Total")]), _vm._v(" "), _c("th", [_vm._v("Bank")]), _vm._v(" "), _c("th", [_vm._v("Bank Account")]), _vm._v(" "), _c("th", [_vm._v("Created At")]), _vm._v(" "), _c("th", [_vm._v("#")])])]), _vm._v(" "), _c("tbody", [_c("tr", {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -200,7 +337,9 @@ var render = function render() {
     }
   }, [_vm._v("\n                            Empty Transactions\n                        ")])]), _vm._v(" "), _vm._l(_vm.transactions, function (transaction, key) {
     var _transaction$method;
-    return _c("tr", [_c("td", [_c("input", {
+    return _c("tr", {
+      key: key
+    }, [_c("td", [_c("input", {
       attrs: {
         type: "checkbox"
       },
@@ -216,13 +355,11 @@ var render = function render() {
       attrs: {
         to: "/app/transaction/" + transaction.id + "/detail"
       }
-    }, [_vm._v("\n                                " + _vm._s(transaction.transaction_number) + "\n                            ")])], 1), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.user_created_by.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.project.company.title))]), _vm._v(" "), _c("td", [_c("span", {
-      staticClass: "badge rounded-pill text-bg-primary"
-    }, [_vm._v(_vm._s((_transaction$method = transaction.method) !== null && _transaction$method !== void 0 ? _transaction$method : "-"))])]), _vm._v(" "), _c("td", [_c("span", {
+    }, [_vm._v("\n                                " + _vm._s(transaction.transaction_number) + "\n                            ")])], 1), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.user_created_by.name) + " "), _c("br"), _vm._v(" "), _c("span", {
       staticClass: "badge rounded-pill text-bg-warning"
-    }, [_vm._v(_vm._s(transaction.project.title))])]), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.title))]), _vm._v(" "), _c("td", [_c("span", {
+    }, [_vm._v(_vm._s(transaction.project.title))])]), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.project.company.title))]), _vm._v(" "), _c("td", [_c("span", {
       staticClass: "badge rounded-pill text-bg-primary"
-    }, [_vm._v(_vm._s(transaction.current_status))])]), _vm._v(" "), _c("td", [_vm._v("Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(transaction.total_amount)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(transaction.created_at)))])]);
+    }, [_vm._v(_vm._s((_transaction$method = transaction.method) !== null && _transaction$method !== void 0 ? _transaction$method : "-"))])]), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.title))]), _vm._v(" "), _c("td", [_vm._v("Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(transaction.total_amount)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.bank))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.account_holder) + " "), _c("br"), _vm._v(_vm._s(transaction.account_number))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(transaction.created_at)))]), _vm._v(" "), _vm._m(2, true)]);
   })], 2)])])])])]);
 };
 var staticRenderFns = [function () {
@@ -239,32 +376,6 @@ var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("div", {
-    staticClass: "row"
-  }, [_c("div", {
-    staticClass: "col-lg-12"
-  }, [_c("div", {
-    staticClass: "row"
-  }, [_c("div", {
-    staticClass: "col-4"
-  }, [_c("div", {
-    staticClass: "card"
-  }, [_c("div", {
-    staticClass: "card-body shadow-lg"
-  }, [_c("h5", {
-    staticClass: "card-title"
-  }, [_vm._v("Total Manual Transfer")]), _vm._v(" "), _c("div", {
-    staticClass: "d-flex flex-column"
-  }, [_c("span", [_vm._v("\n                                            Rp. 0\n                                        ")]), _vm._v(" "), _c("span", [_vm._v("\n                                            0 Transaction\n                                        ")])])])])]), _vm._v(" "), _c("div", {
-    staticClass: "col-4"
-  }, [_c("div", {
-    staticClass: "card"
-  }, [_c("div", {
-    staticClass: "card-body shadow-lg"
-  }, [_c("h5", {
-    staticClass: "card-title"
-  }, [_vm._v("Total By Plugin Flip")]), _vm._v(" "), _c("div", {
-    staticClass: "d-flex flex-column"
-  }, [_c("span", [_vm._v("\n                                            Rp. 0\n                                        ")]), _vm._v(" "), _c("span", [_vm._v("\n                                            0 Transaction\n                                        ")])])])])]), _vm._v(" "), _c("div", {
     staticClass: "col-4"
   }, [_c("div", {
     staticClass: "card"
@@ -274,7 +385,16 @@ var staticRenderFns = [function () {
     staticClass: "card-title"
   }, [_vm._v("Flip Balance")]), _vm._v(" "), _c("div", {
     staticClass: "d-flex flex-column"
-  }, [_c("span", [_vm._v("\n                                            Rp. 0\n                                        ")]), _vm._v(" "), _c("span", [_vm._v("\n                                            Plugin\n                                        ")])])])])])])])]);
+  }, [_c("span", [_vm._v("\n                                            Rp. 0\n                                        ")]), _vm._v(" "), _c("span", [_vm._v("\n                                            Plugin\n                                        ")])])])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("td", [_c("button", {
+    staticClass: "btn btn-danger",
+    attrs: {
+      type: "button"
+    }
+  }, [_vm._v("Reject")])]);
 }];
 render._withStripped = true;
 

@@ -128,7 +128,9 @@ var render = function render() {
   }, [_vm._m(0), _vm._v(" "), _c("tbody", _vm._l(_vm.transactions, function (t, index) {
     return _c("tr", {
       key: index
-    }, [_c("td", [_vm._v(_vm._s(t.invoice))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(t.description))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(t.transction_date)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(t.created_at)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(t.approved_at ? "Approved" : t.rejected_at ? "Rejected" : "Requested"))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(t.total_debit)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(t.total_credit)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(t.balance)))])]);
+    }, [_c("td", [_vm._v(_vm._s(t.invoice))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(t.description))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(t.transction_date)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(t.created_at)))]), _vm._v(" "), _c("td", [_c("span", {
+      "class": t.approved_at ? "badge badge-primary" : t.rejected_at ? "badge badge-danger" : "badge badge-warning"
+    }, [_vm._v(_vm._s(t.approved_at ? "Approved" : t.rejected_at ? "Rejected" : "Requested"))])]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(t.total_debit)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(t.total_credit)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(t.balance)))])]);
   }), 0)])])])])]);
 };
 var staticRenderFns = [function () {

@@ -32,7 +32,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         is_active: 1
       },
       categories: [],
-      postings: []
+      postings: [],
+      formInitialBalance: {
+        id: "",
+        amount: 0
+      }
     };
   },
   created: function created() {
@@ -40,23 +44,46 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.getDataCategory();
   },
   methods: {
-    getData: function getData() {
+    handleInitialBalance: function handleInitialBalance(coa) {
+      this.formInitialBalance.id = coa.id;
+      if (coa.initial_balance) {
+        this.formInitialBalance.amount = coa.initial_balance.debit;
+      }
+      $("#addInitialBalance").modal("show");
+    },
+    submitInitialBalance: function submitInitialBalance() {
       var _this = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+        var resp;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
               _this.$vs.loading();
               _context.next = 4;
-              return _this.$axios.get('api/coa');
+              return _this.$axios.get("api/coa/".concat(_this.formInitialBalance.id, "/set-initial-balance/").concat(_this.formInitialBalance.amount));
             case 4:
-              _this.coas = _context.sent;
+              resp = _context.sent;
               _this.$vs.loading.close();
-              _context.next = 12;
+              if (resp['status']) {
+                _context.next = 9;
+                break;
+              }
+              Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: resp.message,
+                showConfirmButton: false,
+                timer: 1500
+              });
+              return _context.abrupt("return");
+            case 9:
+              $('#addInitialBalance').modal("hide");
+              _this.getData();
+              _context.next = 17;
               break;
-            case 8:
-              _context.prev = 8;
+            case 13:
+              _context.prev = 13;
               _context.t0 = _context["catch"](0);
               _this.$vs.loading.close();
               Swal.fire({
@@ -66,14 +93,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 12:
+            case 17:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 8]]);
+        }, _callee, null, [[0, 13]]);
       }))();
     },
-    getDataCategory: function getDataCategory() {
+    getData: function getData() {
       var _this2 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
@@ -82,18 +109,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _context2.prev = 0;
               _this2.$vs.loading();
               _context2.next = 4;
-              return _this2.$axios.get('api/coa/category?flag=pt');
+              return _this2.$axios.get('api/coa');
             case 4:
-              _this2.categories = _context2.sent;
-              _context2.next = 7;
-              return _this2.$axios.get('api/coa/posting');
-            case 7:
-              _this2.postings = _context2.sent;
+              _this2.coas = _context2.sent;
               _this2.$vs.loading.close();
-              _context2.next = 15;
+              _context2.next = 12;
               break;
-            case 11:
-              _context2.prev = 11;
+            case 8:
+              _context2.prev = 8;
               _context2.t0 = _context2["catch"](0);
               _this2.$vs.loading.close();
               Swal.fire({
@@ -103,11 +126,48 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 15:
+            case 12:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[0, 11]]);
+        }, _callee2, null, [[0, 8]]);
+      }))();
+    },
+    getDataCategory: function getDataCategory() {
+      var _this3 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.prev = 0;
+              _this3.$vs.loading();
+              _context3.next = 4;
+              return _this3.$axios.get('api/coa/category?flag=pt');
+            case 4:
+              _this3.categories = _context3.sent;
+              _context3.next = 7;
+              return _this3.$axios.get('api/coa/posting');
+            case 7:
+              _this3.postings = _context3.sent;
+              _this3.$vs.loading.close();
+              _context3.next = 15;
+              break;
+            case 11:
+              _context3.prev = 11;
+              _context3.t0 = _context3["catch"](0);
+              _this3.$vs.loading.close();
+              Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: _context3.t0.message,
+                showConfirmButton: false,
+                timer: 1500
+              });
+            case 15:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, null, [[0, 11]]);
       }))();
     },
     showEditCoa: function showEditCoa(coa) {
@@ -140,19 +200,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       $("#addCoa").modal("show");
     },
     submitCoa: function submitCoa() {
-      var _this3 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+      var _this4 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
         var respSave;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
             case 0:
-              _context4.prev = 0;
-              _this3.$vs.loading();
-              _context4.next = 4;
-              return _this3.$axios.post('api/coa', _this3.formData);
+              _context5.prev = 0;
+              _this4.$vs.loading();
+              _context5.next = 4;
+              return _this4.$axios.post('api/coa', _this4.formData);
             case 4:
-              respSave = _context4.sent;
-              _this3.$vs.loading.close();
+              respSave = _context5.sent;
+              _this4.$vs.loading.close();
               if (!respSave.status) {
                 Swal.fire({
                   position: 'top-end',
@@ -169,44 +229,44 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   title: respSave.message,
                   showConfirmButton: false,
                   timer: 1500
-                }).then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-                  return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-                    while (1) switch (_context3.prev = _context3.next) {
+                }).then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+                  return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+                    while (1) switch (_context4.prev = _context4.next) {
                       case 0:
-                        _context3.next = 2;
-                        return _this3.getData();
+                        _context4.next = 2;
+                        return _this4.getData();
                       case 2:
                       case "end":
-                        return _context3.stop();
+                        return _context4.stop();
                     }
-                  }, _callee3);
+                  }, _callee4);
                 })));
               }
-              _context4.next = 13;
+              _context5.next = 13;
               break;
             case 9:
-              _context4.prev = 9;
-              _context4.t0 = _context4["catch"](0);
-              _this3.$vs.loading.close();
+              _context5.prev = 9;
+              _context5.t0 = _context5["catch"](0);
+              _this4.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
-                title: _context4.t0.message,
+                title: _context5.t0.message,
                 showConfirmButton: false,
                 timer: 1500
               });
             case 13:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
-        }, _callee4, null, [[0, 9]]);
+        }, _callee5, null, [[0, 9]]);
       }))();
     },
     handleDelete: function handleDelete(id) {
-      var _this4 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
+      var _this5 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7() {
+        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+          while (1) switch (_context7.prev = _context7.next) {
             case 0:
               Swal.fire({
                 icon: 'warning',
@@ -218,9 +278,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showCancelButton: true
               }).then(function (result) {
                 if (result.isConfirmed == true) {
-                  _this4.$vs.loading();
-                  _this4.$axios["delete"]("api/tax/".concat(id, "/delete")).then(function (response) {
-                    _this4.$vs.loading.close();
+                  _this5.$vs.loading();
+                  _this5.$axios["delete"]("api/coa/".concat(id, "/delete")).then(function (response) {
+                    _this5.$vs.loading.close();
                     if (response.status) {
                       Swal.fire({
                         icon: 'success',
@@ -230,21 +290,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                         allowEscapeKey: false,
                         allowEnterKey: false
                       }).then( /*#__PURE__*/function () {
-                        var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(res) {
-                          return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-                            while (1) switch (_context5.prev = _context5.next) {
+                        var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(res) {
+                          return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+                            while (1) switch (_context6.prev = _context6.next) {
                               case 0:
                                 if (!(res.isConfirmed == true)) {
-                                  _context5.next = 3;
+                                  _context6.next = 3;
                                   break;
                                 }
-                                _context5.next = 3;
-                                return _this4.getData();
+                                _context6.next = 3;
+                                return _this5.getData();
                               case 3:
                               case "end":
-                                return _context5.stop();
+                                return _context6.stop();
                             }
-                          }, _callee5);
+                          }, _callee6);
                         }));
                         return function (_x) {
                           return _ref2.apply(this, arguments);
@@ -265,9 +325,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               });
             case 1:
             case "end":
-              return _context6.stop();
+              return _context7.stop();
           }
-        }, _callee6);
+        }, _callee7);
       }))();
     }
   }
@@ -320,14 +380,16 @@ var render = function render() {
       width: "100%",
       cellspacing: "0"
     }
-  }, [_c("thead", [_c("tr", [_c("th", [_vm._v("Category")]), _vm._v(" "), _c("th", [_vm._v("Posting")]), _vm._v(" "), _c("th", [_vm._v("Account Code")]), _vm._v(" "), _c("th", [_vm._v("Account Number")]), _vm._v(" "), _c("th", [_vm._v("Account Name")]), _vm._v(" "), _c("th", [_vm._v("Account Type")]), _vm._v(" "), _c("th", [_vm._v("Description")]), _vm._v(" "), _c("th", [_vm._v("Is Active")]), _vm._v(" "), _c("th", [_vm._v("Created At")]), _vm._v(" "), _vm.$store.state.permissions.includes("coa_create_edit") ? _c("th", [_vm._v("#")]) : _vm._e()])]), _vm._v(" "), _c("tbody", _vm._l(_vm.coas, function (coa, index) {
+  }, [_c("thead", [_c("tr", [_c("th", [_vm._v("Account Code")]), _vm._v(" "), _c("th", [_vm._v("Account Name")]), _vm._v(" "), _c("th", [_vm._v("Category")]), _vm._v(" "), _c("th", [_vm._v("Account Type")]), _vm._v(" "), _c("th", [_vm._v("Description")]), _vm._v(" "), _c("th", [_vm._v("Initial Balance")]), _vm._v(" "), _c("th", [_vm._v("Is Active")]), _vm._v(" "), _vm.$store.state.permissions.includes("coa_create_edit") ? _c("th", [_vm._v("#")]) : _vm._e()])]), _vm._v(" "), _c("tbody", _vm._l(_vm.coas, function (coa, index) {
     return _c("tr", {
       key: index
-    }, [_c("td", [_c("router-link", {
+    }, [_c("td", [_vm._v(_vm._s(coa.account_number))]), _vm._v(" "), _c("td", [_c("router-link", {
       attrs: {
         to: "/app/coa/" + coa.id + "/detail"
       }
-    }, [_vm._v("\n                                " + _vm._s(coa.coa_category.name) + "\n                            ")])], 1), _vm._v(" "), _c("td", [_vm._v(_vm._s(coa.coa_posting.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(coa.account_code))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(coa.account_number))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(coa.account_name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(coa.account_type))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(coa.description))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(coa.is_active === 1 ? "Active" : "In Active"))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(coa.created_at)))]), _vm._v(" "), _vm.$store.state.permissions.includes("coa_create_edit") ? _c("td", [_c("button", {
+    }, [_vm._v(_vm._s(coa.account_name) + "\n                            ")])], 1), _vm._v(" "), _c("td", [_vm._v(_vm._s(coa.coa_category.name) + " ")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(coa.account_type))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(coa.description))]), _vm._v(" "), _c("div", [coa.initial_balance !== null ? _c("span", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(coa.initial_balance.debit)))]) : _c("span", [_vm._v("0")])]), _vm._v(" "), _c("td", [_c("span", {
+      "class": coa.is_active === 1 ? "badge badge-primary" : "badge badge-danger"
+    }, [_vm._v(_vm._s(coa.is_active === 1 ? "Active" : "In Active"))])]), _vm._v(" "), _vm.$store.state.permissions.includes("coa_create_edit") ? _c("td", [_c("button", {
       staticClass: "btn btn-warning",
       attrs: {
         type: "button"
@@ -339,8 +401,89 @@ var render = function render() {
       }
     }, [_c("i", {
       staticClass: "fa fa-pencil"
+    })]), _vm._v(" "), coa.journal_item === null ? _c("button", {
+      staticClass: "btn btn-danger",
+      attrs: {
+        type: "button"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.handleDelete(coa.id);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-remove"
+    })]) : _vm._e(), _vm._v(" "), _c("button", {
+      staticClass: "btn btn-success",
+      attrs: {
+        type: "button"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.handleInitialBalance(coa);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-dollar"
     })])]) : _vm._e()]);
   }), 0)])])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal fade",
+    attrs: {
+      id: "addInitialBalance",
+      tabindex: "-1",
+      role: "dialog",
+      "aria-labelledby": "exampleModalLabel"
+    }
+  }, [_c("div", {
+    staticClass: "modal-dialog",
+    attrs: {
+      role: "document"
+    }
+  }, [_c("div", {
+    staticClass: "modal-content"
+  }, [_vm._m(1), _vm._v(" "), _c("div", {
+    staticClass: "modal-body"
+  }, [_c("form", [_c("div", {
+    staticClass: "form-group"
+  }, [_vm._m(2), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.formInitialBalance.amount,
+      expression: "formInitialBalance.amount"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "number"
+    },
+    domProps: {
+      value: _vm.formInitialBalance.amount
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.formInitialBalance, "amount", $event.target.value);
+      }
+    }
+  })])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal-footer flex justify-content-between"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal"
+    }
+  }, [_vm._v("Close")]), _vm._v(" "), _c("button", {
+    staticClass: "btn btn-primary",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.submitInitialBalance();
+      }
+    }
+  }, [_vm._v("Save changes")])])])])]), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
     attrs: {
       id: "addCoa",
@@ -362,11 +505,11 @@ var render = function render() {
     attrs: {
       id: "exampleModalLabel"
     }
-  }, [_vm._v(_vm._s(_vm.labelModal) + " Coa")]), _vm._v(" "), _vm._m(1)]), _vm._v(" "), _c("div", {
+  }, [_vm._v(_vm._s(_vm.labelModal) + " Coa")]), _vm._v(" "), _vm._m(3)]), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_c("form", [_c("div", {
     staticClass: "form-group"
-  }, [_vm._m(2), _vm._v(" "), _c("select", {
+  }, [_vm._m(4), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -398,7 +541,7 @@ var render = function render() {
     }, [_vm._v(_vm._s(category.code) + "-" + _vm._s(category.name))]);
   })], 2)]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(3), _vm._v(" "), _c("select", {
+  }, [_vm._m(5), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -430,7 +573,7 @@ var render = function render() {
     }, [_vm._v(_vm._s(posting.name))]);
   })], 2)]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(4), _vm._v(" "), _c("input", {
+  }, [_vm._m(6), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -452,7 +595,7 @@ var render = function render() {
     }
   })]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(5), _vm._v(" "), _c("input", {
+  }, [_vm._m(7), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -474,7 +617,7 @@ var render = function render() {
     }
   })]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(6), _vm._v(" "), _c("select", {
+  }, [_vm._m(8), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -508,7 +651,7 @@ var render = function render() {
     }
   }, [_vm._v("Credit")])])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(7), _vm._v(" "), _c("select", {
+  }, [_vm._m(9), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -537,7 +680,7 @@ var render = function render() {
     }
   }, [_vm._v("In Active")])])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(8), _vm._v(" "), _c("textarea", {
+  }, [_c("label", [_vm._v("Description")]), _vm._v(" "), _c("textarea", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -582,6 +725,38 @@ var staticRenderFns = [function () {
   }, [_c("div", {
     staticClass: "col-md-3"
   })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "modal-header"
+  }, [_c("h5", {
+    staticClass: "modal-title",
+    attrs: {
+      id: "exampleModalLabel"
+    }
+  }, [_vm._v("Input Initial Balance")]), _vm._v(" "), _c("button", {
+    staticClass: "close",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal",
+      "aria-label": "Close"
+    }
+  }, [_c("span", {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("label", [_vm._v("Amount"), _c("span", {
+    staticStyle: {
+      color: "red",
+      "font-weight": "bold",
+      "font-style": "italic"
+    }
+  }, [_vm._v("*) required")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -651,16 +826,6 @@ var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("label", [_vm._v("Is Active?"), _c("span", {
-    staticStyle: {
-      color: "red",
-      "font-weight": "bold",
-      "font-style": "italic"
-    }
-  }, [_vm._v("*) required")])]);
-}, function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("label", [_vm._v("Description"), _c("span", {
     staticStyle: {
       color: "red",
       "font-weight": "bold",

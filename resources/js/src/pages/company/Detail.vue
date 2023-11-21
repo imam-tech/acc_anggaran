@@ -12,6 +12,9 @@
                 <router-link :to="'/app/company/'+$route.params.id+'/admin'" v-if="$store.state.permissions.includes('transaction_push_plugin')" type="button" class="btn btn-success  float-right mt-3 mr-3" @click="changeAdminApproval()">
                     <i class="fa fa-eye"></i> View Transaction
                 </router-link>
+                <router-link :to="'/app/transaction/'+$route.params.id+'/form'" type="button" class="btn btn-warning  float-right mt-3 mr-3">
+                    <i class="fa fa-plus-circle"></i> Add Transaction
+                </router-link>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -99,7 +102,7 @@
                                 Empty Project
                             </td>
                         </tr>
-                        <tr v-for="(project, key) in companyData.projects">
+                        <tr v-for="(project, key) in companyData.projects" :key="key">
                             <td><strong>{{ key+1 }}</strong></td>
                             <td>{{ project.title }}</td>
                             <td>{{ project.description }}</td>

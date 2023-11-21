@@ -5,6 +5,8 @@ namespace App\Repositories;
 use App\Models\Coa;
 use App\Models\CoaCategory;
 use App\Models\CoaPosting;
+use App\Models\Journal;
+use App\Models\JournalItem;
 use Illuminate\Support\Facades\DB;
 
 class CoaRepository {
@@ -34,6 +36,7 @@ class CoaRepository {
             } else {
                 $coa = new Coa();
             }
+            $coa->company_id = 1;
             $coa->category_id = $category->id;
             $coa->posting_id = $posting->id;
             $coa->account_code = $data['account_number'] . '-' . $data['account_name'];
@@ -146,9 +149,9 @@ class CoaRepository {
                 FROM journal_items as item
                 LEFT JOIN journals as journal ON journal.id = item.journal_id
                 LEFT JOIN coas as c ON c.id = item.account_id
-                WHERE item.account_id = ${filters['account']} 
-                AND item.transaction_date > '${startDate}'
-                AND item.deleted_at IS NULL AND journal.deleted_at IS NULL ${where}
+                WHERE item.account_id = ".$filters['account']."
+                AND item.transaction_date >= '".$startDate."'
+                AND item.deleted_at IS NULL AND journal.deleted_at IS NULL ".$where."
                 GROUP BY item.journal_id ORDER BY item.transaction_date DESC
             ";
             $queryData = DB::SELECT($query);
@@ -178,6 +181,61 @@ class CoaRepository {
             ]);
         } catch (\Exception $e) {
             return resultFunction("Err code CR-DC: catch " . $e->getMessage());
+        }
+    }
+
+    public function delete($id) {
+        try {
+            $coa = Coa::find($id);
+            if (!$coa) return resultFunction("Err code CR-D: coa not found");
+
+            $journalItem = JournalItem::where('account_id', $coa->id)->first();
+            if ($journalItem) return resultFunction("Err code CR-D: the coa can't be deleted because it has the item.");
+            $coa->delete();
+
+            return resultFunction("Deleting coa is successfully", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code CR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function setInitialBalance($id, $amount) {
+        try {
+            $coa = Coa::find($id);
+            if (!$coa) return resultFunction("Err code CR-DC: coa not found");
+            $dateNow = date("Y-m-d H:i:s");
+
+            $journalItem = JournalItem::where('account_id', $id)->where('is_first_balance', 1)->first();
+            if (!$journalItem) {
+                $journal = new Journal();
+                $journal->company_id = 1;
+                $journal->transaction_uid = "INITIAL BALANCE";
+                $journal->title = "INITIAL BALANCE";
+                $journal->transaction_date = date("Y") . "-01-01 00:00:00";
+                $journal->approved_at = $dateNow;
+                $journal->save();
+
+                $journalItem = new JournalItem();
+                $journalItem->company_id = 1;
+                $journalItem->journal_id = $journal->id;
+                $journalItem->account_id =  $coa->id;
+                $journalItem->description = "INITIAL BALANCE";
+                $journalItem->is_first_balance = 1;
+                $journalItem->approved_at = $dateNow;
+                $journalItem->debit = 0;
+                $journalItem->credit = 0;
+                $journalItem->balance = 0;
+                $journalItem->transaction_date = date("Y") . "-01-01 00:00:00";
+                $journalItem->save();
+            }
+
+            $journalItem->debit = $amount;
+            $journalItem->balance = $amount;
+            $journalItem->save();
+
+            return resultFunction("Initializing balance is successfully", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code CR-SIB: catch " . $e->getMessage());
         }
     }
 }

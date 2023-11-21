@@ -61,7 +61,11 @@
                             </td>
                             <td><span class="badge  rounded-pill text-bg-warning">{{ transaction.project.title }}</span></td>
                             <td>{{ transaction.title }}</td>
-                            <td><span class="badge  rounded-pill text-bg-primary">{{ transaction.current_status}}</span></td>
+                            <td>
+                                <span :class="transaction.current_status | labelByStatus">
+                                    {{ transaction.current_status}}
+                                </span>
+                            </td>
                             <td>Rp. {{ transaction.total_amount | formatPriceWithDecimal }}</td>
                             <td>{{ transaction.created_at | formatDate }}</td>
                             <td>

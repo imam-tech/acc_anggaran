@@ -24,10 +24,10 @@
                                         <h5 class="card-title">Total Manual Transfer</h5>
                                         <div class="d-flex flex-column">
                                             <span>
-                                                Rp. 0
+                                                Rp. {{ manualTransfer.amount | formatPriceWithDecimal }}
                                             </span>
                                             <span>
-                                                0 Transaction
+                                                {{ manualTransfer.transaction }} Transaction
                                             </span>
                                         </div>
                                     </div>
@@ -39,10 +39,10 @@
                                         <h5 class="card-title">Total By Plugin Flip</h5>
                                         <div class="d-flex flex-column">
                                             <span>
-                                                Rp. 0
+                                                Rp. {{ flipTransfer.amount | formatPriceWithDecimal }}
                                             </span>
                                             <span>
-                                                0 Transaction
+                                                {{ flipTransfer.transaction }} Transaction
                                             </span>
                                         </div>
                                     </div>
@@ -66,8 +66,11 @@
                         </div>
                     </div>
                 </div>
-                <h3 class="h3 text-gray-800 float-left mt-3">Transaction Data</h3>
-                <div class="table-responsive">
+                <div class="d-flex flex-row mt-5 justify-content-between">
+                    <h3 class="h3 text-gray-800 float-left mt-3">Transaction Data</h3>
+                    <button v-if="transactions.length > 0" type="button" class="btn btn-warning" @click="handlePushPlugin()">Approve</button>
+                </div>
+                <div class="table-responsive mt-3">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
@@ -76,11 +79,12 @@
                             <th>Author</th>
                             <th>Company</th>
                             <th>Method</th>
-                            <th>Project</th>
                             <th>Title</th>
-                            <th>Last Status</th>
                             <th>Total</th>
+                            <th>Bank</th>
+                            <th>Bank Account</th>
                             <th>Created At</th>
+                            <th>#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -89,7 +93,7 @@
                                 Empty Transactions
                             </td>
                         </tr>
-                        <tr v-for="(transaction, key) in transactions">
+                        <tr v-for="(transaction, key) in transactions" :key="key">
                             <td>
                                 <input type="checkbox" @click="handleCheckItem(key)" :checked="transaction.is_selected === undefined ? false : transaction.is_selected " />
                             </td>
@@ -98,16 +102,19 @@
                                     {{ transaction.transaction_number }}
                                 </router-link>
                             </td>
-                            <td>{{ transaction.user_created_by.name }}</td>
+                            <td>{{ transaction.user_created_by.name }} <br> <span class="badge  rounded-pill text-bg-warning">{{ transaction.project.title }}</span></td>
                             <td>{{ transaction.project.company.title }}</td>
                             <td>
                                 <span class="badge  rounded-pill text-bg-primary">{{ transaction.method ?? "-" }}</span>
                             </td>
-                            <td><span class="badge  rounded-pill text-bg-warning">{{ transaction.project.title }}</span></td>
                             <td>{{ transaction.title }}</td>
-                            <td><span class="badge  rounded-pill text-bg-primary">{{ transaction.current_status}}</span></td>
                             <td>Rp. {{ transaction.total_amount | formatPriceWithDecimal }}</td>
+                            <td>{{ transaction.bank }}</td>
+                            <td>{{ transaction.account_holder }} <br>{{ transaction.account_number }}</td>
                             <td>{{ transaction.created_at | formatDate }}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger">Reject</button>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -124,13 +131,20 @@
         data() {
             return {
                 transactions: {},
-                checkAllStatus: false
+                checkAllStatus: false,
+                manualTransfer: {
+                    amount: 0,
+                    transaction: 0
+                },
+                flipTransfer: {
+                    amount: 0,
+                    transaction: 0
+                }
             }
         },
 
         mounted() {
             if (!this.$store.state.permissions.includes('transaction_push_plugin')) {
-
                 Swal.fire({
                     position: 'top',
                     icon: 'error',
@@ -145,6 +159,64 @@
             this.getData()
         },
         methods: {
+            handlePushPlugin() {
+                const params = [];
+                this.transactions.forEach((x) => {
+                    if (x.is_selected !== undefined) {
+                        params.push(x.id)
+                    }
+                })
+
+                if (params.length === 0) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Opps...",
+                        text: "Please check the transaction at least one transaction",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                    });
+                    return
+                }
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are You Sure Want To Push?',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.post(`api/company/${this.$route.params.id}/push-plugin`, params).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.getData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Delete Coa : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            },
             handleCheckItem(key) {
                 const transactionLocals = []
                 this.transactions.forEach((x, i) => {
@@ -169,9 +241,23 @@
             async getData() {
                 try {
                     this.$vs.loading()
-                    const respDe = await this.$axios.get(`api/transaction?company_id=${this.$route.params.id}`)
+                    const respDe = await this.$axios.get(`api/transaction?company_id=${this.$route.params.id}&status=approved`)
                     this.$vs.loading.close()
                     this.transactions = respDe
+                    const manualTransfers = respDe.filter((x) => x.method === 'manual')
+                    const manualTotal = manualTransfers.reduce((acc, obj) => {
+                        return acc + obj['total_amount']
+                    }, 0)
+                    this.manualTransfer.amount = manualTotal
+                    this.manualTransfer.transaction = manualTransfers.length
+
+                    const flipTransfers = respDe.filter((x) => x.method === 'flip')
+                    const flipTotal = flipTransfers.reduce((acc, obj) => {
+                        return acc + obj['total_amount']
+                    }, 0)
+                    this.flipTransfer.amount = flipTotal
+                    this.flipTransfer.transaction = flipTransfers.length
+
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({

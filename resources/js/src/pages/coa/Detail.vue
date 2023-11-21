@@ -35,7 +35,7 @@
                             <td>{{ t.description }}</td>
                             <td>{{ t.transction_date | formatDate}}</td>
                             <td>{{ t.created_at | formatDate }}</td>
-                            <td>{{ t.approved_at ? "Approved" : (t.rejected_at ? 'Rejected' : 'Requested') }}</td>
+                            <td><span :class="t.approved_at ? 'badge badge-primary' : (t.rejected_at ? 'badge badge-danger' : 'badge badge-warning')">{{ t.approved_at ? "Approved" : (t.rejected_at ? 'Rejected' : 'Requested') }}</span></td>
                             <td>{{ t.total_debit | formatPriceWithDecimal }}</td>
                             <td>{{ t.total_credit | formatPriceWithDecimal }}</td>
                             <td>{{ t.balance | formatPriceWithDecimal }}</td>

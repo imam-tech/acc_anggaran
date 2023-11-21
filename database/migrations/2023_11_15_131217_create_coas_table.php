@@ -15,6 +15,7 @@ class CreateCoasTable extends Migration
     {
         Schema::create('coas', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('company_id');
             $table->integer('category_id');
             $table->integer('posting_id');
             $table->string('account_code');

@@ -56,7 +56,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       ppns: [],
       pphs: [],
       coas: [],
-      cashflows: []
+      cashflows: [],
+      formDataMethod: {
+        method: "",
+        transaction_date: ""
+      }
     };
   },
   mounted: function mounted() {
@@ -65,6 +69,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.getDataCoa();
   },
   methods: {
+    handleShowMethod: function handleShowMethod() {
+      $("#setMethodModal").modal("show");
+    },
     handleForcedStatus: function handleForcedStatus() {
       var _this = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -206,27 +213,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee2, null, [[0, 11]]);
       }))();
     },
-    handleSubmitEditTax: function handleSubmitEditTax() {
+    handleSubmitEditMethod: function handleSubmitEditMethod() {
       var _this3 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-        var paramSave, respDe;
+        var respDe;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
-              paramSave = {
-                input_amount: _this3.formData.input_tax,
-                pph_amount: _this3.formData.pph.value,
-                pph_label: _this3.formData.pph.label + " " + parseFloat(_this3.formData.pph.value) + "%",
-                ppn_amount: _this3.formData.ppn.value,
-                ppn_label: _this3.formData.ppn.label + " " + parseFloat(_this3.formData.ppn.value) + "%",
-                tax_amount: _this3.formData.input,
-                tax_type: _this3.formData.tax_type
-              };
-              _context4.prev = 1;
+              _context4.prev = 0;
               _this3.$vs.loading();
-              _context4.next = 5;
-              return _this3.$axios.post("api/transaction/".concat(_this3.$route.params.id, "/set-tax/").concat(_this3.formData.id), paramSave);
-            case 5:
+              _context4.next = 4;
+              return _this3.$axios.post("api/transaction/".concat(_this3.$route.params.id, "/set-method"), _this3.formDataMethod);
+            case 4:
               respDe = _context4.sent;
               _this3.$vs.loading.close();
               if (!respDe.status) {
@@ -238,7 +236,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   timer: 1500
                 });
               } else {
-                $("#setTaxModal").modal("hide");
+                $("#setMethodModal").modal("hide");
                 Swal.fire({
                   position: 'top',
                   icon: 'success',
@@ -258,11 +256,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   }, _callee3);
                 })));
               }
-              _context4.next = 14;
+              _context4.next = 13;
               break;
-            case 10:
-              _context4.prev = 10;
-              _context4.t0 = _context4["catch"](1);
+            case 9:
+              _context4.prev = 9;
+              _context4.t0 = _context4["catch"](0);
               _this3.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
@@ -271,25 +269,34 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 14:
+            case 13:
             case "end":
               return _context4.stop();
           }
-        }, _callee4, null, [[1, 10]]);
+        }, _callee4, null, [[0, 9]]);
       }))();
     },
-    handleSubmitEditCoa: function handleSubmitEditCoa() {
+    handleSubmitEditTax: function handleSubmitEditTax() {
       var _this4 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-        var respDe;
+        var paramSave, respDe;
         return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) switch (_context6.prev = _context6.next) {
             case 0:
-              _context6.prev = 0;
+              paramSave = {
+                input_amount: _this4.formData.input_tax,
+                pph_amount: _this4.formData.pph.value,
+                pph_label: _this4.formData.pph.label + " " + parseFloat(_this4.formData.pph.value) + "%",
+                ppn_amount: _this4.formData.ppn.value,
+                ppn_label: _this4.formData.ppn.label + " " + parseFloat(_this4.formData.ppn.value) + "%",
+                tax_amount: _this4.formData.input,
+                tax_type: _this4.formData.tax_type
+              };
+              _context6.prev = 1;
               _this4.$vs.loading();
-              _context6.next = 4;
-              return _this4.$axios.post("api/transaction/".concat(_this4.$route.params.id, "/set-coa/").concat(_this4.formDataCoa.id), _this4.formDataCoa.coa_items);
-            case 4:
+              _context6.next = 5;
+              return _this4.$axios.post("api/transaction/".concat(_this4.$route.params.id, "/set-tax/").concat(_this4.formData.id), paramSave);
+            case 5:
               respDe = _context6.sent;
               _this4.$vs.loading.close();
               if (!respDe.status) {
@@ -301,7 +308,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   timer: 1500
                 });
               } else {
-                $("#setCoaModal").modal("hide");
+                $("#setTaxModal").modal("hide");
                 Swal.fire({
                   position: 'top',
                   icon: 'success',
@@ -321,11 +328,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   }, _callee5);
                 })));
               }
-              _context6.next = 13;
+              _context6.next = 14;
               break;
-            case 9:
-              _context6.prev = 9;
-              _context6.t0 = _context6["catch"](0);
+            case 10:
+              _context6.prev = 10;
+              _context6.t0 = _context6["catch"](1);
               _this4.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
@@ -334,11 +341,74 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 13:
+            case 14:
             case "end":
               return _context6.stop();
           }
-        }, _callee6, null, [[0, 9]]);
+        }, _callee6, null, [[1, 10]]);
+      }))();
+    },
+    handleSubmitEditCoa: function handleSubmitEditCoa() {
+      var _this5 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8() {
+        var respDe;
+        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
+            case 0:
+              _context8.prev = 0;
+              _this5.$vs.loading();
+              _context8.next = 4;
+              return _this5.$axios.post("api/transaction/".concat(_this5.$route.params.id, "/set-coa/").concat(_this5.formDataCoa.id), _this5.formDataCoa.coa_items);
+            case 4:
+              respDe = _context8.sent;
+              _this5.$vs.loading.close();
+              if (!respDe.status) {
+                Swal.fire({
+                  position: 'top-end',
+                  icon: 'error',
+                  title: respDe.message,
+                  showConfirmButton: false,
+                  timer: 1500
+                });
+              } else {
+                $("#setCoaModal").modal("hide");
+                Swal.fire({
+                  position: 'top',
+                  icon: 'success',
+                  title: respDe.message,
+                  showConfirmButton: false,
+                  timer: 1500
+                }).then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7() {
+                  return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+                    while (1) switch (_context7.prev = _context7.next) {
+                      case 0:
+                        _context7.next = 2;
+                        return _this5.getData();
+                      case 2:
+                      case "end":
+                        return _context7.stop();
+                    }
+                  }, _callee7);
+                })));
+              }
+              _context8.next = 13;
+              break;
+            case 9:
+              _context8.prev = 9;
+              _context8.t0 = _context8["catch"](0);
+              _this5.$vs.loading.close();
+              Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: _context8.t0.message,
+                showConfirmButton: false,
+                timer: 1500
+              });
+            case 13:
+            case "end":
+              return _context8.stop();
+          }
+        }, _callee8, null, [[0, 9]]);
       }))();
     },
     handleCalculate: function handleCalculate() {
@@ -445,20 +515,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       $("#setCoaModal").modal("show");
     },
     handleApproval: function handleApproval(type, itemId) {
-      var _this5 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8() {
+      var _this6 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee10() {
         var status, respDe;
-        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
-          while (1) switch (_context8.prev = _context8.next) {
+        return _regeneratorRuntime().wrap(function _callee10$(_context10) {
+          while (1) switch (_context10.prev = _context10.next) {
             case 0:
-              _context8.prev = 0;
-              _this5.$vs.loading();
+              _context10.prev = 0;
+              _this6.$vs.loading();
               status = type === 1 ? 'approved' : 'rejected';
-              _context8.next = 5;
-              return _this5.$axios.get("api/transaction/".concat(_this5.$route.params.id, "/").concat(status, "/approval/").concat(itemId));
+              _context10.next = 5;
+              return _this6.$axios.get("api/transaction/".concat(_this6.$route.params.id, "/").concat(status, "/approval/").concat(itemId));
             case 5:
-              respDe = _context8.sent;
-              _this5.$vs.loading.close();
+              respDe = _context10.sent;
+              _this6.$vs.loading.close();
               if (!respDe.status) {
                 Swal.fire({
                   position: 'top-end',
@@ -474,55 +544,55 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   title: respDe.message,
                   showConfirmButton: false,
                   timer: 1500
-                }).then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7() {
-                  return _regeneratorRuntime().wrap(function _callee7$(_context7) {
-                    while (1) switch (_context7.prev = _context7.next) {
+                }).then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9() {
+                  return _regeneratorRuntime().wrap(function _callee9$(_context9) {
+                    while (1) switch (_context9.prev = _context9.next) {
                       case 0:
-                        _context7.next = 2;
-                        return _this5.getData();
+                        _context9.next = 2;
+                        return _this6.getData();
                       case 2:
                       case "end":
-                        return _context7.stop();
+                        return _context9.stop();
                     }
-                  }, _callee7);
+                  }, _callee9);
                 })));
               }
-              _context8.next = 14;
+              _context10.next = 14;
               break;
             case 10:
-              _context8.prev = 10;
-              _context8.t0 = _context8["catch"](0);
-              _this5.$vs.loading.close();
+              _context10.prev = 10;
+              _context10.t0 = _context10["catch"](0);
+              _this6.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
-                title: _context8.t0.message,
+                title: _context10.t0.message,
                 showConfirmButton: false,
                 timer: 1500
               });
             case 14:
             case "end":
-              return _context8.stop();
+              return _context10.stop();
           }
-        }, _callee8, null, [[0, 10]]);
+        }, _callee10, null, [[0, 10]]);
       }))();
     },
     handlePublish: function handlePublish() {
-      var _this6 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9() {
+      var _this7 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee11() {
         var respDe;
-        return _regeneratorRuntime().wrap(function _callee9$(_context9) {
-          while (1) switch (_context9.prev = _context9.next) {
+        return _regeneratorRuntime().wrap(function _callee11$(_context11) {
+          while (1) switch (_context11.prev = _context11.next) {
             case 0:
-              _context9.prev = 0;
-              _this6.$vs.loading();
-              _context9.next = 4;
-              return _this6.$axios.get("api/transaction/".concat(_this6.$route.params.id, "/publish"));
+              _context11.prev = 0;
+              _this7.$vs.loading();
+              _context11.next = 4;
+              return _this7.$axios.get("api/transaction/".concat(_this7.$route.params.id, "/publish"));
             case 4:
-              respDe = _context9.sent;
-              _this6.$vs.loading.close();
+              respDe = _context11.sent;
+              _this7.$vs.loading.close();
               if (respDe.status) {
-                _context9.next = 10;
+                _context11.next = 10;
                 break;
               }
               Swal.fire({
@@ -532,46 +602,46 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-              _context9.next = 12;
+              _context11.next = 12;
               break;
             case 10:
-              _context9.next = 12;
-              return _this6.getData();
+              _context11.next = 12;
+              return _this7.getData();
             case 12:
-              _context9.next = 18;
+              _context11.next = 18;
               break;
             case 14:
-              _context9.prev = 14;
-              _context9.t0 = _context9["catch"](0);
-              _this6.$vs.loading.close();
+              _context11.prev = 14;
+              _context11.t0 = _context11["catch"](0);
+              _this7.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
-                title: _context9.t0.message,
+                title: _context11.t0.message,
                 showConfirmButton: false,
                 timer: 1500
               });
             case 18:
             case "end":
-              return _context9.stop();
+              return _context11.stop();
           }
-        }, _callee9, null, [[0, 14]]);
+        }, _callee11, null, [[0, 14]]);
       }))();
     },
     getData: function getData() {
-      var _this7 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee10() {
+      var _this8 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee12() {
         var respDe;
-        return _regeneratorRuntime().wrap(function _callee10$(_context10) {
-          while (1) switch (_context10.prev = _context10.next) {
+        return _regeneratorRuntime().wrap(function _callee12$(_context12) {
+          while (1) switch (_context12.prev = _context12.next) {
             case 0:
-              _context10.prev = 0;
-              _this7.$vs.loading();
-              _context10.next = 4;
-              return _this7.$axios.get("api/transaction/".concat(_this7.$route.params.id, "/detail"));
+              _context12.prev = 0;
+              _this8.$vs.loading();
+              _context12.next = 4;
+              return _this8.$axios.get("api/transaction/".concat(_this8.$route.params.id, "/detail"));
             case 4:
-              respDe = _context10.sent;
-              _this7.$vs.loading.close();
+              respDe = _context12.sent;
+              _this8.$vs.loading.close();
               if (!respDe.status) {
                 Swal.fire({
                   position: 'top-end',
@@ -581,66 +651,66 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   timer: 1500
                 });
               } else {
-                _this7.transactionData = respDe.data;
+                _this8.transactionData = respDe.data;
               }
-              _context10.next = 13;
+              _context12.next = 13;
               break;
             case 9:
-              _context10.prev = 9;
-              _context10.t0 = _context10["catch"](0);
-              _this7.$vs.loading.close();
+              _context12.prev = 9;
+              _context12.t0 = _context12["catch"](0);
+              _this8.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
-                title: _context10.t0.message,
+                title: _context12.t0.message,
                 showConfirmButton: false,
                 timer: 1500
               });
             case 13:
             case "end":
-              return _context10.stop();
+              return _context12.stop();
           }
-        }, _callee10, null, [[0, 9]]);
+        }, _callee12, null, [[0, 9]]);
       }))();
     },
     getTax: function getTax() {
-      var _this8 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee11() {
+      var _this9 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee13() {
         var respDe;
-        return _regeneratorRuntime().wrap(function _callee11$(_context11) {
-          while (1) switch (_context11.prev = _context11.next) {
+        return _regeneratorRuntime().wrap(function _callee13$(_context13) {
+          while (1) switch (_context13.prev = _context13.next) {
             case 0:
-              _context11.prev = 0;
-              _this8.$vs.loading();
-              _context11.next = 4;
-              return _this8.$axios.get("api/tax");
+              _context13.prev = 0;
+              _this9.$vs.loading();
+              _context13.next = 4;
+              return _this9.$axios.get("api/tax");
             case 4:
-              respDe = _context11.sent;
-              _this8.$vs.loading.close();
-              _this8.pphs = respDe.filter(function (x) {
+              respDe = _context13.sent;
+              _this9.$vs.loading.close();
+              _this9.pphs = respDe.filter(function (x) {
                 return x.type === 'pph';
               });
-              _this8.ppns = respDe.filter(function (x) {
+              _this9.ppns = respDe.filter(function (x) {
                 return x.type === 'ppn';
               });
-              _context11.next = 14;
+              _context13.next = 14;
               break;
             case 10:
-              _context11.prev = 10;
-              _context11.t0 = _context11["catch"](0);
-              _this8.$vs.loading.close();
+              _context13.prev = 10;
+              _context13.t0 = _context13["catch"](0);
+              _this9.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
-                title: _context11.t0.message,
+                title: _context13.t0.message,
                 showConfirmButton: false,
                 timer: 1500
               });
             case 14:
             case "end":
-              return _context11.stop();
+              return _context13.stop();
           }
-        }, _callee11, null, [[0, 10]]);
+        }, _callee13, null, [[0, 10]]);
       }))();
     }
   }
@@ -728,7 +798,21 @@ var render = function render() {
     staticClass: "text-right"
   }, [_vm._v("Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.transactionData.dpp)))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("TOTAL")]), _vm._v(" "), _c("td", {
     staticClass: "text-right"
-  }, [_vm._v("Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.transactionData.total_amount)))])])])])])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.transactionData.total_amount)))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("Transaction Method")]), _vm._v(" "), _c("td", {
+    staticClass: "text-right"
+  }, [_vm._v("\n                                " + _vm._s(_vm.transactionData.method) + " - " + _vm._s(_vm.transactionData.transaction_date)), _vm._v(" "), _vm.$store.state.permissions.includes("transaction_cancel_approval") ? _c("button", {
+    staticClass: "btn-success",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.handleShowMethod();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-pen-alt"
+  })]) : _vm._e()])])])])])]), _vm._v(" "), _c("div", {
     staticClass: "table-responsive"
   }, [_c("table", {
     staticClass: "table table-bordered",
@@ -819,7 +903,7 @@ var render = function render() {
     }, [_c("i", {
       staticClass: "fa fa-times"
     }), _vm._v(" Reject\n                                    ")]) : _vm._e(), _vm._v("\n                                    " + _vm._s(item.approved_at ? "Approved at " + item.approved_at : item.rejected_at ? "Transaction rejected" : _vm.transactionData.current_status === "published" && item.user.email === _vm.$store.state.email ? "" : "Waiting Action") + "\n                                ")])])]);
-  }), _vm._v(" "), _vm.$store.state.permissions.includes("transaction_cancel_approval") ? _c("tr", [_c("td", {
+  }), _vm._v(" "), _vm.$store.state.permissions.includes("transaction_cancel_approval") && _vm.transactionData === "published" ? _c("tr", [_c("td", {
     staticClass: "text-right align-content-center",
     attrs: {
       colspan: "2"
@@ -834,6 +918,101 @@ var render = function render() {
   }, [_vm._v("\n                                    Forced Status\n                                ")])])]) : _vm._e()], 2)])])]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
     attrs: {
+      id: "setMethodModal",
+      tabindex: "-1",
+      role: "dialog",
+      "aria-labelledby": "exampleModalLabel"
+    }
+  }, [_c("div", {
+    staticClass: "modal-dialog",
+    attrs: {
+      role: "document"
+    }
+  }, [_c("div", {
+    staticClass: "modal-content"
+  }, [_vm._m(1), _vm._v(" "), _c("div", {
+    staticClass: "modal-body"
+  }, [_c("form", [_c("div", {
+    staticClass: "row mt-3"
+  }, [_vm._m(2), _vm._v(" "), _c("div", {
+    staticClass: "col-8"
+  }, [_c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.formDataMethod.method,
+      expression: "formDataMethod.method"
+    }],
+    staticClass: "form-control",
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.formDataMethod, "method", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }
+    }
+  }, [_c("option", {
+    attrs: {
+      value: "",
+      selected: ""
+    }
+  }, [_vm._v("--Select Method--")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "flip"
+    }
+  }, [_vm._v("Flip")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "manual"
+    }
+  }, [_vm._v("Manual")])])])]), _vm._v(" "), _vm.formDataMethod.method === "manual" ? _c("div", {
+    staticClass: "row mt-3"
+  }, [_vm._m(3), _vm._v(" "), _c("div", {
+    staticClass: "col-8"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.formDataMethod.transaction_date,
+      expression: "formDataMethod.transaction_date"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "date"
+    },
+    domProps: {
+      value: _vm.formDataMethod.transaction_date
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.formDataMethod, "transaction_date", $event.target.value);
+      }
+    }
+  })])]) : _vm._e()])]), _vm._v(" "), _c("div", {
+    staticClass: "modal-footer flex justify-content-between"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal"
+    }
+  }, [_vm._v("Close")]), _vm._v(" "), _c("button", {
+    staticClass: "btn btn-primary",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.handleSubmitEditMethod();
+      }
+    }
+  }, [_vm._v("Save changes")])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal fade",
+    attrs: {
       id: "setTaxModal",
       tabindex: "-1",
       role: "dialog",
@@ -846,15 +1025,15 @@ var render = function render() {
     }
   }, [_c("div", {
     staticClass: "modal-content"
-  }, [_vm._m(1), _vm._v(" "), _c("div", {
+  }, [_vm._m(4), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_c("form", [_c("div", {
     staticClass: "row"
-  }, [_vm._m(2), _vm._v(" "), _c("div", {
+  }, [_vm._m(5), _vm._v(" "), _c("div", {
     staticClass: "col-8"
   }, [_c("label", [_vm._v(_vm._s(_vm.formData.title))])])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
-  }, [_vm._m(3), _vm._v(" "), _c("div", {
+  }, [_vm._m(6), _vm._v(" "), _c("div", {
     staticClass: "col-8"
   }, [_c("select", {
     directives: [{
@@ -894,7 +1073,7 @@ var render = function render() {
     }
   }, [_vm._v("Exclude")])])])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
-  }, [_vm._m(4), _vm._v(" "), _c("div", {
+  }, [_vm._m(7), _vm._v(" "), _c("div", {
     staticClass: "col-8"
   }, [_c("select", {
     directives: [{
@@ -932,7 +1111,7 @@ var render = function render() {
     }, [_vm._v(_vm._s(ppn.title) + " - " + _vm._s(ppn.amount) + "%")]);
   })], 2)])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
-  }, [_vm._m(5), _vm._v(" "), _c("div", {
+  }, [_vm._m(8), _vm._v(" "), _c("div", {
     staticClass: "col-8"
   }, [_c("select", {
     directives: [{
@@ -970,7 +1149,7 @@ var render = function render() {
     }, [_vm._v(_vm._s(pph.title) + " - " + _vm._s(pph.amount) + "%")]);
   })], 2)])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
-  }, [_vm._m(6), _vm._v(" "), _c("div", {
+  }, [_vm._m(9), _vm._v(" "), _c("div", {
     staticClass: "col-8"
   }, [_c("div", {
     staticClass: "row"
@@ -999,25 +1178,25 @@ var render = function render() {
         _vm.$set(_vm.formData, "input", $event.target.value);
       }
     }
-  })])])])]), _vm._v(" "), _vm._m(7), _vm._v(" "), _c("div", {
-    staticClass: "row mt-3"
-  }, [_vm._m(8), _vm._v(" "), _c("div", {
-    staticClass: "col-8"
-  }, [_vm._v("\n                                        " + _vm._s(_vm.formData.note) + "\n                                    ")])]), _vm._v(" "), _c("div", {
-    staticClass: "row mt-3"
-  }, [_vm._m(9), _vm._v(" "), _c("div", {
-    staticClass: "col-8"
-  }, [_vm._v("\n                                        " + _vm._s(_vm.formData.ppn_value) + "\n                                    ")])]), _vm._v(" "), _c("div", {
-    staticClass: "row mt-3"
-  }, [_vm._m(10), _vm._v(" "), _c("div", {
-    staticClass: "col-8"
-  }, [_vm._v("\n                                        " + _vm._s(_vm.formData.pph_value) + "\n                                    ")])]), _vm._v(" "), _c("div", {
+  })])])])]), _vm._v(" "), _vm._m(10), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
   }, [_vm._m(11), _vm._v(" "), _c("div", {
     staticClass: "col-8"
-  }, [_vm._v("\n                                        " + _vm._s(_vm.formData.dpp_value) + "\n                                    ")])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n                                        " + _vm._s(_vm.formData.note) + "\n                                    ")])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
   }, [_vm._m(12), _vm._v(" "), _c("div", {
+    staticClass: "col-8"
+  }, [_vm._v("\n                                        " + _vm._s(_vm.formData.ppn_value) + "\n                                    ")])]), _vm._v(" "), _c("div", {
+    staticClass: "row mt-3"
+  }, [_vm._m(13), _vm._v(" "), _c("div", {
+    staticClass: "col-8"
+  }, [_vm._v("\n                                        " + _vm._s(_vm.formData.pph_value) + "\n                                    ")])]), _vm._v(" "), _c("div", {
+    staticClass: "row mt-3"
+  }, [_vm._m(14), _vm._v(" "), _c("div", {
+    staticClass: "col-8"
+  }, [_vm._v("\n                                        " + _vm._s(_vm.formData.dpp_value) + "\n                                    ")])]), _vm._v(" "), _c("div", {
+    staticClass: "row mt-3"
+  }, [_vm._m(15), _vm._v(" "), _c("div", {
     staticClass: "col-8"
   }, [_vm._v("\n                                        " + _vm._s(_vm.formData.total_value) + "\n                                    ")])])])]), _vm._v(" "), _c("div", {
     staticClass: "modal-footer flex justify-content-between"
@@ -1059,49 +1238,49 @@ var render = function render() {
     attrs: {
       id: "exampleModalLabel"
     }
-  }, [_vm._v(" " + _vm._s(_vm.formDataCoa.type === "edit" ? "Edit" : "View") + " Item")]), _vm._v(" "), _vm._m(13)]), _vm._v(" "), _c("div", {
+  }, [_vm._v(" " + _vm._s(_vm.formDataCoa.type === "edit" ? "Edit" : "View") + " Item")]), _vm._v(" "), _vm._m(16)]), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_c("form", [_c("div", {
     staticClass: "row"
-  }, [_vm._m(14), _vm._v(" "), _c("div", {
+  }, [_vm._m(17), _vm._v(" "), _c("div", {
     staticClass: "col-8"
   }, [_c("label", [_vm._v(_vm._s(_vm.formDataCoa.title))])])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
-  }, [_vm._m(15), _vm._v(" "), _c("div", {
+  }, [_vm._m(18), _vm._v(" "), _c("div", {
     staticClass: "col-8"
   }, [_c("label", [_vm._v(_vm._s(_vm.formDataCoa.tax_type))])])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
-  }, [_vm._m(16), _vm._v(" "), _c("div", {
+  }, [_vm._m(19), _vm._v(" "), _c("div", {
     staticClass: "col-8"
   }, [_c("label", [_vm._v(_vm._s(_vm.formDataCoa.ppn_type))])])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
-  }, [_vm._m(17), _vm._v(" "), _c("div", {
+  }, [_vm._m(20), _vm._v(" "), _c("div", {
     staticClass: "col-8"
   }, [_c("label", [_vm._v(_vm._s(_vm.formDataCoa.pph_type))])])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
-  }, [_vm._m(18), _vm._v(" "), _c("div", {
-    staticClass: "col-8"
-  }, [_c("label", [_vm._v("Rp.  " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.input_amount)))])])]), _vm._v(" "), _vm._m(19), _vm._v(" "), _c("div", {
-    staticClass: "row mt-3"
-  }, [_vm._m(20), _vm._v(" "), _c("div", {
-    staticClass: "col-8"
-  }, [_vm._v("\n                                        " + _vm._s(_vm.formDataCoa.note) + "\n                                    ")])]), _vm._v(" "), _c("div", {
-    staticClass: "row mt-3"
   }, [_vm._m(21), _vm._v(" "), _c("div", {
     staticClass: "col-8"
-  }, [_vm._v("\n                                        Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.ppn_value)) + "\n                                    ")])]), _vm._v(" "), _c("div", {
-    staticClass: "row mt-3"
-  }, [_vm._m(22), _vm._v(" "), _c("div", {
-    staticClass: "col-8"
-  }, [_vm._v("\n                                        Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.pph_value)) + "\n                                    ")])]), _vm._v(" "), _c("div", {
+  }, [_c("label", [_vm._v("Rp.  " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.input_amount)))])])]), _vm._v(" "), _vm._m(22), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
   }, [_vm._m(23), _vm._v(" "), _c("div", {
     staticClass: "col-8"
-  }, [_vm._v("\n                                        Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.dpp_value)) + "\n                                    ")])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n                                        " + _vm._s(_vm.formDataCoa.note) + "\n                                    ")])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
   }, [_vm._m(24), _vm._v(" "), _c("div", {
     staticClass: "col-8"
-  }, [_vm._v("\n                                        Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.total_amount)) + "\n                                    ")])]), _vm._v(" "), _c("hr"), _vm._v(" "), _vm._m(25), _vm._v(" "), _c("hr"), _vm._v(" "), _vm._l(_vm.formDataCoa.coa_items, function (coaItem, index) {
+  }, [_vm._v("\n                                        Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.ppn_value)) + "\n                                    ")])]), _vm._v(" "), _c("div", {
+    staticClass: "row mt-3"
+  }, [_vm._m(25), _vm._v(" "), _c("div", {
+    staticClass: "col-8"
+  }, [_vm._v("\n                                        Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.pph_value)) + "\n                                    ")])]), _vm._v(" "), _c("div", {
+    staticClass: "row mt-3"
+  }, [_vm._m(26), _vm._v(" "), _c("div", {
+    staticClass: "col-8"
+  }, [_vm._v("\n                                        Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.dpp_value)) + "\n                                    ")])]), _vm._v(" "), _c("div", {
+    staticClass: "row mt-3"
+  }, [_vm._m(27), _vm._v(" "), _c("div", {
+    staticClass: "col-8"
+  }, [_vm._v("\n                                        Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.total_amount)) + "\n                                    ")])]), _vm._v(" "), _c("hr"), _vm._v(" "), _vm._m(28), _vm._v(" "), _c("hr"), _vm._v(" "), _vm._l(_vm.formDataCoa.coa_items, function (coaItem, index) {
     return _c("div", {
       key: index,
       staticClass: "row mt-3"
@@ -1286,6 +1465,52 @@ var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("thead", [_c("tr", [_c("th", [_vm._v("No")]), _vm._v(" "), _c("th", [_vm._v("Title")]), _vm._v(" "), _c("th", [_vm._v("Attachment")]), _vm._v(" "), _c("th", [_vm._v("Input Total")]), _vm._v(" "), _c("th", [_vm._v("Total")]), _vm._v(" "), _c("th", [_vm._v("#")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "modal-header"
+  }, [_c("h5", {
+    staticClass: "modal-title",
+    attrs: {
+      id: "exampleModalLabel"
+    }
+  }, [_vm._v("Change Transaction Method")]), _vm._v(" "), _c("button", {
+    staticClass: "close",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal",
+      "aria-label": "Close"
+    }
+  }, [_c("span", {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-4"
+  }, [_c("label", [_vm._v("Transaction Method"), _c("span", {
+    staticStyle: {
+      color: "red",
+      "font-weight": "bold",
+      "font-style": "italic"
+    }
+  }, [_vm._v("*) required")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-4"
+  }, [_c("label", [_vm._v("Transaction Date"), _c("span", {
+    staticStyle: {
+      color: "red",
+      "font-weight": "bold",
+      "font-style": "italic"
+    }
+  }, [_vm._v("*) required")])])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;

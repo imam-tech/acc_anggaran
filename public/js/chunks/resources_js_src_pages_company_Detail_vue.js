@@ -412,7 +412,15 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "fa fa-eye"
-  }), _vm._v(" View Transaction\n            ")]) : _vm._e()], 1), _vm._v(" "), _c("div", {
+  }), _vm._v(" View Transaction\n            ")]) : _vm._e(), _vm._v(" "), _c("router-link", {
+    staticClass: "btn btn-warning float-right mt-3 mr-3",
+    attrs: {
+      to: "/app/transaction/" + _vm.$route.params.id + "/form",
+      type: "button"
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-plus-circle"
+  }), _vm._v(" Add Transaction\n            ")])], 1), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_c("div", {
     staticClass: "row"
@@ -476,7 +484,9 @@ var render = function render() {
       colspan: "5"
     }
   }, [_vm._v("\n                            Empty Project\n                        ")])]), _vm._v(" "), _vm._l(_vm.companyData.projects, function (project, key) {
-    return _c("tr", [_c("td", [_c("strong", [_vm._v(_vm._s(key + 1))])]), _vm._v(" "), _c("td", [_vm._v(_vm._s(project.title))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(project.description))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(project.created_at)))]), _vm._v(" "), _c("td", [_c("router-link", {
+    return _c("tr", {
+      key: key
+    }, [_c("td", [_c("strong", [_vm._v(_vm._s(key + 1))])]), _vm._v(" "), _c("td", [_vm._v(_vm._s(project.title))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(project.description))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(project.created_at)))]), _vm._v(" "), _c("td", [_c("router-link", {
       staticClass: "btn btn-info",
       attrs: {
         to: "/app/project/" + project.id + "/detail"

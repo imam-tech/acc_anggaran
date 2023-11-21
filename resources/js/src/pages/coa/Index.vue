@@ -38,36 +38,42 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>Category</th>
-                            <th>Posting</th>
                             <th>Account Code</th>
-                            <th>Account Number</th>
                             <th>Account Name</th>
+                            <th>Category</th>
                             <th>Account Type</th>
                             <th>Description</th>
+                            <th>Initial Balance</th>
                             <th>Is Active</th>
-                            <th>Created At</th>
                             <th v-if="$store.state.permissions.includes('coa_create_edit')">#</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr v-for="(coa, index) in coas" :key="index">
+                            <td>{{ coa.account_number }}</td>
                             <td>
-                                <router-link :to="'/app/coa/' + coa.id + '/detail'">
-                                    {{ coa.coa_category.name }}
+                                <router-link :to="'/app/coa/' + coa.id + '/detail'">{{ coa.account_name }}
                                 </router-link>
                             </td>
-                            <td>{{ coa.coa_posting.name}}</td>
-                            <td>{{ coa.account_code }}</td>
-                            <td>{{ coa.account_number }}</td>
-                            <td>{{ coa.account_name }}</td>
+                            <td>{{ coa.coa_category.name }} </td>
                             <td>{{ coa.account_type }}</td>
                             <td>{{ coa.description }}</td>
-                            <td>{{ coa.is_active === 1 ? 'Active' : "In Active" }}</td>
-                            <td>{{ coa.created_at | formatDate }}</td>
+                            <div>
+                                <span v-if="coa.initial_balance !== null">{{ coa.initial_balance.debit | formatPriceWithDecimal }}</span>
+                                <span v-else>0</span>
+                            </div>
+                            <td>
+                                <span :class="coa.is_active === 1 ? 'badge badge-primary' : 'badge badge-danger'">{{ coa.is_active === 1 ? 'Active' : "In Active" }}</span>
+                            </td>
                             <td v-if="$store.state.permissions.includes('coa_create_edit')">
                                 <button type="button" class="btn btn-warning" @click="showEditCoa(coa)">
                                     <i class="fa fa-pencil"></i>
+                                </button>
+                                <button v-if="coa.journal_item === null" type="button" class="btn btn-danger" @click="handleDelete(coa.id)">
+                                    <i class="fa fa-remove"></i>
+                                </button>
+                                <button type="button" class="btn btn-success" @click="handleInitialBalance(coa)">
+                                    <i class="fa fa-dollar"></i>
                                 </button>
                             </td>
                         </tr>
@@ -76,6 +82,35 @@
                     <!--<div class="justify-content-center d-flex">-->
                         <!--<pagination v-model="page" :records="totalData" :per-page="perPage" @paginate="getData"/>-->
                     <!--</div>-->
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="addInitialBalance" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Input Initial Balance</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form>
+                            <div class="form-group">
+                                <label>Amount<span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    font-style: italic;
+                                ">*) required</span></label>
+                                <input type="number" class="form-control" v-model="formInitialBalance.amount">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="submitInitialBalance()">Save changes</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -153,11 +188,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Description<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
+                                <label>Description</label>
                                 <textarea class="form-control" v-model="formData.description"></textarea>
                             </div>
                         </form>
@@ -190,7 +221,11 @@
                     is_active: 1
                 },
                 categories: [],
-                postings: []
+                postings: [],
+                formInitialBalance: {
+                    id: "",
+                    amount: 0
+                }
             }
         },
         created() {
@@ -198,6 +233,41 @@
             this.getDataCategory()
         },
         methods: {
+            handleInitialBalance(coa) {
+                this.formInitialBalance.id = coa.id
+                if (coa.initial_balance) {
+                    this.formInitialBalance.amount = coa.initial_balance.debit
+                }
+                $("#addInitialBalance").modal("show")
+            },
+            async submitInitialBalance() {
+                try {
+                    this.$vs.loading()
+                    const resp = await this.$axios.get(`api/coa/${this.formInitialBalance.id}/set-initial-balance/${this.formInitialBalance.amount}`)
+                    this.$vs.loading.close()
+                    if (!resp['status']) {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: resp.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        return
+                    }
+                    $('#addInitialBalance').modal("hide")
+                    this.getData();
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            },
             async getData() {
                 try {
                     this.$vs.loading()
@@ -308,7 +378,7 @@
                 }).then((result)=>{
                     if(result.isConfirmed == true){
                         this.$vs.loading()
-                        this.$axios.delete(`api/tax/${id}/delete`).then((response)=>{
+                        this.$axios.delete(`api/coa/${id}/delete`).then((response)=>{
                             this.$vs.loading.close()
                             if(response.status){
                                 Swal.fire({

@@ -31,6 +31,12 @@
                 <span>Company</span>
             </router-link>
         </li>
+        <li v-if="$store.state.permissions.includes('transaction_push_plugin')" class="nav-item">
+            <router-link class="nav-link" to="/app/setting">
+                <i class="fas fa-gear"></i>
+                <span>Setting</span>
+            </router-link>
+        </li>
         <li class="nav-item">
             <router-link class="nav-link" to="/app/project">
                 <i class="fas fa-project-diagram"></i>
@@ -59,6 +65,12 @@
             <router-link class="nav-link" to="/app/journal">
                 <i class="fas fa-journal-whills"></i>
                 <span>Journal</span>
+            </router-link>
+        </li>
+        <li class="nav-item">
+            <router-link class="nav-link" to="/app/report">
+                <i class="fas fa-newspaper"></i>
+                <span>Report</span>
             </router-link>
         </li>
 

@@ -20,7 +20,7 @@ class CoaController extends Controller {
 
     public function index(Request $request) {
         $filters = $request->only(['is_active', 'category_id']);
-        $coas = Coa::with(['coaCategory', 'coaPosting']);
+        $coas = Coa::with(['coaCategory', 'coaPosting', 'journalItem', 'initialBalance']);
 
         if (!empty($filters['is_active'])) {
             $coas = $coas->where('is_active', $filters['is_active']);
@@ -86,5 +86,13 @@ class CoaController extends Controller {
     public function journalItemsCategory(Request $request) {
         $filters = $request->only(['account', 'status']);
         return response()->json($this->coaRepo->journalItemsCategory($filters));
+    }
+
+    public function delete($id) {
+        return response()->json($this->coaRepo->delete($id));
+    }
+
+    public function setInitialBalance($id, $amount) {
+        return response()->json($this->coaRepo->setInitialBalance($id, $amount));
     }
 }

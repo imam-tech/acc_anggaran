@@ -14,6 +14,8 @@ import userRouter from './userRouter';
 import transactionRouter from './transactionRouter';
 import coaRouter from './coaRouter';
 import journalRouter from './journalRouter';
+import reportRouter from './reportRouter';
+import settingRouter from './settingRouter';
 
 Vue.use(Router)
 
@@ -73,7 +75,17 @@ const router = new Router({
                     path: 'journal',
                     component: MenuLayout,
                     children: journalRouter
-                }
+                },
+                {
+                    path: 'report',
+                    component: MenuLayout,
+                    children: reportRouter
+                },
+                {
+                    path: 'setting',
+                    component: MenuLayout,
+                    children: settingRouter
+                },
             ]
         },
         {

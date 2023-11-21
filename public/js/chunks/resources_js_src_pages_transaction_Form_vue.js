@@ -119,6 +119,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       });
     },
     handleAddItem: function handleAddItem() {
+      if (this.formItem.title === "" || this.formItem.amount === "") {
+        Swal.fire({
+          position: 'top-end',
+          icon: 'error',
+          title: "Please fill title and amount",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        return;
+      }
       if (this.formItem.type === "") {
         this.formData.items.push(this.formItem);
       } else {
@@ -450,7 +460,7 @@ var render = function render() {
     }, [_vm._v(_vm._s(project.title))]);
   }), 0)])])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(2), _vm._v(" "), _c("textarea", {
+  }, [_c("label", [_vm._v("Description")]), _vm._v(" "), _c("textarea", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -475,7 +485,7 @@ var render = function render() {
     staticClass: "col-6"
   }, [_c("div", {
     staticClass: "form-group"
-  }, [_vm._m(3), _vm._v(" "), _c("select", {
+  }, [_vm._m(2), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -507,7 +517,7 @@ var render = function render() {
     staticClass: "col-6"
   }, [_c("div", {
     staticClass: "form-group"
-  }, [_vm._m(4), _vm._v(" "), _c("select", {
+  }, [_vm._m(3), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -552,7 +562,7 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "col-12"
   }, [_c("button", {
-    staticClass: "btn btn-info float-right mt-3 mr-3",
+    staticClass: "btn btn-warning float-right mt-3 mr-3",
     attrs: {
       type: "button"
     },
@@ -574,7 +584,7 @@ var render = function render() {
       width: "100%",
       cellspacing: "0"
     }
-  }, [_vm._m(5), _vm._v(" "), _c("tbody", _vm._l(_vm.formData.items, function (item, index) {
+  }, [_vm._m(4), _vm._v(" "), _c("tbody", _vm._l(_vm.formData.items, function (item, index) {
     return _c("tr", {
       key: index
     }, [_c("td", [_vm._v(_vm._s(item.title))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.amount))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.attachment))]), _vm._v(" "), _c("td", [_c("button", {
@@ -652,11 +662,11 @@ var render = function render() {
     }
   }, [_c("div", {
     staticClass: "modal-content"
-  }, [_vm._m(6), _vm._v(" "), _c("div", {
+  }, [_vm._m(5), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_c("form", [_c("div", {
     staticClass: "form-group"
-  }, [_vm._m(7), _vm._v(" "), _c("select", {
+  }, [_vm._m(6), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -684,7 +694,7 @@ var render = function render() {
     }, [_vm._v(_vm._s(bank.name))]);
   }), 0)]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(8), _vm._v(" "), _c("input", {
+  }, [_vm._m(7), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -737,11 +747,11 @@ var render = function render() {
     }
   }, [_c("div", {
     staticClass: "modal-content"
-  }, [_vm._m(9), _vm._v(" "), _c("div", {
+  }, [_vm._m(8), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_c("form", [_c("div", {
     staticClass: "form-group"
-  }, [_vm._m(10), _vm._v(" "), _c("input", {
+  }, [_vm._m(9), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -763,7 +773,7 @@ var render = function render() {
     }
   })]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(11), _vm._v(" "), _c("input", {
+  }, [_vm._m(10), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -785,7 +795,7 @@ var render = function render() {
     }
   })]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(12), _vm._v(" "), _c("textarea", {
+  }, [_c("label", [_vm._v("Note")]), _vm._v(" "), _c("textarea", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -836,16 +846,6 @@ var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("label", [_vm._v("Project"), _c("span", {
-    staticStyle: {
-      color: "red",
-      "font-weight": "bold",
-      "font-style": "italic"
-    }
-  }, [_vm._v("*) required")])]);
-}, function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("label", [_vm._v("Description"), _c("span", {
     staticStyle: {
       color: "red",
       "font-weight": "bold",
@@ -954,16 +954,6 @@ var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("label", [_vm._v("Amount"), _c("span", {
-    staticStyle: {
-      color: "red",
-      "font-weight": "bold",
-      "font-style": "italic"
-    }
-  }, [_vm._v("*) required")])]);
-}, function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("label", [_vm._v("Note"), _c("span", {
     staticStyle: {
       color: "red",
       "font-weight": "bold",

@@ -21,4 +21,12 @@ class Coa extends Model
     public function coaPosting() {
         return $this->hasOne(CoaPosting::class, 'id', 'posting_id');
     }
+
+    public function journalItem() {
+        return $this->hasOne(JournalItem::class, 'account_id', 'id')->where('is_first_balance', 0);
+    }
+
+    public function initialBalance() {
+        return $this->hasOne(JournalItem::class, 'account_id', 'id')->where('is_first_balance', 1);
+    }
 }

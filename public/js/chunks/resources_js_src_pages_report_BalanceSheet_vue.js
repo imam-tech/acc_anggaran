@@ -1,10 +1,10 @@
 "use strict";
-(self["webpackChunk"] = self["webpackChunk"] || []).push([["resources_js_src_pages_transaction_Index_vue"],{
+(self["webpackChunk"] = self["webpackChunk"] || []).push([["resources_js_src_pages_report_BalanceSheet_vue"],{
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/transaction/Index.vue?vue&type=script&lang=js":
-/*!**********************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/transaction/Index.vue?vue&type=script&lang=js ***!
-  \**********************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/report/BalanceSheet.vue?vue&type=script&lang=js":
+/*!************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/report/BalanceSheet.vue?vue&type=script&lang=js ***!
+  \************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -16,40 +16,64 @@ function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyri
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: "Index.vue",
+  name: "BalanceSheet.vue",
   data: function data() {
     return {
-      transactions: [],
-      formData: {
-        id: "",
-        title: "",
-        voucherPrefix: "",
-        type: ""
-      }
+      months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"],
+      coaList: [],
+      dataReports: []
     };
   },
   created: function created() {
-    this.getData();
-    console.log("permissions", this.$store.state.permissions);
+    this.initiateData();
   },
   methods: {
-    getData: function getData() {
+    initiateData: function initiateData() {
+      for (var i = 1; i <= 12; i++) {
+        this.getData(i < 10 ? "0" + i : i);
+      }
+    },
+    getData: function getData(month) {
       var _this = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+        var respData, balances;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
               _this.$vs.loading();
               _context.next = 4;
-              return _this.$axios.get('api/transaction');
+              return _this.$axios.get('api/journal/report/balance-profit?month=' + month + '&year=2023&type=balance_sheet');
             case 4:
-              _this.transactions = _context.sent;
+              respData = _context.sent.data;
+              balances = [];
+              respData.accounts.forEach(function (x) {
+                if (month == "01") {
+                  var respCl = {};
+                  if (x.account_name !== null) {
+                    respCl = {
+                      "type": '',
+                      "label": x.account_code + "-" + x.account_name
+                    };
+                  } else {
+                    respCl = {
+                      "type": 'bold',
+                      "label": x.name
+                    };
+                  }
+                  _this.coaList.push(respCl);
+                }
+                balances.push(x.balance);
+              });
+              _this.dataReports.push({
+                'month': month,
+                'data': balances
+              });
               _this.$vs.loading.close();
-              _context.next = 12;
+              _context.next = 15;
               break;
-            case 8:
-              _context.prev = 8;
+            case 11:
+              _context.prev = 11;
               _context.t0 = _context["catch"](0);
               _this.$vs.loading.close();
               Swal.fire({
@@ -59,11 +83,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 12:
+            case 15:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 8]]);
+        }, _callee, null, [[0, 11]]);
       }))();
     }
   }
@@ -71,10 +95,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/transaction/Index.vue?vue&type=template&id=0cdff0fd":
-/*!*********************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/transaction/Index.vue?vue&type=template&id=0cdff0fd ***!
-  \*********************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/report/BalanceSheet.vue?vue&type=template&id=d7c3a78c":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/report/BalanceSheet.vue?vue&type=template&id=d7c3a78c ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -89,84 +113,98 @@ var render = function render() {
     staticClass: "container-fluid"
   }, [_c("div", {
     staticClass: "card shadow mb-4"
-  }, [_vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _c("div", {
-    staticClass: "card-body"
   }, [_c("div", {
-    staticClass: "table-responsive"
-  }, [_c("table", {
-    staticClass: "table table-bordered",
+    staticClass: "card-title"
+  }, [_c("h1", {
+    staticClass: "h3 mt-3 ml-3 text-gray-800 float-left"
+  }, [_vm._v("Balance Sheet")]), _vm._v(" "), _c("router-link", {
+    staticClass: "btn btn-success float-right mt-3 mr-3",
     attrs: {
-      id: "dataTable",
-      width: "100%",
-      cellspacing: "0"
+      to: "/app/report"
     }
-  }, [_vm._m(2), _vm._v(" "), _c("tbody", _vm._l(_vm.transactions, function (transaction, index) {
-    var _transaction$method;
+  }, [_c("i", {
+    staticClass: "fa fa-arrow-left"
+  }), _vm._v(" Back\n            ")])], 1), _vm._v(" "), _c("div", {
+    staticClass: "card-body"
+  }, [_vm._m(0), _vm._v(" "), _c("div", {
+    staticClass: "row mt-3"
+  }, [_c("div", {
+    staticClass: "col-12"
+  }, [_c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-6"
+  }, [_c("table", {
+    staticClass: "table"
+  }, [_vm._m(1), _vm._v(" "), _c("tbody", [_c("tr", [_c("td", [_c("table", {
+    staticClass: "table table-borderless"
+  }, _vm._l(_vm.coaList, function (cl, iC) {
     return _c("tr", {
-      key: index
-    }, [_c("td", [_c("router-link", {
-      attrs: {
-        to: "/app/transaction/" + transaction.id + "/detail"
-      }
-    }, [_vm._v("\n                                " + _vm._s(transaction.transaction_number) + "\n                            ")])], 1), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.user_created_by.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.project.company.title))]), _vm._v(" "), _c("td", [_c("span", {
-      staticClass: "badge rounded-pill text-bg-primary"
-    }, [_vm._v(_vm._s((_transaction$method = transaction.method) !== null && _transaction$method !== void 0 ? _transaction$method : "-"))])]), _vm._v(" "), _c("td", [_c("span", {
-      staticClass: "badge rounded-pill text-bg-warning"
-    }, [_vm._v(_vm._s(transaction.project.title))])]), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.title))]), _vm._v(" "), _c("td", [_c("span", {
-      "class": _vm._f("labelByStatus")(transaction.current_status)
-    }, [_vm._v("\n                                " + _vm._s(transaction.current_status) + "\n                            ")])]), _vm._v(" "), _c("td", [_vm._v("Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(transaction.total_amount)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(transaction.created_at)))]), _vm._v(" "), _c("td", [_c("div", {
-      staticClass: "avatar-stack"
-    }, _vm._l(transaction.transaction_approval_nulls, function (approval, index) {
-      return transaction.current_status !== "rejected" ? _c("span", {
-        key: index,
-        staticClass: "avatar",
-        attrs: {
-          "data-toggle": "tooltip",
-          "data-placement": "top",
-          title: approval.user.name
-        }
-      }, [_vm._v("\n                                    " + _vm._s(_vm._f("getShortName")(approval.user.name)) + "\n                                ")]) : _vm._e();
-    }), 0)])]);
-  }), 0)])])])])]);
+      key: iC
+    }, [_c("td", {
+      "class": cl.type === "bold" ? "font-weight-bold" : "pl-4"
+    }, [_vm._v(_vm._s(cl.label))])]);
+  }), 0)])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-6"
+  }, [_c("table", {
+    staticClass: "table table-responsive"
+  }, [_c("thead", [_c("tr", {
+    staticClass: "bg-gray-300 p-2 rounded"
+  }, _vm._l(_vm.months, function (month, iM) {
+    return _c("th", {
+      key: iM
+    }, [_vm._v(_vm._s(month))]);
+  }), 0)]), _vm._v(" "), _c("tbody", [_c("tr", {
+    "class": _vm.iM % 2 == 1 ? "bg-gray" : ""
+  }, _vm._l(_vm.dataReports, function (dataR, iR) {
+    return _c("td", {
+      key: iR
+    }, [_c("table", {
+      staticClass: "table table-borderless"
+    }, _vm._l(dataR.data, function (j, iJ) {
+      return _c("tr", {
+        key: iJ
+      }, [_c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(j)))])]);
+    }), 0)]);
+  }), 0)])])])])])])])])]);
 };
 var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("div", {
-    staticClass: "card-title"
-  }, [_c("h1", {
-    staticClass: "h3 mt-3 ml-3 text-gray-800 float-left"
-  }, [_vm._v("Transaction List")])]);
-}, function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "row ml-3"
+    staticClass: "row"
   }, [_c("div", {
-    staticClass: "col-md-3"
-  })]);
+    staticClass: "col-12"
+  }, [_c("button", {
+    staticClass: "btn btn-success",
+    attrs: {
+      type: "button"
+    }
+  }, [_vm._v("Export")])])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("thead", [_c("tr", [_c("th", [_vm._v("Transaction Number")]), _vm._v(" "), _c("th", [_vm._v("Author")]), _vm._v(" "), _c("th", [_vm._v("Company")]), _vm._v(" "), _c("th", [_vm._v("Method")]), _vm._v(" "), _c("th", [_vm._v("Project")]), _vm._v(" "), _c("th", [_vm._v("Title")]), _vm._v(" "), _c("th", [_vm._v("Last Status")]), _vm._v(" "), _c("th", [_vm._v("Total")]), _vm._v(" "), _c("th", [_vm._v("Created At")]), _vm._v(" "), _c("th", [_vm._v("Approval")])])]);
+  return _c("thead", [_c("tr", {
+    staticClass: "backgroup bg-light bg-gradient p-2 rounded"
+  }, [_c("th", [_vm._v("Account")])])]);
 }];
 render._withStripped = true;
 
 
 /***/ }),
 
-/***/ "./resources/js/src/pages/transaction/Index.vue":
-/*!******************************************************!*\
-  !*** ./resources/js/src/pages/transaction/Index.vue ***!
-  \******************************************************/
+/***/ "./resources/js/src/pages/report/BalanceSheet.vue":
+/*!********************************************************!*\
+  !*** ./resources/js/src/pages/report/BalanceSheet.vue ***!
+  \********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _Index_vue_vue_type_template_id_0cdff0fd__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Index.vue?vue&type=template&id=0cdff0fd */ "./resources/js/src/pages/transaction/Index.vue?vue&type=template&id=0cdff0fd");
-/* harmony import */ var _Index_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Index.vue?vue&type=script&lang=js */ "./resources/js/src/pages/transaction/Index.vue?vue&type=script&lang=js");
+/* harmony import */ var _BalanceSheet_vue_vue_type_template_id_d7c3a78c__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BalanceSheet.vue?vue&type=template&id=d7c3a78c */ "./resources/js/src/pages/report/BalanceSheet.vue?vue&type=template&id=d7c3a78c");
+/* harmony import */ var _BalanceSheet_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./BalanceSheet.vue?vue&type=script&lang=js */ "./resources/js/src/pages/report/BalanceSheet.vue?vue&type=script&lang=js");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -176,9 +214,9 @@ __webpack_require__.r(__webpack_exports__);
 /* normalize component */
 ;
 var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _Index_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"],
-  _Index_vue_vue_type_template_id_0cdff0fd__WEBPACK_IMPORTED_MODULE_0__.render,
-  _Index_vue_vue_type_template_id_0cdff0fd__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  _BalanceSheet_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"],
+  _BalanceSheet_vue_vue_type_template_id_d7c3a78c__WEBPACK_IMPORTED_MODULE_0__.render,
+  _BalanceSheet_vue_vue_type_template_id_d7c3a78c__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
   false,
   null,
   null,
@@ -188,38 +226,38 @@ var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "resources/js/src/pages/transaction/Index.vue"
+component.options.__file = "resources/js/src/pages/report/BalanceSheet.vue"
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
 
 /***/ }),
 
-/***/ "./resources/js/src/pages/transaction/Index.vue?vue&type=script&lang=js":
-/*!******************************************************************************!*\
-  !*** ./resources/js/src/pages/transaction/Index.vue?vue&type=script&lang=js ***!
-  \******************************************************************************/
+/***/ "./resources/js/src/pages/report/BalanceSheet.vue?vue&type=script&lang=js":
+/*!********************************************************************************!*\
+  !*** ./resources/js/src/pages/report/BalanceSheet.vue?vue&type=script&lang=js ***!
+  \********************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Index_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Index.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/transaction/Index.vue?vue&type=script&lang=js");
- /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Index_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_BalanceSheet_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./BalanceSheet.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/report/BalanceSheet.vue?vue&type=script&lang=js");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_BalanceSheet_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./resources/js/src/pages/transaction/Index.vue?vue&type=template&id=0cdff0fd":
-/*!************************************************************************************!*\
-  !*** ./resources/js/src/pages/transaction/Index.vue?vue&type=template&id=0cdff0fd ***!
-  \************************************************************************************/
+/***/ "./resources/js/src/pages/report/BalanceSheet.vue?vue&type=template&id=d7c3a78c":
+/*!**************************************************************************************!*\
+  !*** ./resources/js/src/pages/report/BalanceSheet.vue?vue&type=template&id=d7c3a78c ***!
+  \**************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Index_vue_vue_type_template_id_0cdff0fd__WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   staticRenderFns: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Index_vue_vue_type_template_id_0cdff0fd__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_BalanceSheet_vue_vue_type_template_id_d7c3a78c__WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   staticRenderFns: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_BalanceSheet_vue_vue_type_template_id_d7c3a78c__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Index_vue_vue_type_template_id_0cdff0fd__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Index.vue?vue&type=template&id=0cdff0fd */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/transaction/Index.vue?vue&type=template&id=0cdff0fd");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_BalanceSheet_vue_vue_type_template_id_d7c3a78c__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./BalanceSheet.vue?vue&type=template&id=d7c3a78c */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/src/pages/report/BalanceSheet.vue?vue&type=template&id=d7c3a78c");
 
 
 /***/ })

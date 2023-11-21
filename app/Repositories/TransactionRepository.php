@@ -397,4 +397,30 @@ class TransactionRepository {
             return resultFunction("Err code TR-PTJ: catch " . $e->getMessage());
         }
     }
+
+    public function setMethod($id, $data) {
+        try {
+            $validator = \Validator::make($data, [
+                "method" => "required"
+            ]);
+
+            if ($validator->fails()) return resultFunction("Err code TR-St: " . collect($validator->errors()->all())->implode(" , "));
+
+            $transaction = Transaction::with([])->find($id);
+            if (!$transaction) return resultFunction("Err code TR-ST: transaction not found for ID " . $id);
+
+            if ($data['method'] === 'manual') {
+                if (!$data['transaction_date']) return resultFunction("Err code TR-ST: transaction date is not found for manual method");
+                $transaction->transaction_date = $data['transaction_date'];
+            } else {
+                $transaction->transaction_date = null;
+            }
+            $transaction->method = $data['method'];
+            $transaction->save();
+
+            return resultFunction("Method has created", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code TR-ST: catch " . $e->getMessage());
+        }
+    }
 }

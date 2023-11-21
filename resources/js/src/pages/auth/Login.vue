@@ -1,30 +1,33 @@
 <template>
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="p-5">
-                <div class="text-center">
-                    <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
-                </div>
-                <form class="user">
-                    <div class="form-group">
-                        <input v-model="formData.email" type="email" class="form-control form-control-user"
-                               id="exampleInputEmail" aria-describedby="emailHelp"
-                               placeholder="Enter Email Address...">
+    <div class="container h-100">
+        <div class="d-flex align-items-center justify-content-center">
+            <div class="col-lg-12">
+                <div class="p-5">
+                    <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                     </div>
-                    <div class="form-group">
-                        <input v-model="formData.password" type="password" class="form-control form-control-user"
-                               id="exampleInputPassword" placeholder="Password">
+                    <form class="user">
+                        <div class="form-group">
+                            <input v-model="formData.email" type="email" class="form-control"
+                                id="exampleInputEmail" aria-describedby="emailHelp"
+                                placeholder="Enter Email Address...">
+                        </div>
+                        <div class="form-group d-flex flex-row">
+                            <input v-model="formData.password" :type="showPassword ? 'text' : 'password'" class="form-control"
+                                id="exampleInputPassword" placeholder="Password">
+                            <button type="button" class="btn btn-info" @click="showPassword = !showPassword">
+                                <i v-if="!showPassword" class="fas fa-eye"></i>
+                                <i v-else class="fas fa-eye-slash"></i>
+                            </button>
+                        </div>
+                        <button type="button" @click="loginProcess()" class="btn btn-primary btn-user btn-block">
+                            Login
+                        </button>
+                    </form>
+                    <hr>
+                    <div class="text-center">
+                        <a class="small" href="#">Forgot Password?</a>
                     </div>
-                    <button type="button" @click="loginProcess()" class="btn btn-primary btn-user btn-block">
-                        Login
-                    </button>
-                </form>
-                <hr>
-                <div class="text-center">
-                    <a class="small" href="forgot-password.html">Forgot Password?</a>
-                </div>
-                <div class="text-center">
-                    <a class="small" href="register.html">Create an Account!</a>
                 </div>
             </div>
         </div>
@@ -41,7 +44,8 @@
                 formData: {
                     email: "",
                     password: ""
-                }
+                },
+                showPassword: false
             }
         },
         methods: {

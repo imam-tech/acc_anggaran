@@ -3,31 +3,67 @@
 
         <div class="card shadow mb-4">
             <div class="card-title">
-                <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Journal List</h1>
+                <div class="row m-3">
+                    <div class="col-6">
+                        <h1 class="h3 text-gray-800 float-left">Journal List</h1>
+                    </div>
+                    <div class="col-6 text-right">
+                        <router-link to="/app/journal/form/create">
+                            <button type="button" class="btn btn-primary">
+                                <i class="fas fa-plus-circle"></i> Journal
+                            </button>
+                        </router-link>
+                    </div>
+                </div>
             </div>
-            <div class="row ml-3">
-                <!--<div class="col-md-3">-->
-                    <!--<div class="input-group mb-2">-->
-                        <!--<div class="input-group-prepend">-->
-                            <!--<div class="input-group-text">Title</div>-->
-                        <!--</div>-->
-                        <!--<input type="text" class="form-control" id="title" placeholder="Title" v-model="sortVal.title">-->
-                    <!--</div>-->
-                <!--</div>-->
-                <!--<div class="col-md-3">-->
-                    <!--<div class="input-group mb-2">-->
-                        <!--<div class="input-group-prepend">-->
-                            <!--<div class="input-group-text">Status</div>-->
-                        <!--</div>-->
-                        <!--<select name="status" v-model="sortVal.status" class="form-control">-->
-                            <!--<option value="active" :selected="sortVal.status== null ? true : false">All</option>-->
-                            <!--<option value="active" :selected="sortVal.status== 'active' ? true : false">Active</option>-->
-                            <!--<option value="not_active" :selected="sortVal.status== 'not_active' ? true : false">Not Active</option>-->
-                        <!--</select>-->
-                    <!--</div>-->
-                <!--</div>-->
-                <div class="col-md-3">
-                    <!--<button class="btn btn-success mb-2" @click="sortValue()">Search</button>-->
+            <div class="row m-3">
+                <div class="col-xl-2 col-md-6">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Start Date</div>
+                        </div>
+                        <input type="date" class="form-control" v-model="filter.start_date" placeholder="Title">
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-6">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">End Date</div>
+                        </div>
+                        <input type="date" class="form-control" v-model="filter.end_date">
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Transaction UID</div>
+                        </div>
+                        <input type="text" class="form-control" v-model="filter.transaction_uid">
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-6">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Title</div>
+                        </div>
+                        <input type="text" class="form-control" v-model="filter.title">
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-6">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Status</div>
+                        </div>
+                        <select name="status" class="form-control" v-model="filter.status">
+                            <option value="all">All</option>
+                            <option value="approved">Approved</option>
+                            <option value="requested">Requested</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xl-1 col-md-6">
+                    <button class="btn btn-success mb-2" @click="getData()">Search</button>
                 </div>
             </div>
             <div class="card-body">
@@ -43,6 +79,7 @@
                             <th>Status</th>
                             <th>Debit (IDR)</th>
                             <th>Credit (IDR)</th>
+                            <th>#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -56,9 +93,23 @@
                             <td>{{ journal.voucher_no }}</td>
                             <td>{{ journal.transaction_date | formatDate }}</td>
                             <td>{{ journal.created_at | formatDate }}</td>
-                            <td>{{ journal.approved_at ? 'Approved' : (journal.rejected_at ? 'Rejected' : 'Requested') }}</td>
+                            <td>
+                                <span :class="(journal.approved_at ? 'approved' : (journal.rejected_at ? 'rejected' : 'requested')) | labelByStatus">
+                                    {{ (journal.approved_at ? 'Approved' : (journal.rejected_at ? 'Rejected' : 'Requested')) }}
+                                </span>
+                            </td>
                             <td>{{ showDebitAndCredit(journal.journal_items, 'debit') | formatPriceWithDecimal}}</td>
                             <td>{{ showDebitAndCredit(journal.journal_items, 'credit') | formatPriceWithDecimal }}</td>
+                            <td>
+                                <router-link v-if="journal.approved_at === null && journal.rejected_at === null" :to="'/app/journal/form/' + journal.id">
+                                    <button type="button" class="btn btn-warning">
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
+                                </router-link>
+                                <button @click="handleDelete(journal.id)" v-if="journal.approved_at === null && journal.rejected_at === null" type="button" class="btn btn-danger">
+                                    <i class="fa fa-remove"></i>
+                                </button>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -77,6 +128,13 @@
         data() {
             return {
                 journals: [],
+                filter: {
+                    start_date: "",
+                    end_date: "",
+                    transaction_uid: "",
+                    title: "",
+                    status: ""
+                }
             }
         },
         created() {
@@ -103,7 +161,8 @@
             async getData() {
                 try {
                     this.$vs.loading()
-                    this.journals = await this.$axios.get(`api/journal`)
+                    this.journals = await this.$axios.get(`api/journal?start_date=${this.filter.start_date}&end_date=${this.filter.end_date}
+                    &transaction_uid=${this.filter.transaction_uid}&title=${this.filter.title}&status=${this.filter.status}`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
@@ -116,6 +175,45 @@
                     })
                 }
             },
+            async handleDelete(id) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are You Sure Want To Delete This Journal?',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.delete(`api/journal/${id}/delete`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.getData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Delete Journal : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            }
         }
     }
 </script>

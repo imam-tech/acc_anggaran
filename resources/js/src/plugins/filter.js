@@ -80,3 +80,10 @@ Vue.filter('getShortName', val => {
     var acronym = matches.join(''); // JSON
     return acronym.toUpperCase()
 })
+
+Vue.filter('labelByStatus', val => {
+    if (val === 'approved') return "badge badge-success rounded-pill";
+    if (val === 'rejected') return "badge badge-danger rounded-pill";
+    if (val === 'published') return "badge badge-primary rounded-pill";
+    if (val === 'requested') return "badge badge-warning rounded-pill";
+})
