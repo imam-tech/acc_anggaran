@@ -33,7 +33,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         tax_admin: "",
         accounting_admin: ""
       },
-      userNotStafs: []
+      userNotStafs: [],
+      settingFlipId: "",
+      settingFlips: []
     };
   },
   mounted: function mounted() {
@@ -41,30 +43,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.getDataUserNotStaf();
   },
   methods: {
-    changeAdminApproval: function changeAdminApproval() {
-      this.formAdmin.finance_manager = this.companyData.company_admins.find(function (x) {
-        return x.name === 'finance_manager';
-      }) ? this.companyData.company_admins.find(function (x) {
-        return x.name === 'finance_manager';
-      }).user_id : "";
-      this.formAdmin.finance_staf = this.companyData.company_admins.find(function (x) {
-        return x.name === 'finance_staf';
-      }) ? this.companyData.company_admins.find(function (x) {
-        return x.name === 'finance_staf';
-      }).user_id : "";
-      this.formAdmin.tax_admin = this.companyData.company_admins.find(function (x) {
-        return x.name === 'tax_admin';
-      }) ? this.companyData.company_admins.find(function (x) {
-        return x.name === 'tax_admin';
-      }).user_id : "";
-      this.formAdmin.accounting_admin = this.companyData.company_admins.find(function (x) {
-        return x.name === 'accounting_admin';
-      }) ? this.companyData.company_admins.find(function (x) {
-        return x.name === 'accounting_admin';
-      }).user_id : "";
-      $("#adminApproval").modal("show");
-    },
-    handleAdminApproval: function handleAdminApproval() {
+    handleSubmitChangeSettingFlip: function handleSubmitChangeSettingFlip() {
       var _this = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
         var respSave;
@@ -74,10 +53,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _context2.prev = 0;
               _this.$vs.loading();
               _context2.next = 4;
-              return _this.$axios.post('api/company/admin-approval', {
-                company_id: _this.companyData.id,
-                admins: _this.formAdmin
-              });
+              return _this.$axios.get("api/company/".concat(_this.$route.params.id, "/change-setting-flip/").concat(_this.settingFlipId));
             case 4:
               respSave = _context2.sent;
               _this.$vs.loading.close();
@@ -90,7 +66,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   timer: 1500
                 });
               } else {
-                $("#adminApproval").modal("hide");
+                $("#changeSettingFlip").modal("hide");
                 Swal.fire({
                   position: 'top',
                   icon: 'success',
@@ -130,7 +106,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee2, null, [[0, 9]]);
       }))();
     },
-    submitProject: function submitProject() {
+    handleChangeSettingFlip: function handleChangeSettingFlip() {
+      $("#changeSettingFlip").modal("show");
+    },
+    changeAdminApproval: function changeAdminApproval() {
+      this.formAdmin.finance_manager = this.companyData.company_admins.find(function (x) {
+        return x.name === 'finance_manager';
+      }) ? this.companyData.company_admins.find(function (x) {
+        return x.name === 'finance_manager';
+      }).user_id : "";
+      this.formAdmin.finance_staf = this.companyData.company_admins.find(function (x) {
+        return x.name === 'finance_staf';
+      }) ? this.companyData.company_admins.find(function (x) {
+        return x.name === 'finance_staf';
+      }).user_id : "";
+      this.formAdmin.tax_admin = this.companyData.company_admins.find(function (x) {
+        return x.name === 'tax_admin';
+      }) ? this.companyData.company_admins.find(function (x) {
+        return x.name === 'tax_admin';
+      }).user_id : "";
+      this.formAdmin.accounting_admin = this.companyData.company_admins.find(function (x) {
+        return x.name === 'accounting_admin';
+      }) ? this.companyData.company_admins.find(function (x) {
+        return x.name === 'accounting_admin';
+      }).user_id : "";
+      $("#adminApproval").modal("show");
+    },
+    handleAdminApproval: function handleAdminApproval() {
       var _this2 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
         var respSave;
@@ -140,7 +142,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _context4.prev = 0;
               _this2.$vs.loading();
               _context4.next = 4;
-              return _this2.$axios.post('api/project', _this2.formData);
+              return _this2.$axios.post('api/company/admin-approval', {
+                company_id: _this2.companyData.id,
+                admins: _this2.formAdmin
+              });
             case 4:
               respSave = _context4.sent;
               _this2.$vs.loading.close();
@@ -153,7 +158,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   timer: 1500
                 });
               } else {
-                $("#addProject").modal("hide");
+                $("#adminApproval").modal("hide");
                 Swal.fire({
                   position: 'top',
                   icon: 'success',
@@ -193,6 +198,69 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee4, null, [[0, 9]]);
       }))();
     },
+    submitProject: function submitProject() {
+      var _this3 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
+        var respSave;
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
+            case 0:
+              _context6.prev = 0;
+              _this3.$vs.loading();
+              _context6.next = 4;
+              return _this3.$axios.post('api/project', _this3.formData);
+            case 4:
+              respSave = _context6.sent;
+              _this3.$vs.loading.close();
+              if (!respSave.status) {
+                Swal.fire({
+                  position: 'top-end',
+                  icon: 'error',
+                  title: respSave.message,
+                  showConfirmButton: false,
+                  timer: 1500
+                });
+              } else {
+                $("#addProject").modal("hide");
+                Swal.fire({
+                  position: 'top',
+                  icon: 'success',
+                  title: respSave.message,
+                  showConfirmButton: false,
+                  timer: 1500
+                }).then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+                  return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+                    while (1) switch (_context5.prev = _context5.next) {
+                      case 0:
+                        _context5.next = 2;
+                        return _this3.getData();
+                      case 2:
+                      case "end":
+                        return _context5.stop();
+                    }
+                  }, _callee5);
+                })));
+              }
+              _context6.next = 13;
+              break;
+            case 9:
+              _context6.prev = 9;
+              _context6.t0 = _context6["catch"](0);
+              _this3.$vs.loading.close();
+              Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: _context6.t0.message,
+                showConfirmButton: false,
+                timer: 1500
+              });
+            case 13:
+            case "end":
+              return _context6.stop();
+          }
+        }, _callee6, null, [[0, 9]]);
+      }))();
+    },
     showEditModal: function showEditModal(project) {
       this.labelModal = 'Edit';
       this.formData.id = project.id;
@@ -208,52 +276,56 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       $("#addProject").modal("show");
     },
     getDataUserNotStaf: function getDataUserNotStaf() {
-      var _this3 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
+      var _this4 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7() {
+        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+          while (1) switch (_context7.prev = _context7.next) {
             case 0:
-              _context5.prev = 0;
-              _this3.$vs.loading();
-              _context5.next = 4;
-              return _this3.$axios.get("api/user/not-staff");
+              _context7.prev = 0;
+              _this4.$vs.loading();
+              _context7.next = 4;
+              return _this4.$axios.get("api/user/not-staff");
             case 4:
-              _this3.userNotStafs = _context5.sent;
-              _this3.$vs.loading.close();
-              _context5.next = 12;
+              _this4.userNotStafs = _context7.sent;
+              _this4.$vs.loading.close();
+              _context7.next = 12;
               break;
             case 8:
-              _context5.prev = 8;
-              _context5.t0 = _context5["catch"](0);
-              _this3.$vs.loading.close();
+              _context7.prev = 8;
+              _context7.t0 = _context7["catch"](0);
+              _this4.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
-                title: _context5.t0.message,
+                title: _context7.t0.message,
                 showConfirmButton: false,
                 timer: 1500
               });
             case 12:
             case "end":
-              return _context5.stop();
+              return _context7.stop();
           }
-        }, _callee5, null, [[0, 8]]);
+        }, _callee7, null, [[0, 8]]);
       }))();
     },
     getData: function getData() {
-      var _this4 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
+      var _this5 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8() {
         var respDe;
-        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
+        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
             case 0:
-              _context6.prev = 0;
-              _this4.$vs.loading();
-              _context6.next = 4;
-              return _this4.$axios.get("api/company/".concat(_this4.$route.params.id, "/detail"));
+              _context8.prev = 0;
+              _this5.$vs.loading();
+              _context8.next = 4;
+              return _this5.$axios.get("api/company/".concat(_this5.$route.params.id, "/detail"));
             case 4:
-              respDe = _context6.sent;
-              _this4.$vs.loading.close();
+              respDe = _context8.sent;
+              _context8.next = 7;
+              return _this5.$axios.get("api/setting/flip");
+            case 7:
+              _this5.settingFlips = _context8.sent;
+              _this5.$vs.loading.close();
               if (!respDe.status) {
                 Swal.fire({
                   position: 'top-end',
@@ -263,33 +335,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   timer: 1500
                 });
               } else {
-                _this4.companyData = respDe.data;
+                _this5.companyData = respDe.data;
               }
-              _context6.next = 13;
+              _context8.next = 16;
               break;
-            case 9:
-              _context6.prev = 9;
-              _context6.t0 = _context6["catch"](0);
-              _this4.$vs.loading.close();
+            case 12:
+              _context8.prev = 12;
+              _context8.t0 = _context8["catch"](0);
+              _this5.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
-                title: _context6.t0.message,
+                title: _context8.t0.message,
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 13:
+            case 16:
             case "end":
-              return _context6.stop();
+              return _context8.stop();
           }
-        }, _callee6, null, [[0, 9]]);
+        }, _callee8, null, [[0, 12]]);
       }))();
     },
     handleDelete: function handleDelete(id) {
-      var _this5 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8() {
-        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
-          while (1) switch (_context8.prev = _context8.next) {
+      var _this6 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee10() {
+        return _regeneratorRuntime().wrap(function _callee10$(_context10) {
+          while (1) switch (_context10.prev = _context10.next) {
             case 0:
               Swal.fire({
                 icon: 'warning',
@@ -301,9 +373,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showCancelButton: true
               }).then(function (result) {
                 if (result.isConfirmed == true) {
-                  _this5.$vs.loading();
-                  _this5.$axios["delete"]("api/company/".concat(id, "/unassign")).then(function (response) {
-                    _this5.$vs.loading.close();
+                  _this6.$vs.loading();
+                  _this6.$axios["delete"]("api/company/".concat(id, "/unassign")).then(function (response) {
+                    _this6.$vs.loading.close();
                     if (response.status) {
                       Swal.fire({
                         icon: 'success',
@@ -313,24 +385,24 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                         allowEscapeKey: false,
                         allowEnterKey: false
                       }).then( /*#__PURE__*/function () {
-                        var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(res) {
-                          return _regeneratorRuntime().wrap(function _callee7$(_context7) {
-                            while (1) switch (_context7.prev = _context7.next) {
+                        var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9(res) {
+                          return _regeneratorRuntime().wrap(function _callee9$(_context9) {
+                            while (1) switch (_context9.prev = _context9.next) {
                               case 0:
                                 if (!(res.isConfirmed == true)) {
-                                  _context7.next = 3;
+                                  _context9.next = 3;
                                   break;
                                 }
-                                _context7.next = 3;
-                                return _this5.getData();
+                                _context9.next = 3;
+                                return _this6.getData();
                               case 3:
                               case "end":
-                                return _context7.stop();
+                                return _context9.stop();
                             }
-                          }, _callee7);
+                          }, _callee9);
                         }));
                         return function (_x) {
-                          return _ref3.apply(this, arguments);
+                          return _ref4.apply(this, arguments);
                         };
                       }());
                     } else {
@@ -348,9 +420,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               });
             case 1:
             case "end":
-              return _context8.stop();
+              return _context10.stop();
           }
-        }, _callee8);
+        }, _callee10);
       }))();
     }
   }
@@ -428,7 +500,19 @@ var render = function render() {
     staticClass: "col-6"
   }, [_c("table", {
     staticClass: "table table-striped"
-  }, [_vm._m(0), _vm._v(" "), _c("tbody", [_c("tr", [_c("th", [_vm._v("Title")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.companyData.title))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("Type")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.companyData.type))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("Voucher Prefix")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.companyData.voucher_prefix))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("User Count")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.companyData.projects.length) + " Projects")])])])])]), _vm._v(" "), _c("div", {
+  }, [_vm._m(0), _vm._v(" "), _c("tbody", [_c("tr", [_c("th", [_vm._v("Title")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.companyData.title))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("Type")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.companyData.type))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("Voucher Prefix")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.companyData.voucher_prefix))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("User Count")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.companyData.projects.length) + " Projects")])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("Setting Flip")]), _vm._v(" "), _c("td", [_vm.companyData.setting_flip ? _c("span", [_vm._v(_vm._s(_vm.companyData.setting_flip.flip_name))]) : _c("span", [_vm._v(" - ")]), _vm._v(" "), _vm.$store.state.permissions.includes("transaction_push_plugin") ? _c("button", {
+    staticClass: "btn btn-primary float-right mt-3 mr-3",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.handleChangeSettingFlip();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-gear"
+  }), _vm._v(" Connect Flip\n                                ")]) : _vm._e()])])])])]), _vm._v(" "), _c("div", {
     staticClass: "col-6"
   }, [_c("table", {
     staticClass: "table table-striped"
@@ -753,6 +837,69 @@ var render = function render() {
         return _vm.handleAdminApproval();
       }
     }
+  }, [_vm._v("Save changes")])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal fade",
+    attrs: {
+      id: "changeSettingFlip",
+      tabindex: "-1",
+      role: "dialog",
+      "aria-labelledby": "exampleModalLabel"
+    }
+  }, [_c("div", {
+    staticClass: "modal-dialog",
+    attrs: {
+      role: "document"
+    }
+  }, [_c("div", {
+    staticClass: "modal-content"
+  }, [_vm._m(11), _vm._v(" "), _c("div", {
+    staticClass: "modal-body"
+  }, [_c("form", [_c("div", {
+    staticClass: "form-group"
+  }, [_vm._m(12), _vm._v(" "), _c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.settingFlipId,
+      expression: "settingFlipId"
+    }],
+    staticClass: "form-control",
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.settingFlipId = $event.target.multiple ? $$selectedVal : $$selectedVal[0];
+      }
+    }
+  }, _vm._l(_vm.settingFlips, function (settingFlip, index) {
+    return _c("option", {
+      key: index,
+      domProps: {
+        value: settingFlip.id
+      }
+    }, [_vm._v(_vm._s(settingFlip.flip_name))]);
+  }), 0)])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal-footer flex justify-content-between"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal"
+    }
+  }, [_vm._v("Close")]), _vm._v(" "), _c("button", {
+    staticClass: "btn btn-primary",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.handleSubmitChangeSettingFlip();
+      }
+    }
   }, [_vm._v("Save changes")])])])])])])])]);
 };
 var staticRenderFns = [function () {
@@ -868,6 +1015,38 @@ var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("label", [_vm._v("Accounting Admin"), _c("span", {
+    staticStyle: {
+      color: "red",
+      "font-weight": "bold",
+      "font-style": "italic"
+    }
+  }, [_vm._v("*) required")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "modal-header"
+  }, [_c("h5", {
+    staticClass: "modal-title",
+    attrs: {
+      id: "exampleModalLabel"
+    }
+  }, [_vm._v("Change Admin Approval")]), _vm._v(" "), _c("button", {
+    staticClass: "close",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal",
+      "aria-label": "Close"
+    }
+  }, [_c("span", {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("label", [_vm._v("Flip Account"), _c("span", {
     staticStyle: {
       color: "red",
       "font-weight": "bold",

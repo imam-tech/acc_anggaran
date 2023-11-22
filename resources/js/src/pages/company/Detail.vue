@@ -42,6 +42,16 @@
                                 <th>User Count</th>
                                 <td>{{companyData.projects.length}} Projects</td>
                             </tr>
+                            <tr>
+                                <th>Setting Flip</th>
+                                <td>
+                                    <span v-if="companyData.setting_flip">{{ companyData.setting_flip.flip_name }}</span>
+                                    <span v-else> - </span>
+                                    <button v-if="$store.state.permissions.includes('transaction_push_plugin')" type="button" class="btn btn-primary  float-right mt-3 mr-3" @click="handleChangeSettingFlip()">
+                                        <i class="fas fa-gear"></i> Connect Flip
+                                    </button>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -220,6 +230,37 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade" id="changeSettingFlip" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Change Admin Approval</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+
+                                <form>
+                                    <div class="form-group">
+                                        <label>Flip Account<span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    font-style: italic;
+                                ">*) required</span></label>
+                                        <select class="form-control" v-model="settingFlipId">
+                                            <option v-for="(settingFlip, index) in settingFlips" :key="index" :value="settingFlip.id">{{ settingFlip.flip_name }}</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" @click="handleSubmitChangeSettingFlip()">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -245,7 +286,9 @@
                     tax_admin: "",
                     accounting_admin:""
                 },
-                userNotStafs: []
+                userNotStafs: [],
+                settingFlipId: "",
+                settingFlips: []
             }
         },
 
@@ -254,6 +297,45 @@
             this.getDataUserNotStaf()
         },
         methods: {
+            async handleSubmitChangeSettingFlip() {
+                try {
+                    this.$vs.loading()
+                    const respSave = await this.$axios.get(`api/company/${this.$route.params.id}/change-setting-flip/${this.settingFlipId}`)
+                    this.$vs.loading.close()
+                    if (!respSave.status) {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: respSave.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    } else {
+                        $("#changeSettingFlip").modal("hide")
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'success',
+                            title: respSave.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(async ()=>{
+                            await this.getData()
+                        })
+                    }
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            },
+            handleChangeSettingFlip() {
+                $("#changeSettingFlip").modal("show")
+            },
             changeAdminApproval() {
                 this.formAdmin.finance_manager = this.companyData.company_admins.find(x => x.name === 'finance_manager') ? (this.companyData.company_admins.find(x => x.name === 'finance_manager')).user_id : ""
                 this.formAdmin.finance_staf = this.companyData.company_admins.find(x => x.name === 'finance_staf') ? (this.companyData.company_admins.find(x => x.name === 'finance_staf')).user_id : ""
@@ -371,6 +453,7 @@
                 try {
                     this.$vs.loading()
                     const respDe = await this.$axios.get(`api/company/${this.$route.params.id}/detail`)
+                    this.settingFlips = await this.$axios.get(`api/setting/flip`)
                     this.$vs.loading.close()
 
                     if (!respDe.status) {

@@ -29,7 +29,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       },
       formInquiry: {
         bank: "",
-        account_number: ""
+        account_number: "",
+        company_id: ""
       },
       company: "",
       projects: [],
@@ -50,20 +51,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.getDataCompany();
   },
   methods: {
-    submitProcess: function submitProcess() {
+    handleUploadImage: function handleUploadImage(e) {
       var _this = this;
+      this.file = e.target.files[0];
+      var form_data = new FormData();
+      form_data.append('files', this.file);
+      this.$vs.loading();
+      this.$axios.post('/api/transaction/upload-image', form_data, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }).then(function (res) {
+        _this.$vs.loading.close();
+        if (res.status == false) {
+          Swal.fire({
+            position: 'top-end',
+            icon: 'error',
+            title: res.message,
+            showConfirmButton: false,
+            timer: 1500
+          });
+        } else {
+          _this.formItem.attachment = res.data;
+          console.log(res.data);
+        }
+      })["catch"](function (e) {
+        Swal.fire({
+          position: 'top-end',
+          icon: 'error',
+          title: e.message,
+          showConfirmButton: false,
+          timer: 1500
+        });
+      });
+    },
+    submitProcess: function submitProcess() {
+      var _this2 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
         var respSave;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
-              _this.$vs.loading();
+              _this2.$vs.loading();
               _context.next = 4;
-              return _this.$axios.post('api/transaction', _this.formData);
+              return _this2.$axios.post('api/transaction', _this2.formData);
             case 4:
               respSave = _context.sent;
-              _this.$vs.loading.close();
+              _this2.$vs.loading.close();
               if (!respSave.status) {
                 Swal.fire({
                   position: 'top-end',
@@ -80,7 +115,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   showConfirmButton: false,
                   timer: 1500
                 }).then(function () {
-                  _this.$router.push("/app/transaction/".concat(respSave.data.id, "/detail"));
+                  _this2.$router.push("/app/transaction/".concat(respSave.data.id, "/detail"));
                 });
               }
               _context.next = 13;
@@ -88,7 +123,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             case 9:
               _context.prev = 9;
               _context.t0 = _context["catch"](0);
-              _this.$vs.loading.close();
+              _this2.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
@@ -150,19 +185,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       $("#addInquiry").modal("show");
     },
     handleAddInquiry: function handleAddInquiry() {
-      var _this2 = this;
+      var _this3 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
         var respSave;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
               _context3.prev = 0;
-              _this2.$vs.loading();
-              _context3.next = 4;
-              return _this2.$axios.post('api/inquiry', _this2.formInquiry);
-            case 4:
+              _this3.formInquiry.company_id = _this3.$route.params.id;
+              _this3.$vs.loading();
+              _context3.next = 5;
+              return _this3.$axios.post('api/inquiry', _this3.formInquiry);
+            case 5:
               respSave = _context3.sent;
-              _this2.$vs.loading.close();
+              _this3.$vs.loading.close();
               if (!respSave.status) {
                 Swal.fire({
                   position: 'top-end',
@@ -171,8 +207,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   showConfirmButton: false,
                   timer: 1500
                 });
-                _this2.formData.bank = _this2.formInquiry.bank;
-                _this2.getDataInquiry();
+                _this3.formData.bank = _this3.formInquiry.bank;
+                _this3.getDataInquiry();
               } else {
                 $("#addInquiry").modal("hide");
                 Swal.fire({
@@ -186,7 +222,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     while (1) switch (_context2.prev = _context2.next) {
                       case 0:
                         _context2.next = 2;
-                        return _this2.getData();
+                        return _this3.getData();
                       case 2:
                       case "end":
                         return _context2.stop();
@@ -194,12 +230,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   }, _callee2);
                 })));
               }
-              _context3.next = 13;
+              _context3.next = 14;
               break;
-            case 9:
-              _context3.prev = 9;
+            case 10:
+              _context3.prev = 10;
               _context3.t0 = _context3["catch"](0);
-              _this2.$vs.loading.close();
+              _this3.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
@@ -207,27 +243,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 13:
+            case 14:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[0, 9]]);
+        }, _callee3, null, [[0, 10]]);
       }))();
     },
     getDataCompany: function getDataCompany() {
-      var _this3 = this;
+      var _this4 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
         var respCompany;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
               _context4.prev = 0;
-              _this3.$vs.loading();
+              _this4.$vs.loading();
               _context4.next = 4;
-              return _this3.$axios.get("api/company/".concat(_this3.$route.params.id, "/detail"));
+              return _this4.$axios.get("api/company/".concat(_this4.$route.params.id, "/detail"));
             case 4:
               respCompany = _context4.sent;
-              _this3.$vs.loading.close();
+              _this4.$vs.loading.close();
               if (respCompany.status) {
                 _context4.next = 9;
                 break;
@@ -241,13 +277,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               });
               return _context4.abrupt("return");
             case 9:
-              _this3.company = respCompany.data;
+              _this4.company = respCompany.data;
               _context4.next = 16;
               break;
             case 12:
               _context4.prev = 12;
               _context4.t0 = _context4["catch"](0);
-              _this3.$vs.loading.close();
+              _this4.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
@@ -263,24 +299,24 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     getDataInquiry: function getDataInquiry() {
-      var _this4 = this;
+      var _this5 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
               _context5.prev = 0;
-              _this4.$vs.loading();
+              _this5.$vs.loading();
               _context5.next = 4;
-              return _this4.$axios.get("api/inquiry?bank=".concat(_this4.formData.bank));
+              return _this5.$axios.get("api/inquiry?bank=".concat(_this5.formData.bank));
             case 4:
-              _this4.inquiries = _context5.sent;
-              _this4.$vs.loading.close();
+              _this5.inquiries = _context5.sent;
+              _this5.$vs.loading.close();
               _context5.next = 12;
               break;
             case 8:
               _context5.prev = 8;
               _context5.t0 = _context5["catch"](0);
-              _this4.$vs.loading.close();
+              _this5.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
@@ -296,24 +332,24 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     getDataProject: function getDataProject() {
-      var _this5 = this;
+      var _this6 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
         return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) switch (_context6.prev = _context6.next) {
             case 0:
               _context6.prev = 0;
-              _this5.$vs.loading();
+              _this6.$vs.loading();
               _context6.next = 4;
-              return _this5.$axios.get("api/project?company_id=".concat(_this5.$route.params.id));
+              return _this6.$axios.get("api/project?company_id=".concat(_this6.$route.params.id));
             case 4:
-              _this5.projects = _context6.sent;
-              _this5.$vs.loading.close();
+              _this6.projects = _context6.sent;
+              _this6.$vs.loading.close();
               _context6.next = 12;
               break;
             case 8:
               _context6.prev = 8;
               _context6.t0 = _context6["catch"](0);
-              _this5.$vs.loading.close();
+              _this6.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
@@ -329,24 +365,24 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     getDataBank: function getDataBank() {
-      var _this6 = this;
+      var _this7 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7() {
         return _regeneratorRuntime().wrap(function _callee7$(_context7) {
           while (1) switch (_context7.prev = _context7.next) {
             case 0:
               _context7.prev = 0;
-              _this6.$vs.loading();
+              _this7.$vs.loading();
               _context7.next = 4;
-              return _this6.$axios.get("https://old.importir.com/api/list-bank-inquiry?token=syigdfjhagsjdf766et4wff6");
+              return _this7.$axios.get("https://old.importir.com/api/list-bank-inquiry?token=syigdfjhagsjdf766et4wff6");
             case 4:
-              _this6.banks = _context7.sent.message.banks;
-              _this6.$vs.loading.close();
+              _this7.banks = _context7.sent.message.banks;
+              _this7.$vs.loading.close();
               _context7.next = 12;
               break;
             case 8:
               _context7.prev = 8;
               _context7.t0 = _context7["catch"](0);
-              _this6.$vs.loading.close();
+              _this7.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
@@ -587,7 +623,14 @@ var render = function render() {
   }, [_vm._m(4), _vm._v(" "), _c("tbody", _vm._l(_vm.formData.items, function (item, index) {
     return _c("tr", {
       key: index
-    }, [_c("td", [_vm._v(_vm._s(item.title))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.amount))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.attachment))]), _vm._v(" "), _c("td", [_c("button", {
+    }, [_c("td", [_vm._v(_vm._s(item.title))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.amount))]), _vm._v(" "), _c("td", [_c("a", {
+      attrs: {
+        href: item.attachment,
+        target: "_blank"
+      }
+    }, [_c("i", {
+      staticClass: "fas fa-link"
+    })])]), _vm._v(" "), _c("td", [_c("button", {
       staticClass: "btn btn-warning",
       attrs: {
         type: "button"
@@ -812,6 +855,16 @@ var render = function render() {
         _vm.$set(_vm.formItem, "note", $event.target.value);
       }
     }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_vm._m(11), _vm._v(" "), _c("input", {
+    staticClass: "form-control",
+    attrs: {
+      type: "file"
+    },
+    on: {
+      change: _vm.handleUploadImage
+    }
   })])])]), _vm._v(" "), _c("div", {
     staticClass: "modal-footer flex justify-content-between"
   }, [_c("button", {
@@ -954,6 +1007,16 @@ var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("label", [_vm._v("Amount"), _c("span", {
+    staticStyle: {
+      color: "red",
+      "font-weight": "bold",
+      "font-style": "italic"
+    }
+  }, [_vm._v("*) required")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("label", [_vm._v("Attachment"), _c("span", {
     staticStyle: {
       color: "red",
       "font-weight": "bold",

@@ -834,7 +834,14 @@ var render = function render() {
       colspan: "6"
     }
   }, [_vm._v("\n                            Items\n                        ")])]), _vm._v(" "), _vm._l(_vm.transactionData.transaction_items, function (item, key) {
-    return _c("tr", [_c("td", [_c("strong", [_vm._v(_vm._s(key + 1))])]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.title))]), _vm._v(" "), _c("td", [_vm._v("Attachment")]), _vm._v(" "), _c("td", [_vm._v("Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(item.input_amount)))]), _vm._v(" "), _c("td", [_vm._v("Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(item.total_amount)))]), _vm._v(" "), _c("td", [_c("button", {
+    return _c("tr", [_c("td", [_c("strong", [_vm._v(_vm._s(key + 1))])]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.title))]), _vm._v(" "), _c("td", [_c("a", {
+      attrs: {
+        href: item.attachment,
+        target: "_blank"
+      }
+    }, [_c("i", {
+      staticClass: "fas fa-link"
+    })])]), _vm._v(" "), _c("td", [_vm._v("Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(item.input_amount)))]), _vm._v(" "), _c("td", [_vm._v("Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(item.total_amount)))]), _vm._v(" "), _c("td", [_c("button", {
       staticClass: "btn btn-info",
       attrs: {
         disabled: !_vm.handleCheckSet(_vm.transactionData, "transaction_edit_tax"),

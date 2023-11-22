@@ -12,7 +12,9 @@ use App\Models\TransactionApproval;
 use App\Models\TransactionItem;
 use App\Models\TransactionItemCoa;
 use App\Models\TransactionStatus;
+use App\Services\DigitalOceanService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class TransactionRepository {
     public function store($data) {
@@ -20,7 +22,6 @@ class TransactionRepository {
             $validator = \Validator::make($data, [
                 "title" => "required",
                 "project_id" => "required",
-                "description" => "required",
                 "inquiry_id" => "required",
                 "items" => "required",
             ]);
@@ -45,7 +46,7 @@ class TransactionRepository {
             $transaction->created_by = auth()->user()->id;
             $transaction->transaction_number = "";
             $transaction->title = $data['title'];
-            $transaction->description = $data['description'];
+            $transaction->description = $data['description'] ?? "";
             $transaction->bank = $inquiry->bank;
             $transaction->account_holder = $inquiry->name;
             $transaction->account_number = $inquiry->account_number;
@@ -421,6 +422,22 @@ class TransactionRepository {
             return resultFunction("Method has created", true);
         } catch (\Exception $e) {
             return resultFunction("Err code TR-ST: catch " . $e->getMessage());
+        }
+    }
+
+    public function uploadImage($image)
+    {
+        try {
+            if (!$image) {
+                return resultFunction("Err code TR-Ui: Please attach the image");
+            }
+            if ($image->getError() == 1) {
+                return resultFunction('Err code TR-Ui: ' . $image->getErrorMessage());
+            }
+
+            return (new DigitalOceanService())->uploadImageToDO($image, "transaction");
+        } catch (\Exception $e) {
+            return resultFunction("Err code TR-Ui: catch " . $e->getMessage());
         }
     }
 }

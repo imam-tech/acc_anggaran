@@ -10,4 +10,5 @@ Route:: group(['prefix' => 'company', 'middleware' => 'auth:sanctum'], function 
     Route::get('/{id?}/detail', [CompanyController::class, 'detail']);
     Route::post('/admin-approval', [CompanyController::class, 'adminApproval']);
     Route::post('/{id?}/push-plugin', [CompanyController::class, 'pushPlugin']);
+    Route::get('/{id?}/change-setting-flip/{settingId?}', [CompanyController::class, 'changeSettingFlip']);
 });

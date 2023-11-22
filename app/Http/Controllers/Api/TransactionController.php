@@ -67,4 +67,8 @@ class TransactionController extends Controller {
     public function setMethod($id, Request $request) {
         return response()->json($this->transactionRepo->setMethod($id, $request->all()));
     }
+
+    public function uploadImage(Request $request) {
+        return response()->json($this->transactionRepo->uploadImage($request->file('files')));
+    }
 }

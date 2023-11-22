@@ -16,7 +16,7 @@ class CreateSettingFlipsTable extends Migration
         Schema::create('setting_flips', function (Blueprint $table) {
             $table->increments('id');
             $table->string('flip_name');
-            $table->string('flip_key');
+            $table->text('flip_key');
             $table->tinyInteger('is_active')->default(1);
             $table->timestamps();
             $table->softDeletes();

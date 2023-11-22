@@ -41,4 +41,8 @@ class CompanyController extends Controller {
     public function pushPlugin($id, Request $request) {
         return response()->json($this->companyRepo->pushPlugin($id, $request->all()));
     }
+
+    public function changeSettingFlip($id, $settingFlipId) {
+        return response()->json($this->companyRepo->changeSettingFlip($id, $settingFlipId));
+    }
 }

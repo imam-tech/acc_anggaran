@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Company;
 use App\Models\CompanyAdmin;
+use App\Models\SettingFlip;
 use App\Models\Transaction;
 use App\Models\TransactionStatus;
 use Illuminate\Support\Facades\DB;
@@ -92,7 +93,7 @@ class CompanyRepository {
 
     public function detail($id) {
         try {
-            $company = Company::with(['projects', 'companyAdmins.user'])->find($id);
+            $company = Company::with(['projects', 'companyAdmins.user', 'settingFlip'])->find($id);
             if (!$company) return resultFunction("Err code CR-Dl: company not found for ID " .$id);
             return resultFunction("", true, $company);
         } catch (\Exception $e) {
@@ -155,6 +156,24 @@ class CompanyRepository {
             return resultFunction("Push transaction successfully", true);
         } catch (\Exception $e) {
             return resultFunction("Err code CR-PP: catch " . $e->getMessage());
+        }
+    }
+
+    public function changeSettingFlip($id, $settingFlipId) {
+        try {
+            $company = Company::find($id);
+            if (!$company) return resultFunction("Err code CR-CSF: company not found for ID " .$id);
+
+
+            $settingFlip = SettingFlip::find($settingFlipId);
+            if (!$settingFlip) return resultFunction("Err code CR-CSF: flip not found for ID " .$settingFlipId);
+
+            $company->setting_flip_id = $settingFlip->id;
+            $company->save();
+
+            return resultFunction("Setting flip successfully", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code CR-CSF: catch " . $e->getMessage());
         }
     }
 }

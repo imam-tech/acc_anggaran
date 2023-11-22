@@ -97,7 +97,9 @@
                                         <tr v-for="(item, index) in formData.items" :key="index">
                                             <td>{{ item.title }}</td>
                                             <td>{{ item.amount }}</td>
-                                            <td>{{ item.attachment }}</td>
+                                            <td>
+                                                <a :href="item.attachment" target="_blank"><i class="fas fa-link"></i></a>
+                                            </td>
                                             <td>
                                                 <button type="button" class="btn btn-warning" @click="showEditItem(item, index)">
                                                     <i class="fa fa-pencil"></i>
@@ -213,14 +215,14 @@
                                 <label>Note</label>
                                 <textarea class="form-control" v-model="formItem.note"></textarea>
                             </div>
-                            <!--<div class="form-group">-->
-                                <!--<label>Attachment<span style="-->
-                                    <!--color: red;-->
-                                    <!--font-weight: bold;-->
-                                    <!--font-style: italic;-->
-                                <!--">*) required</span></label>-->
-                                <!--<input type="file" class="form-control">-->
-                            <!--</div>-->
+                            <div class="form-group">
+                                <label>Attachment<span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    font-style: italic;
+                                ">*) required</span></label>
+                                <input type="file" class="form-control" @change="handleUploadImage" >
+                            </div>
                         </form>
                     </div>
                     <div class="modal-footer flex justify-content-between">
@@ -249,7 +251,8 @@
                 },
                 formInquiry: {
                     bank: "",
-                    account_number: ""
+                    account_number: "",
+                    company_id: ""
                 },
                 company: "",
                 projects: [],
@@ -271,6 +274,44 @@
             this.getDataCompany()
         },
         methods: {
+            handleUploadImage(e) {
+                this.file = e.target.files[0]
+                var form_data = new FormData()
+
+                form_data.append('files', this.file)
+                this.$vs.loading()
+                this.$axios.post('/api/transaction/upload-image',
+                    form_data,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data"
+                        }
+                    }
+                ).then((res) => {
+                    this.$vs.loading.close()
+                    if (res.status == false) {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: res.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    } else {
+                        this.formItem.attachment = res.data
+                        console.log(res.data)
+                    }
+
+                }).catch((e) => {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                })
+            },
             async submitProcess() {
                 try {
                     this.$vs.loading()
@@ -352,6 +393,7 @@
             },
             async handleAddInquiry() {
                 try {
+                    this.formInquiry.company_id = this.$route.params.id
                     this.$vs.loading()
                     const respSave = await this.$axios.post('api/inquiry', this.formInquiry)
                     this.$vs.loading.close()

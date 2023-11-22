@@ -103,7 +103,9 @@
                         <tr v-for="(item, key) in transactionData.transaction_items">
                             <td><strong>{{ key+1 }}</strong></td>
                             <td>{{ item.title }}</td>
-                            <td>Attachment</td>
+                            <td>
+                                <a :href="item.attachment" target="_blank"><i class="fas fa-link"></i></a>
+                            </td>
                             <td>Rp. {{ item.input_amount | formatPriceWithDecimal }}</td>
                             <td>Rp. {{ item.total_amount | formatPriceWithDecimal }}</td>
                             <td>

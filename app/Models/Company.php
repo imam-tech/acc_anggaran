@@ -21,4 +21,8 @@ class Company extends Model
     public function companyAdmins() {
         return $this->hasMany(CompanyAdmin::class, 'company_id', 'id');
     }
+
+    public function settingFlip() {
+        return $this->hasOne(SettingFlip::class, 'id', 'setting_flip_id');
+    }
 }
