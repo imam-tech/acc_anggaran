@@ -57,4 +57,20 @@ class FlipService {
             return resultFunction("Err code FS-CI: catch " . $e->getMessage());
         }
     }
+
+    public function pushToFlip($transaction) {
+        try {
+            $payloads = [
+                "account_number" => $transaction->account_number,
+                "bank_code" => $transaction->bank,
+                "amount" => (int) $transaction->dpp
+            ];
+            $url = 'disbursement';
+            $idempotencyKey = 'demo-anggaran-' . $transaction->id;
+
+            return $this->_callPost($url, $payloads, $idempotencyKey);
+        } catch (\Exception $e) {
+            return resultFunction("Err code FS-PTF: catch " . $e->getMessage());
+        }
+    }
 }

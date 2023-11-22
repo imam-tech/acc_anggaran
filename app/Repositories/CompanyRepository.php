@@ -6,7 +6,9 @@ use App\Models\Company;
 use App\Models\CompanyAdmin;
 use App\Models\SettingFlip;
 use App\Models\Transaction;
+use App\Models\TransactionFlip;
 use App\Models\TransactionStatus;
+use App\Services\FlipService;
 use Illuminate\Support\Facades\DB;
 
 class CompanyRepository {
@@ -131,13 +133,61 @@ class CompanyRepository {
 
     public function pushPlugin($id, $transactionIds) {
         try {
-            DB::beginTransaction();
-            $company = Company::find($id);
+            $company = Company::with(['settingFlip'])->find($id);
             if (!$company) return resultFunction("Err code CR-PP: company not found for ID " .$id);
 
             $transactions = Transaction::with(['transactionItems.transactionItemCoas'])->whereIn('id', $transactionIds)->get();
 
             if (count($transactions) !== count($transactionIds)) return resultFunction("Err code CR-PP: the transaction data is not match");
+
+            $flipService = new FlipService(decrypt($company->settingFlip->flip_key));
+            foreach ($transactions as $transaction) {
+                if ($transaction->method  === 'flip') {
+                    $result = $flipService->pushToFlip($transaction);
+                    if (!$result['status']) return $result;
+
+                    $transaction->current_status = 'processed';
+                    $transaction->save();
+
+                    $transactionStatus = new TransactionStatus();
+                    $transactionStatus->transaction_id = $transaction->id;
+                    $transactionStatus->title = 'processed';
+                    $transactionStatus->save();
+
+                    $transactionFlip = new TransactionFlip();
+                    $transactionFlip->transaction_id = $transaction->id;
+                    $transactionFlip->flip_id = $result['data']->id;
+                    $transactionFlip->status = 'requested';
+                    $transactionFlip->fee = $result['data']->fee;
+                    $transactionFlip->save();
+                } else {
+                    $transactionRepo = new TransactionRepository();
+                    $transactionRepo->pushToJurnal($transaction);
+                    $transaction->current_status = 'completed';
+                    $transaction->save();
+
+                    $transactionStatus = new TransactionStatus();
+                    $transactionStatus->transaction_id = $transaction->id;
+                    $transactionStatus->title = 'completed';
+                    $transactionStatus->save();
+                }
+            }
+
+            return resultFunction("Push transaction successfully", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code CR-PP: catch " . $e->getMessage());
+        }
+    }
+
+    public function callbackFlip($id, $transactionIds) {
+        try {
+            DB::beginTransaction();
+            $company = Company::find($id);
+            if (!$company) return resultFunction("Err code CR-CF: company not found for ID " .$id);
+
+            $transactions = Transaction::with(['transactionItems.transactionItemCoas'])->whereIn('id', $transactionIds)->get();
+
+            if (count($transactions) !== count($transactionIds)) return resultFunction("Err code CR-CF: the transaction data is not match");
 
             $transactionRepo = new TransactionRepository();
             foreach ($transactions as $transaction) {
@@ -155,7 +205,7 @@ class CompanyRepository {
             DB::commit();
             return resultFunction("Push transaction successfully", true);
         } catch (\Exception $e) {
-            return resultFunction("Err code CR-PP: catch " . $e->getMessage());
+            return resultFunction("Err code CR-CF: catch " . $e->getMessage());
         }
     }
 

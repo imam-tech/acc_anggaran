@@ -145,6 +145,10 @@ class TransactionRepository {
                 if (!$isPass) return resultFunction("Err code TR-Ap: you must set all coa");
             }
 
+            if ($transactionApproval->title === 'Finance Staf') {
+                if (!$transaction->method) return resultFunction("Err code TR-Ap: you must set method flip or manual");
+            }
+
             $statusChange = "";
             if ($status === 'approved') {
                 $transactionApproval->approved_at = date("Y-m-d H:i:s");

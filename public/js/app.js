@@ -2806,6 +2806,8 @@ vue__WEBPACK_IMPORTED_MODULE_1__["default"].filter('labelByStatus', function (va
   if (val === 'rejected') return "badge badge-danger rounded-pill";
   if (val === 'published') return "badge badge-primary rounded-pill";
   if (val === 'requested') return "badge badge-warning rounded-pill";
+  if (val === 'completed') return "badge badge-info rounded-pill";
+  if (val === 'processed') return "badge badge-secondary rounded-pill";
 });
 
 /***/ }),

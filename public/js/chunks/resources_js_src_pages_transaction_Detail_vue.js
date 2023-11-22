@@ -23,6 +23,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       formData: {
         id: "",
         title: "",
+        attachment: "",
         tax_type: "",
         ppn: {
           label: "",
@@ -43,6 +44,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       formDataCoa: {
         id: "",
         title: "",
+        attachment: "",
         tax_type: "",
         ppn_type: "",
         pph_type: "",
@@ -455,6 +457,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.formData = {
         id: item.id,
         title: item.title,
+        attachment: item.attachment,
         tax_type: "",
         ppn: {
           label: "",
@@ -501,6 +504,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.formDataCoa = {
         id: item.id,
         title: item.title,
+        attachment: item.attachment,
         tax_type: item.tax_type,
         ppn_type: item.ppn_label,
         pph_type: item.pph_label,
@@ -1185,7 +1189,18 @@ var render = function render() {
         _vm.$set(_vm.formData, "input", $event.target.value);
       }
     }
-  })])])])]), _vm._v(" "), _vm._m(10), _vm._v(" "), _c("div", {
+  })])])])]), _vm._v(" "), _c("div", {
+    staticClass: "row mt-3"
+  }, [_vm._m(10), _vm._v(" "), _c("div", {
+    staticClass: "col-8"
+  }, [_c("a", {
+    attrs: {
+      href: _vm.formData.attachment,
+      target: "_blank"
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-link"
+  })])])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
   }, [_vm._m(11), _vm._v(" "), _c("div", {
     staticClass: "col-8"
@@ -1267,7 +1282,18 @@ var render = function render() {
     staticClass: "row mt-3"
   }, [_vm._m(21), _vm._v(" "), _c("div", {
     staticClass: "col-8"
-  }, [_c("label", [_vm._v("Rp.  " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.input_amount)))])])]), _vm._v(" "), _vm._m(22), _vm._v(" "), _c("div", {
+  }, [_c("label", [_vm._v("Rp.  " + _vm._s(_vm._f("formatPriceWithDecimal")(_vm.formDataCoa.input_amount)))])])]), _vm._v(" "), _c("div", {
+    staticClass: "row mt-3"
+  }, [_vm._m(22), _vm._v(" "), _c("div", {
+    staticClass: "col-8"
+  }, [_c("a", {
+    attrs: {
+      href: _vm.formDataCoa.attachment,
+      target: "_blank"
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-link"
+  })])])]), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
   }, [_vm._m(23), _vm._v(" "), _c("div", {
     staticClass: "col-8"
@@ -1598,12 +1624,8 @@ var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("div", {
-    staticClass: "row mt-3"
-  }, [_c("div", {
     staticClass: "col-4"
-  }, [_c("label", [_vm._v("Attachment")])]), _vm._v(" "), _c("div", {
-    staticClass: "col-8"
-  }, [_vm._v("\n                                        Attachment\n                                    ")])]);
+  }, [_c("label", [_vm._v("Attachment")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -1683,12 +1705,8 @@ var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("div", {
-    staticClass: "row mt-3"
-  }, [_c("div", {
     staticClass: "col-4"
-  }, [_c("label", [_vm._v("Attachment")])]), _vm._v(" "), _c("div", {
-    staticClass: "col-8"
-  }, [_vm._v("\n                                        Attachment\n                                    ")])]);
+  }, [_c("label", [_vm._v("Attachment")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;

@@ -303,7 +303,7 @@
                                             <label>Attachment</label>
                                         </div>
                                         <div class="col-8">
-                                            Attachment
+                                            <a :href="formData.attachment" target="_blank"><i class="fas fa-link"></i></a>
                                         </div>
                                     </div>
                                     <div class="row mt-3">
@@ -412,7 +412,7 @@
                                             <label>Attachment</label>
                                         </div>
                                         <div class="col-8">
-                                            Attachment
+                                            <a :href="formDataCoa.attachment" target="_blank"><i class="fas fa-link"></i></a>
                                         </div>
                                     </div>
                                     <div class="row mt-3">
@@ -516,6 +516,7 @@
                 formData: {
                     id: "",
                     title: "",
+                    attachment: "",
                     tax_type: "",
                     ppn: {label: "", value: 0},
                     pph: {label: "", value: 0},
@@ -530,6 +531,7 @@
                 formDataCoa: {
                     id: "",
                     title: "",
+                    attachment: "",
                     tax_type: "",
                     ppn_type: "",
                     pph_type: "",
@@ -817,6 +819,7 @@
                 this.formData = {
                     id: item.id,
                     title: item.title,
+                    attachment: item.attachment,
                     tax_type: "",
                     ppn: {label: "", value: 0},
                     pph: {label: "", value: 0},
@@ -844,6 +847,7 @@
                 this.formDataCoa = {
                     id: item.id,
                     title:item.title,
+                    attachment: item.attachment,
                     tax_type: item.tax_type,
                     ppn_type: item.ppn_label,
                     pph_type: item.pph_label,

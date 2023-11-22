@@ -15,3 +15,4 @@ Route:: group(['prefix' => 'transaction', 'middleware' => 'auth:sanctum'], funct
     Route::post('/{id?}/set-method/', [TransactionController::class, 'setMethod']);
     Route::post('/upload-image', [TransactionController::class, 'uploadImage']);
 });
+Route::post('/transaction/callback-flip', [TransactionController::class, 'callbackFlip']);
