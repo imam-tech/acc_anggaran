@@ -21,7 +21,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-md-6 col-xl-8">
                         <table class="table table-striped">
                             <tbody>
                             <tr>
@@ -75,6 +75,36 @@
                                     <button type="button" @click="handleShowMethod()" class="btn-success"  v-if="$store.state.permissions.includes('transaction_cancel_approval')">
                                         <i class="fas fa-pen-alt"></i>
                                     </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr v-for="(tSt, tI) in transactionData.transaction_statuses" :key="tI">
+                                <th>{{ tSt.title }}</th>
+                                <td class="text-right">{{tSt.created_at | formatDate}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <table v-if="transactionData.transaction_flip" class="table table-striped mt-5">
+                            <tbody>
+                            <tr>
+                                <th>Status</th>
+                                <td class="text-right">{{ transactionData.transaction_flip.status }}</td>
+                            </tr>
+                            <tr>
+                                <th>Fee</th>
+                                <td class="text-right">{{ transactionData.transaction_flip.fee | formatPriceWithDecimal }}</td>
+                            </tr>
+                            <tr v-if="transactionData.transaction_flip.receipt_file">
+                                <th>Receipt</th>
+                                <td class="text-right">
+                                    <a :href="transactionData.transaction_flip.receipt_file">
+                                        <i class="fas fa-link"></i>
+                                    </a>
                                 </td>
                             </tr>
                             </tbody>

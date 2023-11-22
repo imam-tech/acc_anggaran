@@ -13,4 +13,8 @@ class TransactionFlip extends Model
     
     protected $table = 'transaction_flips';
     protected $guarded = [];
+
+    public function transaction() {
+        return $this->hasOne(Transaction::class, 'id', 'transaction_id');
+    }
 }

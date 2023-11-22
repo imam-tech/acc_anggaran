@@ -73,6 +73,6 @@ class TransactionController extends Controller {
     }
 
     public function callbackFlip(Request $request) {
-        return response()->json($request->all());
+        return response()->json($this->transactionRepo->callbackFlip($request->all()));
     }
 }

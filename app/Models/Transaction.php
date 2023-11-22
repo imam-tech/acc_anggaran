@@ -41,4 +41,8 @@ class Transaction extends Model
     public function transactionApprovalNulls() {
         return $this->hasMany(TransactionApproval::class, 'transaction_id', 'id')->whereNull('approved_at')->whereNull('rejected_at');
     }
+
+    public function transactionFlip() {
+        return $this->hasOne(TransactionFlip::class, 'transaction_id', 'id');
+    }
 }

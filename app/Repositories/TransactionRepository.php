@@ -9,6 +9,7 @@ use App\Models\JournalItem;
 use App\Models\Project;
 use App\Models\Transaction;
 use App\Models\TransactionApproval;
+use App\Models\TransactionFlip;
 use App\Models\TransactionItem;
 use App\Models\TransactionItemCoa;
 use App\Models\TransactionStatus;
@@ -101,7 +102,7 @@ class TransactionRepository {
     public function detail($id) {
         try {
             $transaction = Transaction::with(['transactionItems.transactionItemCoas', 'userCreatedBy', 'transactionStatuses', 'project', 'company',
-                'transactionApprovals.user'])
+                'transactionApprovals.user', 'transactionFlip'])
                 ->find($id);
             if (!$transaction) return resultFunction("Err code CR-Dl: transaction not found for ID " .$id);
             return resultFunction("", true, $transaction);
@@ -381,7 +382,7 @@ class TransactionRepository {
                         'journal_id' => $journal->id,
                         'account_id' => $coa->account_id,
                         'cashflow_id' => $coa->cashflow_id,
-                        'description' => $item->note,
+                        'description' => $item->note ?? "",
                         'debit' => $coa->debit,
                         'credit' => $coa->credit,
                         'transaction_date' => $dateNow,
@@ -442,6 +443,35 @@ class TransactionRepository {
             return (new DigitalOceanService())->uploadImageToDO($image, "transaction");
         } catch (\Exception $e) {
             return resultFunction("Err code TR-Ui: catch " . $e->getMessage());
+        }
+    }
+
+    public function callbackFlip($dataFlip) {
+        try {
+            $data = json_decode($dataFlip['data'], true);
+            $transactionFlip = TransactionFlip::with(['transaction'])->where('flip_id', $data['id'])->first();
+            if (!$transactionFlip) return resultFunction("Err code TR-CF: data is not found");
+            if (!$transactionFlip->transaction) return resultFunction("Err code TR-CF: data is not found");
+
+            $transactionFlip->status = 'completed';
+            $transactionFlip->receipt_file = $data['receipt'];
+            $transactionFlip->fee = $data['fee'];
+            $transactionFlip->save();
+
+            $transaction = $transactionFlip->transaction;
+
+            $transactionRepo = new TransactionRepository();
+            $transactionRepo->pushToJurnal($transaction);
+            $transaction->current_status = 'completed';
+            $transaction->save();
+
+            $transactionStatus = new TransactionStatus();
+            $transactionStatus->transaction_id = $transaction->id;
+            $transactionStatus->title = 'completed';
+            $transactionStatus->save();
+            return resultFunction("", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code TR-CF: catch " . $e->getMessage());
         }
     }
 }

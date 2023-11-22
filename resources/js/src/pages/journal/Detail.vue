@@ -88,7 +88,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr v-if="journal.approved_at === null && journal.rejected_at === null && $store.state.permissions.includes('company_set_admin')">
+                        <tr v-if="journal.approved_at === null && journal.rejected_at === null && $store.state.permissions.includes('transaction_edit_coa')">
                             <td colspan="6" class="text-right">
                                 <button @click="handleApproveReject('approved')" type="button" class="btn btn-primary">
                                     <i class="fa fa-check"></i> Approved
