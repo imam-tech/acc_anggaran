@@ -72,6 +72,10 @@ class CoaController extends Controller {
         return response()->json($this->coaRepo->store($request->all(), $request->header('company_id')));
     }
 
+    public function uploadBulk(Request $request) {
+        return response()->json($this->coaRepo->uploadBulk($request, $request->header('company_id')));
+    }
+
     public function indexCashflow() {
         $coaPostings = Cashflow::with([]);
 

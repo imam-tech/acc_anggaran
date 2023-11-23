@@ -9,34 +9,12 @@
                         <i class="fa fa-address-book"></i> Coa Category
                     </button>
                 </router-link>
+                <button type="button" class="btn btn-warning float-right mr-3 mt-3" @click="handleShowUploadCoaBulk()">
+                    <i class="fa fa-upload"></i> Bulk Coa
+                </button>
                 <button v-if="$store.state.permissions.includes('coa_create_edit')" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddCoa()">
                     <i class="fa fa-plus-circle"></i> Coa
                 </button>
-            </div>
-            <div class="row ml-3">
-                <!--<div class="col-md-3">-->
-                    <!--<div class="input-group mb-2">-->
-                        <!--<div class="input-group-prepend">-->
-                            <!--<div class="input-group-text">Title</div>-->
-                        <!--</div>-->
-                        <!--<input type="text" class="form-control" id="title" placeholder="Title" v-model="sortVal.title">-->
-                    <!--</div>-->
-                <!--</div>-->
-                <!--<div class="col-md-3">-->
-                    <!--<div class="input-group mb-2">-->
-                        <!--<div class="input-group-prepend">-->
-                            <!--<div class="input-group-text">Status</div>-->
-                        <!--</div>-->
-                        <!--<select name="status" v-model="sortVal.status" class="form-control">-->
-                            <!--<option value="active" :selected="sortVal.status== null ? true : false">All</option>-->
-                            <!--<option value="active" :selected="sortVal.status== 'active' ? true : false">Active</option>-->
-                            <!--<option value="not_active" :selected="sortVal.status== 'not_active' ? true : false">Not Active</option>-->
-                        <!--</select>-->
-                    <!--</div>-->
-                <!--</div>-->
-                <div class="col-md-3">
-                    <!--<button class="btn btn-success mb-2" @click="sortValue()">Search</button>-->
-                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -92,6 +70,42 @@
                     <!--<div class="justify-content-center d-flex">-->
                         <!--<pagination v-model="page" :records="totalData" :per-page="perPage" @paginate="getData"/>-->
                     <!--</div>-->
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="uploadCoaBulk" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Input Initial Balance</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label  class="text-danger font-weight-bold font-italic">Template Upload File</label>
+                                <label for="">
+                                    <a href="https://stage-accounting.sgp1.cdn.digitaloceanspaces.com/Coa%20bulk.xlsx">
+                                        <i class="fa fa-link"></i>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>File COA<span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    font-style: italic;
+                                ">*) required</span></label>
+                                <input type="file" ref="file" class="form-control" @change="uploadFile">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="handleUploadCoaBulk()">Save changes</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -235,7 +249,8 @@
                 formInitialBalance: {
                     id: "",
                     amount: 0
-                }
+                },
+                excelData: ""
             }
         },
         created() {
@@ -243,6 +258,44 @@
             this.getDataCategory()
         },
         methods: {
+            async handleUploadCoaBulk() {
+                try {
+                    console.log("c", this.excelData)
+                    this.$vs.loading()
+                    let formDataCoa = new FormData();
+                    const config = { headers: {'content-type' : 'multipart/form-data'}}
+                    formDataCoa.append('file_excel', this.excelData);
+                    const resp = await this.$axios.post(`api/coa/upload-bulk`, formDataCoa, config)
+                    this.$vs.loading.close()
+                    if (!resp['status']) {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: resp.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        return
+                    }
+                    $('#uploadCoaBulk').modal("hide")
+                    this.getData();
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            },
+            uploadFile() {
+                this.excelData = this.$refs.file.files[0];
+            },
+            handleShowUploadCoaBulk() {
+                $("#uploadCoaBulk").modal('show')
+            },
             handleInitialBalance(coa) {
                 this.formInitialBalance.id = coa.id
                 if (coa.initial_balance) {

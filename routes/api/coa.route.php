@@ -7,6 +7,7 @@ Route:: group(['prefix' => 'coa', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/', [CoaController::class, 'index']);
     Route::get('/by-company', [CoaController::class, 'indexByCompany']);
     Route::post('/', [CoaController::class, 'store']);
+    Route::post('/upload-bulk', [CoaController::class, 'uploadBulk']);
     Route::delete('/{id?}/delete', [CoaController::class, 'delete']);
     Route::get('/{id?}/set-initial-balance/{amount}', [CoaController::class, 'setInitialBalance']);
 

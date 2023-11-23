@@ -2,12 +2,14 @@
 
 namespace App\Repositories;
 
+use App\Imports\CoaImport;
 use App\Models\Coa;
 use App\Models\CoaCategory;
 use App\Models\CoaPosting;
 use App\Models\Journal;
 use App\Models\JournalItem;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CoaRepository {
     public function store($data, $companyId) {
@@ -236,6 +238,48 @@ class CoaRepository {
             return resultFunction("Initializing balance is successfully", true);
         } catch (\Exception $e) {
             return resultFunction("Err code CR-SIB: catch " . $e->getMessage());
+        }
+    }
+
+    public function uploadBulk($request, $companyId) {
+        try {
+            $data = Excel::toArray(new CoaImport, $request->file('file_excel'));
+
+            $dataProcess = [];
+            foreach ($data[0] as $key => $datum) {
+                if ($key > 0) {
+                    $dataProcess[] = $datum;
+                }
+            }
+
+            $coaCategories = CoaCategory::whereIn('name', array_unique(array_column($dataProcess, 0)))->where('flag', 'pt')->get();
+            $postings = CoaPosting::whereIn("name", array_unique(array_column($dataProcess, 1)))->get();
+
+            $paramSave = [];
+            foreach ($dataProcess as $process) {
+                $categorySelect = $coaCategories->where('name', strtoupper($process[0]))->first();
+                if (!$categorySelect) return resultFunction("Err code CR-UB: coa category  is not found");
+
+                $postingSelect = $postings->where('name', $process[1])->first();
+                if (!$postingSelect) return resultFunction("Err code CR-UB: posting  is not found");
+
+                $paramSave[] = [
+                    'company_id' => $companyId,
+                    'category_id' => $categorySelect->id,
+                    'posting_id' => $postingSelect->id,
+                    'account_code' => $process[2].'-'.$process[3],
+                    'account_number' => $process[2],
+                    'account_name' => $process[3],
+                    'description' => '',
+                    'account_type' => $process[4],
+                    'is_active' => 1
+                ];
+            }
+            Coa::insert($paramSave);
+
+            return resultFunction(" coa bulk is successfully", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code CR-S: catch " . $e->getMessage());
         }
     }
 }
