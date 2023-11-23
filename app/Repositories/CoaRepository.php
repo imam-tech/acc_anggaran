@@ -19,6 +19,7 @@ class CoaRepository {
                 "account_name" => "required",
                 "account_type" => "required",
             ]);
+            return resultFunction("", false, $companyId);
 
             if ($validator->fails()) return resultFunction("Err code CR-S: " . collect($validator->errors()->all())->implode(" , "));
 
