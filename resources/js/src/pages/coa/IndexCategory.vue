@@ -4,6 +4,9 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Coa Category List</h1>
+                <router-link to="/app/coa" class="btn btn-success float-right mt-3 mr-3">
+                    <i class="fa fa-arrow-left"></i> Back
+                </router-link>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

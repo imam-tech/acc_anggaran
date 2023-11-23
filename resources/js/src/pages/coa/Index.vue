@@ -4,6 +4,11 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Coa List</h1>
+                <router-link to="/app/coa/category">
+                    <button type="button" class="btn btn-success float-right mr-3 mt-3">
+                        <i class="fa fa-address-book"></i> Coa Category
+                    </button>
+                </router-link>
                 <button v-if="$store.state.permissions.includes('coa_create_edit')" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddCoa()">
                     <i class="fa fa-plus-circle"></i> Coa
                 </button>

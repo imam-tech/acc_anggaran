@@ -8,31 +8,6 @@
                     <i class="fa fa-plus-circle"></i> Company
                 </button>
             </div>
-            <div class="row ml-3">
-                <!--<div class="col-md-3">-->
-                    <!--<div class="input-group mb-2">-->
-                        <!--<div class="input-group-prepend">-->
-                            <!--<div class="input-group-text">Title</div>-->
-                        <!--</div>-->
-                        <!--<input type="text" class="form-control" id="title" placeholder="Title" v-model="sortVal.title">-->
-                    <!--</div>-->
-                <!--</div>-->
-                <!--<div class="col-md-3">-->
-                    <!--<div class="input-group mb-2">-->
-                        <!--<div class="input-group-prepend">-->
-                            <!--<div class="input-group-text">Status</div>-->
-                        <!--</div>-->
-                        <!--<select name="status" v-model="sortVal.status" class="form-control">-->
-                            <!--<option value="active" :selected="sortVal.status== null ? true : false">All</option>-->
-                            <!--<option value="active" :selected="sortVal.status== 'active' ? true : false">Active</option>-->
-                            <!--<option value="not_active" :selected="sortVal.status== 'not_active' ? true : false">Not Active</option>-->
-                        <!--</select>-->
-                    <!--</div>-->
-                <!--</div>-->
-                <div class="col-md-3">
-                    <!--<button class="btn btn-success mb-2" @click="sortValue()">Search</button>-->
-                </div>
-            </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-4" v-for="(company, index) in companies" :key="index">
@@ -52,43 +27,6 @@
                             </div>
                         </router-link>
                     </div>
-                </div>
-                <div class="table-responsive">
-                    <!--<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">-->
-                        <!--<thead>-->
-                        <!--<tr>-->
-                            <!--<th>Title</th>-->
-                            <!--<th>Type</th>-->
-                            <!--<th>Voucher Prefix</th>-->
-                            <!--<th>Project Count</th>-->
-                            <!--<th>Created At</th>-->
-                            <!--<th>#</th>-->
-                        <!--</tr>-->
-                        <!--</thead>-->
-                        <!--<tbody>-->
-                        <!--<tr v-for="(company, index) in companies" :key="index">-->
-                            <!--<td>{{ company.title }}</td>-->
-                            <!--<td>{{ company.type === 'pt' ? 'PT' : 'Yayasan' }}</td>-->
-                            <!--<td>{{ company.voucher_prefix }}</td>-->
-                            <!--<td>{{ company.projects.length }} Project</td>-->
-                            <!--<td>{{ company.created_at | formatDate }}</td>-->
-                            <!--<td>-->
-                                <!--<router-link :to="'/app/company/'+company.id+'/detail'" class="btn btn-info">-->
-                                    <!--<i class="fa fa-eye"></i>-->
-                                <!--</router-link>-->
-                                <!--<button v-if="$store.state.permissions.includes('company_edit')" type="button" class="btn btn-warning" @click="showEditCompany(company)">-->
-                                    <!--<i class="fa fa-pencil"></i>-->
-                                <!--</button>-->
-                                <!--<button v-if="$store.state.permissions.includes('company_delete')" class="btn btn-danger" type="button" @click="handleDelete(company.id)">-->
-                                    <!--<i class="fa fa-minus"></i>-->
-                                <!--</button>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--</tbody>-->
-                    <!--</table>-->
-                    <!--<div class="justify-content-center d-flex">-->
-                        <!--<pagination v-model="page" :records="totalData" :per-page="perPage" @paginate="getData"/>-->
-                    <!--</div>-->
                 </div>
             </div>
         </div>
@@ -198,6 +136,16 @@
             },
             async submitCompany() {
                 try {
+                    if (this.formData.voucherPrefix.length > 3) {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: "Maximum character of Voucher Prefix is 4",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        return
+                    }
                     this.$vs.loading()
                     const respSave = await this.$axios.post('api/company', this.formData)
                     this.$vs.loading.close()

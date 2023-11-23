@@ -113,12 +113,22 @@
 
                     this.$vs.loading()
                     this.companies = await this.$axios.get('api/company')
+                    this.$vs.loading.close()
                     if (this.companies.length > 0) {
                         if (!Cookies.get("current_company")) {
                             Cookies.set('current_company', this.companies[0].id, {expires: 1})
                         }
+                    } else {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'error',
+                            title: 'Please create a company first to use this platform',
+                            showConfirmButton: false,
+                            timer: 3000
+                        }).then(async ()=>{
+                            this.$router.push('/app/company/')
+                        })
                     }
-                    this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
