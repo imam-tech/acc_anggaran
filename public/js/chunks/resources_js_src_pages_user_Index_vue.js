@@ -29,10 +29,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         password: "",
         password_confirmation: ""
       },
+      formChangePassword: {
+        id: "",
+        password: "",
+        password_confirmation: ""
+      },
       formRole: {
         role_id: "",
         user_id: ""
-      }
+      },
+      formFilter: {
+        name: "",
+        email: "",
+        role: ""
+      },
+      userRole: []
     };
   },
   created: function created() {
@@ -40,6 +51,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.getDataRole();
   },
   methods: {
+    showRolePermission: function showRolePermission(user) {
+      console.log("user", user);
+      this.userRole = user;
+      $("#permissionList").modal("show");
+    },
     changeRole: function changeRole(user) {
       this.formRole.user_id = user.id;
       this.formRole.role_id = user.role_id;
@@ -54,7 +70,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _context.prev = 0;
               _this.$vs.loading();
               _context.next = 4;
-              return _this.$axios.get('api/user');
+              return _this.$axios.get("api/user?name=".concat(_this.formFilter.name, "&email=").concat(_this.formFilter.email, "&role=").concat(_this.formFilter.role));
             case 4:
               _this.users = _context.sent;
               _this.$vs.loading.close();
@@ -117,6 +133,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.formData.name = user.name;
       this.formData.email = user.email;
       $("#addUser").modal("show");
+    },
+    showChangePasswordUser: function showChangePasswordUser(user) {
+      if (this.formChangePassword.password !== this.formChangePassword.password_confirmation) {
+        Swal.fire({
+          position: 'top-end',
+          icon: 'error',
+          title: "Password and password confirmation is not same",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        return;
+      }
+      this.formChangePassword.id = user.id;
+      this.formChangePassword.password = user.password;
+      this.formChangePassword.pasword_confirmation = user.pasword_confirmation;
+      $("#changePassword").modal("show");
     },
     showAddUser: function showAddUser() {
       this.labelModal = 'Add';
@@ -190,7 +222,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee4, null, [[0, 9]]);
       }))();
     },
-    submitUser: function submitUser() {
+    submitChangePasswordUser: function submitChangePasswordUser() {
       var _this4 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
         var respSave;
@@ -198,27 +230,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) switch (_context6.prev = _context6.next) {
             case 0:
               _context6.prev = 0;
-              if (_this4.formData.id) {
-                _context6.next = 5;
-                break;
-              }
-              if (!(_this4.formData.password !== _this4.formData.password_confirmation)) {
-                _context6.next = 5;
-                break;
-              }
-              Swal.fire({
-                position: 'top-end',
-                icon: 'error',
-                title: "Password is not same with password confirmation",
-                showConfirmButton: false,
-                timer: 1500
-              });
-              return _context6.abrupt("return");
-            case 5:
               _this4.$vs.loading();
-              _context6.next = 8;
-              return _this4.$axios.post('api/user', _this4.formData);
-            case 8:
+              _context6.next = 4;
+              return _this4.$axios.post('api/user/change-password', _this4.formChangePassword);
+            case 4:
               respSave = _context6.sent;
               _this4.$vs.loading.close();
               if (!respSave.status) {
@@ -230,7 +245,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   timer: 1500
                 });
               } else {
-                $("#addUser").modal("hide");
+                $("#changePassword").modal("hide");
                 Swal.fire({
                   position: 'top',
                   icon: 'success',
@@ -250,10 +265,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   }, _callee5);
                 })));
               }
-              _context6.next = 17;
+              _context6.next = 13;
               break;
-            case 13:
-              _context6.prev = 13;
+            case 9:
+              _context6.prev = 9;
               _context6.t0 = _context6["catch"](0);
               _this4.$vs.loading.close();
               Swal.fire({
@@ -263,18 +278,98 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 17:
+            case 13:
             case "end":
               return _context6.stop();
           }
-        }, _callee6, null, [[0, 13]]);
+        }, _callee6, null, [[0, 9]]);
+      }))();
+    },
+    submitUser: function submitUser() {
+      var _this5 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8() {
+        var respSave;
+        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
+            case 0:
+              _context8.prev = 0;
+              if (_this5.formData.id) {
+                _context8.next = 5;
+                break;
+              }
+              if (!(_this5.formData.password !== _this5.formData.password_confirmation)) {
+                _context8.next = 5;
+                break;
+              }
+              Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: "Password is not same with password confirmation",
+                showConfirmButton: false,
+                timer: 1500
+              });
+              return _context8.abrupt("return");
+            case 5:
+              _this5.$vs.loading();
+              _context8.next = 8;
+              return _this5.$axios.post('api/user', _this5.formData);
+            case 8:
+              respSave = _context8.sent;
+              _this5.$vs.loading.close();
+              if (!respSave.status) {
+                Swal.fire({
+                  position: 'top-end',
+                  icon: 'error',
+                  title: respSave.message,
+                  showConfirmButton: false,
+                  timer: 1500
+                });
+              } else {
+                $("#addUser").modal("hide");
+                Swal.fire({
+                  position: 'top',
+                  icon: 'success',
+                  title: respSave.message,
+                  showConfirmButton: false,
+                  timer: 1500
+                }).then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7() {
+                  return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+                    while (1) switch (_context7.prev = _context7.next) {
+                      case 0:
+                        _context7.next = 2;
+                        return _this5.getData();
+                      case 2:
+                      case "end":
+                        return _context7.stop();
+                    }
+                  }, _callee7);
+                })));
+              }
+              _context8.next = 17;
+              break;
+            case 13:
+              _context8.prev = 13;
+              _context8.t0 = _context8["catch"](0);
+              _this5.$vs.loading.close();
+              Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: _context8.t0.message,
+                showConfirmButton: false,
+                timer: 1500
+              });
+            case 17:
+            case "end":
+              return _context8.stop();
+          }
+        }, _callee8, null, [[0, 13]]);
       }))();
     },
     handleDelete: function handleDelete(id) {
-      var _this5 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8() {
-        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
-          while (1) switch (_context8.prev = _context8.next) {
+      var _this6 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee10() {
+        return _regeneratorRuntime().wrap(function _callee10$(_context10) {
+          while (1) switch (_context10.prev = _context10.next) {
             case 0:
               Swal.fire({
                 icon: 'warning',
@@ -286,9 +381,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showCancelButton: true
               }).then(function (result) {
                 if (result.isConfirmed == true) {
-                  _this5.$vs.loading();
-                  _this5.$axios["delete"]("api/user/".concat(id, "/delete")).then(function (response) {
-                    _this5.$vs.loading.close();
+                  _this6.$vs.loading();
+                  _this6.$axios["delete"]("api/user/".concat(id, "/delete")).then(function (response) {
+                    _this6.$vs.loading.close();
                     if (response.status) {
                       Swal.fire({
                         icon: 'success',
@@ -298,24 +393,24 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                         allowEscapeKey: false,
                         allowEnterKey: false
                       }).then( /*#__PURE__*/function () {
-                        var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(res) {
-                          return _regeneratorRuntime().wrap(function _callee7$(_context7) {
-                            while (1) switch (_context7.prev = _context7.next) {
+                        var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9(res) {
+                          return _regeneratorRuntime().wrap(function _callee9$(_context9) {
+                            while (1) switch (_context9.prev = _context9.next) {
                               case 0:
                                 if (!(res.isConfirmed == true)) {
-                                  _context7.next = 3;
+                                  _context9.next = 3;
                                   break;
                                 }
-                                _context7.next = 3;
-                                return _this5.getData();
+                                _context9.next = 3;
+                                return _this6.getData();
                               case 3:
                               case "end":
-                                return _context7.stop();
+                                return _context9.stop();
                             }
-                          }, _callee7);
+                          }, _callee9);
                         }));
                         return function (_x) {
-                          return _ref3.apply(this, arguments);
+                          return _ref4.apply(this, arguments);
                         };
                       }());
                     } else {
@@ -333,9 +428,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               });
             case 1:
             case "end":
-              return _context8.stop();
+              return _context10.stop();
           }
-        }, _callee8);
+        }, _callee10);
       }))();
     }
   }
@@ -377,7 +472,118 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "fa fa-plus-circle"
-  }), _vm._v(" User\n            ")]) : _vm._e()]), _vm._v(" "), _vm._m(0), _vm._v(" "), _c("div", {
+  }), _vm._v(" User\n            ")]) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "row ml-3"
+  }, [_c("div", {
+    staticClass: "col-md-3"
+  }, [_c("div", {
+    staticClass: "input-group mb-2"
+  }, [_vm._m(0), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.formFilter.name,
+      expression: "formFilter.name"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text",
+      placeholder: "Name"
+    },
+    domProps: {
+      value: _vm.formFilter.name
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.formFilter, "name", $event.target.value);
+      }
+    }
+  })])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-3"
+  }, [_c("div", {
+    staticClass: "input-group mb-2"
+  }, [_vm._m(1), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.formFilter.email,
+      expression: "formFilter.email"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text",
+      placeholder: "Email"
+    },
+    domProps: {
+      value: _vm.formFilter.email
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.formFilter, "email", $event.target.value);
+      }
+    }
+  })])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-3"
+  }, [_c("div", {
+    staticClass: "input-group mb-2"
+  }, [_vm._m(2), _vm._v(" "), _c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.formFilter.role,
+      expression: "formFilter.role"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      name: "status"
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.formFilter, "role", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }
+    }
+  }, [_c("option", {
+    attrs: {
+      value: ""
+    }
+  }, [_vm._v("All")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "administrator"
+    }
+  }, [_vm._v("Administrator")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "finance"
+    }
+  }, [_vm._v("Finance")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "accounting"
+    }
+  }, [_vm._v("Accounting")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "tax"
+    }
+  }, [_vm._v("Tax")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "staf"
+    }
+  }, [_vm._v("Staff")])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-3"
+  }, [_c("button", {
+    staticClass: "btn btn-success mb-2",
+    on: {
+      click: function click($event) {
+        return _vm.getData();
+      }
+    }
+  }, [_vm._v("Search")])])]), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_c("div", {
     staticClass: "table-responsive"
@@ -388,7 +594,12 @@ var render = function render() {
       width: "100%",
       cellspacing: "0"
     }
-  }, [_c("thead", [_c("tr", [_c("th", [_vm._v("Name")]), _vm._v(" "), _c("th", [_vm._v("Email")]), _vm._v(" "), _c("th", [_vm._v("Role")]), _vm._v(" "), _c("th", [_vm._v("Created At")]), _vm._v(" "), _vm.$store.state.permissions.includes("user_create") ? _c("th", [_vm._v("#")]) : _vm._e()])]), _vm._v(" "), _c("tbody", _vm._l(_vm.users, function (user, index) {
+  }, [_c("thead", [_c("tr", [_c("th", [_vm._v("Name")]), _vm._v(" "), _c("th", [_vm._v("Email")]), _vm._v(" "), _c("th", [_vm._v("Role")]), _vm._v(" "), _c("th", [_vm._v("Created At")]), _vm._v(" "), _vm.$store.state.permissions.includes("user_create") ? _c("th", [_vm._v("#")]) : _vm._e()])]), _vm._v(" "), _c("tbody", [_vm.users.length == 0 ? _c("tr", [_c("td", {
+    staticClass: "text-center",
+    attrs: {
+      colspan: "6"
+    }
+  }, [_vm._v("\n                            User Not Found\n                        ")])]) : _vm._l(_vm.users, function (user, index) {
     return _c("tr", {
       key: index
     }, [_c("td", [_vm._v(_vm._s(user.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(user.email))]), _vm._v(" "), _c("td", [_vm.$store.state.permissions.includes("user_role") ? _c("button", {
@@ -403,7 +614,19 @@ var render = function render() {
       }
     }, [_c("i", {
       staticClass: "fa fa-repeat"
-    })]) : _vm._e(), _vm._v("\n                            " + _vm._s(user.role ? user.role.title : "No Role") + "\n                        ")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(user.created_at)))]), _vm._v(" "), _vm.$store.state.permissions.includes("user_create") ? _c("td", [_c("button", {
+    })]) : _vm._e(), _vm._v(" "), _c("button", {
+      staticClass: "btn btn-success",
+      attrs: {
+        type: "button"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.showRolePermission(user.role.role_permissions);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-eye"
+    })]), _vm._v("\n                            " + _vm._s(user.role ? user.role.title : "No Role") + "\n                        ")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(user.created_at)))]), _vm._v(" "), _vm.$store.state.permissions.includes("user_create") ? _c("td", [_c("button", {
       staticClass: "btn btn-warning",
       attrs: {
         type: "button"
@@ -415,8 +638,20 @@ var render = function render() {
       }
     }, [_c("i", {
       staticClass: "fa fa-pencil"
+    })]), _vm._v(" "), _c("button", {
+      staticClass: "btn btn-danger",
+      attrs: {
+        type: "button"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.showChangePasswordUser(user);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-gear"
     })])]) : _vm._e()]);
-  }), 0)])])])]), _vm._v(" "), _c("div", {
+  })], 2)])])])]), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
     attrs: {
       id: "addUser",
@@ -438,11 +673,11 @@ var render = function render() {
     attrs: {
       id: "exampleModalLabel"
     }
-  }, [_vm._v(_vm._s(_vm.labelModal) + " User")]), _vm._v(" "), _vm._m(1)]), _vm._v(" "), _c("div", {
+  }, [_vm._v(_vm._s(_vm.labelModal) + " User")]), _vm._v(" "), _vm._m(3)]), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_c("form", [_c("div", {
     staticClass: "form-group"
-  }, [_vm._m(2), _vm._v(" "), _c("input", {
+  }, [_vm._m(4), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -465,7 +700,7 @@ var render = function render() {
     }
   })]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(3), _vm._v(" "), _c("input", {
+  }, [_vm._m(5), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -488,7 +723,7 @@ var render = function render() {
     }
   })]), _vm._v(" "), !_vm.formData.id ? _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(4), _vm._v(" "), _c("input", {
+  }, [_vm._m(6), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -511,7 +746,7 @@ var render = function render() {
     }
   })]) : _vm._e(), _vm._v(" "), !_vm.formData.id ? _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(5), _vm._v(" "), _c("input", {
+  }, [_vm._m(7), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -565,11 +800,11 @@ var render = function render() {
     }
   }, [_c("div", {
     staticClass: "modal-content"
-  }, [_vm._m(6), _vm._v(" "), _c("div", {
+  }, [_vm._m(8), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_c("form", [_c("div", {
     staticClass: "form-group"
-  }, [_vm._m(7), _vm._v(" "), _c("select", {
+  }, [_vm._m(9), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -613,16 +848,134 @@ var render = function render() {
         return _vm.handleChangeRole();
       }
     }
-  }, [_vm._v("Save changes")])])])])])]);
+  }, [_vm._v("Save changes")])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal fade",
+    attrs: {
+      id: "changePassword",
+      tabindex: "-1",
+      role: "dialog",
+      "aria-labelledby": "exampleModalLabel"
+    }
+  }, [_c("div", {
+    staticClass: "modal-dialog",
+    attrs: {
+      role: "document"
+    }
+  }, [_c("div", {
+    staticClass: "modal-content"
+  }, [_vm._m(10), _vm._v(" "), _c("div", {
+    staticClass: "modal-body"
+  }, [_c("form", [_c("div", {
+    staticClass: "form-group"
+  }, [_vm._m(11), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.formChangePassword.password,
+      expression: "formChangePassword.password"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "password",
+      placeholder: "Password of User"
+    },
+    domProps: {
+      value: _vm.formChangePassword.password
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.formChangePassword, "password", $event.target.value);
+      }
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_vm._m(12), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.formChangePassword.password_confirmation,
+      expression: "formChangePassword.password_confirmation"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "password",
+      placeholder: "Password of User"
+    },
+    domProps: {
+      value: _vm.formChangePassword.password_confirmation
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.formChangePassword, "password_confirmation", $event.target.value);
+      }
+    }
+  })])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal-footer flex justify-content-between"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal"
+    }
+  }, [_vm._v("Close")]), _vm._v(" "), _c("button", {
+    staticClass: "btn btn-primary",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.submitChangePasswordUser();
+      }
+    }
+  }, [_vm._v("Save changes")])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal fade",
+    attrs: {
+      id: "permissionList",
+      tabindex: "-1",
+      role: "dialog",
+      "aria-labelledby": "exampleModalLabel"
+    }
+  }, [_c("div", {
+    staticClass: "modal-dialog",
+    attrs: {
+      role: "document"
+    }
+  }, [_c("div", {
+    staticClass: "modal-content"
+  }, [_vm._m(13), _vm._v(" "), _c("div", {
+    staticClass: "modal-body"
+  }, [_c("ul", _vm._l(_vm.userRole, function (perm, permI) {
+    return _c("li", {
+      key: permI
+    }, [_vm._v("\n                            " + _vm._s(perm.permission.display_title) + "\n                        ")]);
+  }), 0)]), _vm._v(" "), _vm._m(14)])])])]);
 };
 var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("div", {
-    staticClass: "row ml-3"
+    staticClass: "input-group-prepend"
   }, [_c("div", {
-    staticClass: "col-md-3"
-  })]);
+    staticClass: "input-group-text"
+  }, [_vm._v("Name")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "input-group-prepend"
+  }, [_c("div", {
+    staticClass: "input-group-text"
+  }, [_vm._v("Email")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "input-group-prepend"
+  }, [_c("div", {
+    staticClass: "input-group-text"
+  }, [_vm._v("Role")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -710,6 +1063,82 @@ var staticRenderFns = [function () {
       "font-style": "italic"
     }
   }, [_vm._v("*) required")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "modal-header"
+  }, [_c("h5", {
+    staticClass: "modal-title",
+    attrs: {
+      id: "exampleModalLabel"
+    }
+  }, [_vm._v("Change Password User")]), _vm._v(" "), _c("button", {
+    staticClass: "close",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal",
+      "aria-label": "Close"
+    }
+  }, [_c("span", {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("label", [_vm._v("Password"), _c("span", {
+    staticStyle: {
+      color: "red",
+      "font-weight": "bold",
+      "font-style": "italic"
+    }
+  }, [_vm._v("*) required")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("label", [_vm._v("Password Confirmation"), _c("span", {
+    staticStyle: {
+      color: "red",
+      "font-weight": "bold",
+      "font-style": "italic"
+    }
+  }, [_vm._v("*) required")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "modal-header"
+  }, [_c("h5", {
+    staticClass: "modal-title",
+    attrs: {
+      id: "exampleModalLabel"
+    }
+  }, [_vm._v("Permission List")]), _vm._v(" "), _c("button", {
+    staticClass: "close",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal",
+      "aria-label": "Close"
+    }
+  }, [_c("span", {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "modal-footer flex justify-content-between"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal"
+    }
+  }, [_vm._v("Close")])]);
 }];
 render._withStripped = true;
 

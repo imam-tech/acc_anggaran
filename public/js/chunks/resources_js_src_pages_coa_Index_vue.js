@@ -380,7 +380,12 @@ var render = function render() {
       width: "100%",
       cellspacing: "0"
     }
-  }, [_c("thead", [_c("tr", [_c("th", [_vm._v("Account Code")]), _vm._v(" "), _c("th", [_vm._v("Account Name")]), _vm._v(" "), _c("th", [_vm._v("Category")]), _vm._v(" "), _c("th", [_vm._v("Account Type")]), _vm._v(" "), _c("th", [_vm._v("Description")]), _vm._v(" "), _c("th", [_vm._v("Initial Balance")]), _vm._v(" "), _c("th", [_vm._v("Is Active")]), _vm._v(" "), _vm.$store.state.permissions.includes("coa_create_edit") ? _c("th", [_vm._v("#")]) : _vm._e()])]), _vm._v(" "), _c("tbody", _vm._l(_vm.coas, function (coa, index) {
+  }, [_c("thead", [_c("tr", [_c("th", [_vm._v("Account Code")]), _vm._v(" "), _c("th", [_vm._v("Account Name")]), _vm._v(" "), _c("th", [_vm._v("Category")]), _vm._v(" "), _c("th", [_vm._v("Account Type")]), _vm._v(" "), _c("th", [_vm._v("Description")]), _vm._v(" "), _c("th", [_vm._v("Initial Balance")]), _vm._v(" "), _c("th", [_vm._v("Is Active")]), _vm._v(" "), _vm.$store.state.permissions.includes("coa_create_edit") ? _c("th", [_vm._v("#")]) : _vm._e()])]), _vm._v(" "), _c("tbody", [_vm.coas.length == 0 ? _c("tr", [_c("td", {
+    staticClass: "text-center",
+    attrs: {
+      colspan: "8"
+    }
+  }, [_vm._v("\n                            COA Not Found\n                        ")])]) : _vm._l(_vm.coas, function (coa, index) {
     return _c("tr", {
       key: index
     }, [_c("td", [_vm._v(_vm._s(coa.account_number))]), _vm._v(" "), _c("td", [_c("router-link", {
@@ -413,7 +418,7 @@ var render = function render() {
       }
     }, [_c("i", {
       staticClass: "fa fa-remove"
-    })]) : _vm._e(), _vm._v(" "), _c("button", {
+    })]) : _vm._e(), _vm._v(" "), coa.coa_category.label === "balance_sheet" ? _c("button", {
       staticClass: "btn btn-success",
       attrs: {
         type: "button"
@@ -425,8 +430,8 @@ var render = function render() {
       }
     }, [_c("i", {
       staticClass: "fa fa-dollar"
-    })])]) : _vm._e()]);
-  }), 0)])])])]), _vm._v(" "), _c("div", {
+    })]) : _vm._e()]) : _vm._e()]);
+  })], 2)])])])]), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
     attrs: {
       id: "addInitialBalance",

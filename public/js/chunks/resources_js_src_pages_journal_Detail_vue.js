@@ -243,7 +243,9 @@ var render = function render() {
     staticClass: "text-right"
   }, [_vm._v(_vm._s(_vm.journal.transaction_date))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("Status")]), _vm._v(" "), _c("td", {
     staticClass: "text-right"
-  }, [_vm._v(_vm._s(_vm.journal.approved_at ? "Approved" : _vm.journal.rejected_at ? "Rejected" : "Requested"))])])])])])]), _vm._v(" "), _vm._m(1), _vm._v(" "), _c("div", {
+  }, [_c("span", {
+    "class": _vm._f("labelByStatus")(_vm.journal.approved_at ? "approved" : _vm.journal.rejected_at ? "rejected" : "requested")
+  }, [_vm._v("\n                                    " + _vm._s(_vm.journal.approved_at ? "Approved" : _vm.journal.rejected_at ? "Rejected" : "Requested") + "\n                                ")])])])])])])]), _vm._v(" "), _vm._m(1), _vm._v(" "), _c("div", {
     staticClass: "table-responsive"
   }, [_c("table", {
     staticClass: "table table-bordered",
@@ -274,7 +276,7 @@ var render = function render() {
     staticClass: "d-flex flex-column"
   }, [_c("span", [_vm._v("Total Debit")]), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(_vm.showDebitAndCredit(_vm.journal.journal_items, "debit"))))])])]), _vm._v(" "), _c("td", [_c("div", {
     staticClass: "d-flex flex-column"
-  }, [_c("span", [_vm._v("Total Credit")]), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(_vm.showDebitAndCredit(_vm.journal.journal_items, "credit"))))])])])]), _vm._v(" "), _vm.journal.approved_at === null && _vm.journal.rejected_at === null && _vm.$store.state.permissions.includes("company_set_admin") ? _c("tr", [_c("td", {
+  }, [_c("span", [_vm._v("Total Credit")]), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(_vm.showDebitAndCredit(_vm.journal.journal_items, "credit"))))])])])]), _vm._v(" "), _vm.journal.approved_at === null && _vm.journal.rejected_at === null && _vm.$store.state.permissions.includes("transaction_edit_coa") ? _c("tr", [_c("td", {
     staticClass: "text-right",
     attrs: {
       colspan: "6"

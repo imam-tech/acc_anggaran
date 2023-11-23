@@ -21,15 +21,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     return {
       months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"],
       coaList: [],
-      dataReports: []
+      dataReports: [],
+      lastMonth: 0
     };
   },
   created: function created() {
+    var d = new Date();
+    this.lastMonth = d.getMonth() + 1;
     this.initiateData();
   },
   methods: {
     initiateData: function initiateData() {
-      for (var i = 1; i <= 12; i++) {
+      for (var i = 1; i <= this.lastMonth; i++) {
         this.getData(i < 10 ? "0" + i : i);
       }
     },
@@ -48,22 +51,36 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               respData = _context.sent.data;
               balances = [];
               respData.accounts.forEach(function (x) {
+                var type = 'child';
+                if (x.is_summary) {
+                  type = 'parent';
+                }
                 if (month == "01") {
                   var respCl = {};
+                  var type2 = 'child';
+                  if (x.is_summary) {
+                    type2 = 'parent';
+                  }
                   if (x.account_name !== null) {
                     respCl = {
                       "type": '',
-                      "label": x.account_code + "-" + x.account_name
+                      "label": x.account_code + "-" + x.account_name,
+                      "type2": type2
                     };
                   } else {
                     respCl = {
                       "type": 'bold',
-                      "label": x.name
+                      "label": x.name,
+                      "type2": type2
                     };
                   }
                   _this.coaList.push(respCl);
                 }
-                balances.push(x.balance);
+                balances.push({
+                  balance: x.balance,
+                  type: type,
+                  percentage: x.percentage
+                });
               });
               _this.dataReports.push({
                 'month': month,
@@ -133,39 +150,52 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "row"
   }, [_c("div", {
-    staticClass: "col-6"
+    staticClass: "col-6 p-0"
   }, [_c("table", {
     staticClass: "table"
-  }, [_vm._m(1), _vm._v(" "), _c("tbody", [_c("tr", [_c("td", [_c("table", {
+  }, [_vm._m(1), _vm._v(" "), _c("tbody", [_c("tr", [_c("td", {
+    staticClass: "p-0"
+  }, [_c("table", {
     staticClass: "table table-borderless"
   }, _vm._l(_vm.coaList, function (cl, iC) {
     return _c("tr", {
       key: iC
     }, [_c("td", {
-      "class": cl.type === "bold" ? "font-weight-bold" : "pl-4"
+      "class": cl.type2 === "parent" ? "font-weight-bold bg-light" : "pl-4"
     }, [_vm._v(_vm._s(cl.label))])]);
-  }), 0)])])])])]), _vm._v(" "), _c("div", {
-    staticClass: "col-6"
+  }), 0)])])]), _vm._v(" "), _c("tfooter", [_c("tr", {
+    staticClass: "backgroup bg-light bg-gradient p-2 rounded"
+  }, [_c("th", [_vm._v("Account")])])])], 1)]), _vm._v(" "), _c("div", {
+    staticClass: "col-6 p-0"
   }, [_c("table", {
-    staticClass: "table table-responsive"
+    staticClass: "table table-bordered table-responsive"
   }, [_c("thead", [_c("tr", {
     staticClass: "bg-gray-300 p-2 rounded"
   }, _vm._l(_vm.months, function (month, iM) {
-    return _c("th", {
+    return iM < _vm.lastMonth ? _c("th", {
       key: iM
-    }, [_vm._v(_vm._s(month))]);
-  }), 0)]), _vm._v(" "), _c("tbody", [_c("tr", {
-    "class": _vm.iM % 2 == 1 ? "bg-gray" : ""
-  }, _vm._l(_vm.dataReports, function (dataR, iR) {
+    }, [_vm._v(_vm._s(month))]) : _vm._e();
+  }), 0)]), _vm._v(" "), _c("tbody", [_c("tr", _vm._l(_vm.dataReports, function (dataR, iR) {
     return _c("td", {
-      key: iR
+      key: iR,
+      staticClass: "p-0"
     }, [_c("table", {
-      staticClass: "table table-borderless"
+      staticClass: "table table-bordered"
     }, _vm._l(dataR.data, function (j, iJ) {
       return _c("tr", {
         key: iJ
-      }, [_c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(j)))])]);
+      }, [_c("td", {
+        "class": j.type === "parent" ? "bg-light" : ""
+      }, [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(j.balance)))]), _vm._v(" "), _c("td", {
+        "class": j.type === "parent" ? "bg-light" : ""
+      }, [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(j.percentage)) + "%")])]);
     }), 0)]);
+  }), 0), _vm._v(" "), _c("tr", {
+    staticClass: "bg-gray-300 p-2 rounded"
+  }, _vm._l(_vm.months, function (month, iM) {
+    return iM < _vm.lastMonth ? _c("th", {
+      key: iM
+    }, [_vm._v(_vm._s(month))]) : _vm._e();
   }), 0)])])])])])])])])]);
 };
 var staticRenderFns = [function () {

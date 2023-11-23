@@ -283,7 +283,9 @@ var render = function render() {
   }, [_vm._m(1), _vm._v(" "), _c("tbody", _vm._l(_vm.gls, function (cl, iC) {
     return _c("tr", {
       key: iC
-    }, [_c("td", [_vm._v(_vm._s(cl.uid))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.title))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.account_code))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.cf_name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.description))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(cl.debit)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(cl.credit)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(cl.transaction_date)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(cl.created_at)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.approved_at ? "APPROVED" : cl.rejected_at ? "REJECTED" : "REQUESTED"))])]);
+    }, [_c("td", [_vm._v(_vm._s(cl.uid))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.title))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.account_code))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.cf_name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.description))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(cl.debit)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(cl.credit)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(cl.transaction_date)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(cl.created_at)))]), _vm._v(" "), _c("td", [_c("span", {
+      "class": _vm._f("labelByStatus")(cl.approved_at ? "approved" : cl.rejected_at ? "rejected" : "requested")
+    }, [_vm._v("\n                                                " + _vm._s(cl.approved_at ? "Approved" : cl.rejected_at ? "Rejected" : "Requested") + "\n                                            ")])])]);
   }), 0)])])])])])])])]);
 };
 var staticRenderFns = [function () {

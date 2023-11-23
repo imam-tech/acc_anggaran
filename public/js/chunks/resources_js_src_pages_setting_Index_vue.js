@@ -261,7 +261,29 @@ var render = function render() {
     staticClass: "card-title"
   }, [_c("h1", {
     staticClass: "h3 mt-3 ml-3 text-gray-800 float-left"
-  }, [_vm._v("Setting List")]), _vm._v(" "), _vm.$store.state.permissions.includes("transaction_push_plugin") ? _c("button", {
+  }, [_vm._v("Setting List")]), _vm._v(" "), _c("router-link", {
+    attrs: {
+      to: "/app/setting/role"
+    }
+  }, [_c("button", {
+    staticClass: "btn btn-success float-right mr-3 mt-3",
+    attrs: {
+      type: "button"
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-gear"
+  }), _vm._v(" Role\n                ")])]), _vm._v(" "), _c("router-link", {
+    attrs: {
+      to: "/app/setting/permission"
+    }
+  }, [_c("button", {
+    staticClass: "btn btn-warning float-right mr-3 mt-3",
+    attrs: {
+      type: "button"
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-deaf"
+  }), _vm._v(" Permission\n                ")])]), _vm._v(" "), _vm.$store.state.permissions.includes("transaction_push_plugin") ? _c("button", {
     staticClass: "btn btn-primary float-right mr-3 mt-3",
     attrs: {
       type: "button"
@@ -273,7 +295,7 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "fa fa-plus-circle"
-  }), _vm._v(" Setting\n            ")]) : _vm._e()]), _vm._v(" "), _c("div", {
+  }), _vm._v(" Setting\n            ")]) : _vm._e()], 1), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_c("div", {
     staticClass: "table-responsive"

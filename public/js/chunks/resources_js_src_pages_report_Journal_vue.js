@@ -24,7 +24,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     return {
       journals: [],
       filter: {
-        status: "",
+        status: "all",
         start_date: "",
         end_date: ""
       }
@@ -242,7 +242,9 @@ var render = function render() {
   }, [_vm._m(1), _vm._v(" "), _c("tbody", _vm._l(_vm.journals, function (cl, iC) {
     return _c("tr", {
       key: iC
-    }, [_c("td", [_vm._v(_vm._s(cl.transaction_uid))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.voucher_no))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.title))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(cl.debit)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(cl.credit)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.approved_at ? "APPROVED" : cl.rejected_at ? "REJECTED" : "REQUESTED"))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(cl.transaction_date)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(cl.created_at)))])]);
+    }, [_c("td", [_vm._v(_vm._s(cl.transaction_uid))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.voucher_no))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(cl.title))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(cl.debit)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(cl.credit)))]), _vm._v(" "), _c("td", [_c("span", {
+      "class": _vm._f("labelByStatus")(cl.approved_at ? "approved" : cl.rejected_at ? "rejected" : "requested")
+    }, [_vm._v("\n                                                " + _vm._s(cl.approved_at ? "Approved" : cl.rejected_at ? "Rejected" : "Requested") + "\n                                            ")])]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(cl.transaction_date)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(cl.created_at)))])]);
   }), 0)])])])])])])])]);
 };
 var staticRenderFns = [function () {

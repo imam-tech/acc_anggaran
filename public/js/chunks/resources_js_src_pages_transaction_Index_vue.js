@@ -109,9 +109,9 @@ var render = function render() {
         to: "/app/transaction/" + transaction.id + "/detail"
       }
     }, [_vm._v("\n                                " + _vm._s(transaction.transaction_number) + "\n                            ")])], 1), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.user_created_by.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.project.company.title))]), _vm._v(" "), _c("td", [_c("span", {
-      staticClass: "badge rounded-pill text-bg-primary"
+      staticClass: "badge rounded-pill text-bg-primary p-2"
     }, [_vm._v(_vm._s((_transaction$method = transaction.method) !== null && _transaction$method !== void 0 ? _transaction$method : "-"))])]), _vm._v(" "), _c("td", [_c("span", {
-      staticClass: "badge rounded-pill text-bg-warning"
+      staticClass: "badge rounded-pill text-bg-warning p-2"
     }, [_vm._v(_vm._s(transaction.project.title))])]), _vm._v(" "), _c("td", [_vm._v(_vm._s(transaction.title))]), _vm._v(" "), _c("td", [_c("span", {
       "class": _vm._f("labelByStatus")(transaction.current_status)
     }, [_vm._v("\n                                " + _vm._s(transaction.current_status) + "\n                            ")])]), _vm._v(" "), _c("td", [_vm._v("Rp. " + _vm._s(_vm._f("formatPriceWithDecimal")(transaction.total_amount)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formatDate")(transaction.created_at)))]), _vm._v(" "), _c("td", [_c("div", {

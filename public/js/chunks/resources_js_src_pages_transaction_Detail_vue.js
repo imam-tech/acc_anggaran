@@ -187,7 +187,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _context2.prev = 0;
               _this2.$vs.loading();
               _context2.next = 4;
-              return _this2.$axios.get('api/coa?is_active=1');
+              return _this2.$axios.get("api/coa/by-company?is_active=1&transaction_id=".concat(_this2.$route.params.id));
             case 4:
               _this2.coas = _context2.sent;
               _context2.next = 7;
@@ -777,7 +777,7 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "row"
   }, [_c("div", {
-    staticClass: "col-12"
+    staticClass: "col-md-6 col-xl-8"
   }, [_c("table", {
     staticClass: "table table-striped"
   }, [_c("tbody", [_c("tr", [_c("th", [_vm._v("Created By")]), _vm._v(" "), _c("td", {
@@ -816,7 +816,31 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "fas fa-pen-alt"
-  })]) : _vm._e()])])])])])]), _vm._v(" "), _c("div", {
+  })]) : _vm._e()])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-6 col-xl-4"
+  }, [_c("table", {
+    staticClass: "table table-striped"
+  }, [_c("tbody", _vm._l(_vm.transactionData.transaction_statuses, function (tSt, tI) {
+    return _c("tr", {
+      key: tI
+    }, [_c("th", [_vm._v(_vm._s(tSt.title))]), _vm._v(" "), _c("td", {
+      staticClass: "text-right"
+    }, [_vm._v(_vm._s(_vm._f("formatDate")(tSt.created_at)))])]);
+  }), 0)]), _vm._v(" "), _vm.transactionData.transaction_flip ? _c("table", {
+    staticClass: "table table-striped mt-5"
+  }, [_c("tbody", [_c("tr", [_c("th", [_vm._v("Status")]), _vm._v(" "), _c("td", {
+    staticClass: "text-right"
+  }, [_vm._v(_vm._s(_vm.transactionData.transaction_flip.status))])]), _vm._v(" "), _c("tr", [_c("th", [_vm._v("Fee")]), _vm._v(" "), _c("td", {
+    staticClass: "text-right"
+  }, [_vm._v(_vm._s(_vm._f("formatPriceWithDecimal")(_vm.transactionData.transaction_flip.fee)))])]), _vm._v(" "), _vm.transactionData.transaction_flip.receipt_file ? _c("tr", [_c("th", [_vm._v("Receipt")]), _vm._v(" "), _c("td", {
+    staticClass: "text-right"
+  }, [_c("a", {
+    attrs: {
+      href: _vm.transactionData.transaction_flip.receipt_file
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-link"
+  })])])]) : _vm._e()])]) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "table-responsive"
   }, [_c("table", {
     staticClass: "table table-bordered",
