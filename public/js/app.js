@@ -2769,7 +2769,7 @@ var _axios = axios__WEBPACK_IMPORTED_MODULE_0___default().create(config);
 _axios.interceptors.request.use(function (config) {
   var accessToken = js_cookie__WEBPACK_IMPORTED_MODULE_1__["default"].get('access_token');
   if (accessToken) {
-    config.headers['Authorization'] = "Bearer ".concat(accessToken, "as");
+    config.headers['Authorization'] = "Bearer ".concat(accessToken);
     config.headers['Company-Id'] = js_cookie__WEBPACK_IMPORTED_MODULE_1__["default"].get('current_company');
   }
   return config;
