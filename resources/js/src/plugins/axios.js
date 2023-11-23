@@ -19,7 +19,7 @@ _axios.interceptors.request.use(
   function (config) {
     const accessToken = Cookies.get('access_token')
     if(accessToken){
-      config.headers['Authorization'] = `Bearer ${ accessToken }`;
+      config.headers['Authorization'] = `Bearer ${ accessToken }as`;
       config.headers['Company-Id'] = Cookies.get('current_company');
     }
 
@@ -44,7 +44,10 @@ _axios.interceptors.response.use(
       // return window.location.href = '/error/error-404'
     }
     else if(error.response.status===401){
-    //  return window.location.href = '/error/error-401'
+      console.log("oke")
+      Cookies.remove('access_token')
+
+      return window.location.href = '/auth/login'
     }
     return Promise.reject(error)
   }

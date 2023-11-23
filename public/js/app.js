@@ -2769,7 +2769,7 @@ var _axios = axios__WEBPACK_IMPORTED_MODULE_0___default().create(config);
 _axios.interceptors.request.use(function (config) {
   var accessToken = js_cookie__WEBPACK_IMPORTED_MODULE_1__["default"].get('access_token');
   if (accessToken) {
-    config.headers['Authorization'] = "Bearer ".concat(accessToken);
+    config.headers['Authorization'] = "Bearer ".concat(accessToken, "as");
     config.headers['Company-Id'] = js_cookie__WEBPACK_IMPORTED_MODULE_1__["default"].get('current_company');
   }
   return config;
@@ -2787,7 +2787,9 @@ _axios.interceptors.response.use(function (response) {
   if (error.response.status === 404) {
     // return window.location.href = '/error/error-404'
   } else if (error.response.status === 401) {
-    //  return window.location.href = '/error/error-401'
+    console.log("oke");
+    js_cookie__WEBPACK_IMPORTED_MODULE_1__["default"].remove('access_token');
+    return window.location.href = '/auth/login';
   }
   return Promise.reject(error);
 });
