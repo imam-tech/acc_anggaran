@@ -119,7 +119,17 @@
                             }
                             this.coaList.push(respCl)
                         }
-                        // balances.push(x.balance)
+                        balances.push({balance: x.balance, type: type})
+                    })
+                    respData.posting.forEach((x) => {
+                        let type = 'parent'
+                        if (month == "01") {
+                            const respCl = {
+                                "type": 'bold',
+                                "label" :  x.name
+                            }
+                            this.coaList.push(respCl)
+                        }
                         balances.push({balance: x.balance, type: type})
                     })
                     this.dataReports.push({

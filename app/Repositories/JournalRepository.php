@@ -239,7 +239,6 @@ class JournalRepository {
                 'ASET TETAP BERWUJUD' => 0,
                 'PENYUSUTAN ASET TETAP BERWUJUD' => 0,
                 'ASET TETAP' => 0,
-                'ASET' => 0,
                 'HUTANG PAJAK' => 0,
                 'HUTANG USAHA' => 0,
                 'BIAYA YANG MASIH HARUS DIBAYAR' => 0,
@@ -275,6 +274,9 @@ class JournalRepository {
 
             $tAsetTidakLancar = $categoryList['ASET TETAP BERWUJUD'] + $categoryList['PENYUSUTAN ASET TETAP BERWUJUD'];
             $response = $this->setResponse($response, $tAsetTidakLancar, 'ASET TIDAK LANCAR');
+
+            $tAset = $tAsetTidakLancar + $tAsetLancar;
+            $response = $this->setResponse($response, $tAset, 'ASET');
 
             $tKewajibanLancar = $categoryList['HUTANG PAJAK'] + $categoryList['HUTANG USAHA'] + $categoryList['BIAYA YANG MASIH HARUS DIBAYAR']
             + $categoryList['HUTANG BANK & LEMBAGA KEUANGAN'] + $categoryList['HUTANG AFILIASI'] + $categoryList['HUTANG PEMEGANG SAHAM']
