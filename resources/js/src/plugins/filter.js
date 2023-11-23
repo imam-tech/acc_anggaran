@@ -82,10 +82,10 @@ Vue.filter('getShortName', val => {
 })
 
 Vue.filter('labelByStatus', val => {
-    if (val === 'approved') return "badge badge-success rounded-pill";
-    if (val === 'rejected') return "badge badge-danger rounded-pill";
-    if (val === 'published') return "badge badge-primary rounded-pill";
-    if (val === 'requested') return "badge badge-warning rounded-pill";
-    if (val === 'completed') return "badge badge-info rounded-pill";
-    if (val === 'processed') return "badge badge-secondary rounded-pill";
+    if (val === 'approved') return "badge badge-success rounded-pill p-2";
+    if (val === 'rejected') return "badge badge-danger rounded-pill p-2";
+    if (val === 'published') return "badge badge-primary rounded-pill p-2";
+    if (val === 'requested') return "badge badge-warning rounded-pill p-2";
+    if (val === 'completed') return "badge badge-info rounded-pill p-2";
+    if (val === 'processed') return "badge badge-secondary rounded-pill p-2";
 })

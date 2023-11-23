@@ -23,8 +23,23 @@ class UserController extends Controller {
         return response()->json($user);
     }
 
-    public function index() {
-        $user = User::with(['role']);
+    public function index(Request $request) {
+        $filters = $request->only(['name', 'email', 'role']);
+        $user = User::with(['role.rolePermissions.permission']);
+
+        if (!empty($filters['name'])) {
+            $user = $user->where('name', 'LIKE', "%" . $filters['name'] . '%');
+        }
+
+        if (!empty($filters['email'])) {
+            $user = $user->where('email', 'LIKE', "%" . $filters['email'] . '%');
+        }
+
+        if (!empty($filters['role'])) {
+            $user = $user->whereHas('role', function ($q) use ($filters) {
+                $q->where('title', $filters['role']);
+            });
+        }
 
         $user = $user->orderBy('id', 'desc')->get();
         return response()->json($user);
@@ -44,5 +59,9 @@ class UserController extends Controller {
         $user = $user->where('role_id', "<>", 6);
         $user = $user->orderBy('id', 'desc')->get();
         return response()->json($user);
+    }
+
+    public function changePassword(Request $request) {
+        return response()->json($this->userRepo->changePassword($request->all()));
     }
 }

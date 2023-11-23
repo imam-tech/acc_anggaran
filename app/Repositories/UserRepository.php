@@ -59,4 +59,25 @@ class UserRepository {
             return resultFunction("Err code PR-Dl: catch " . $e->getMessage());
         }
     }
+    public function changePassword($data) {
+        try {
+            $validator = \Validator::make($data, [
+                "id" => "required",
+                "password" => "required",
+                "password_confirmation" => "required",
+            ]);
+
+            if ($validator->fails()) return resultFunction("Err code UR-CP: " . collect($validator->errors()->all())->implode(" , "));
+
+            $user = User::find($data['id']);
+            if (!$user) return resultFunction("Err code UR-CP: user not found for ID " . $data['id']);
+
+            $user->password = Hash::make($data['password']);
+            $user->save();
+
+            return resultFunction("Change Password User successfully", true, $user);
+        } catch (\Exception $e) {
+            return resultFunction("Err code UR-CP: catch " . $e->getMessage());
+        }
+    }
 }

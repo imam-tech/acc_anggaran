@@ -4,6 +4,16 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Setting List</h1>
+                <router-link to="/app/setting/role">
+                    <button type="button" class="btn btn-success float-right mr-3 mt-3">
+                        <i class="fas fa-gear"></i> Role
+                    </button>
+                </router-link>
+                <router-link to="/app/setting/permission">
+                    <button type="button" class="btn btn-warning float-right mr-3 mt-3">
+                        <i class="fas fa-deaf"></i> Permission
+                    </button>
+                </router-link>
                 <button v-if="$store.state.permissions.includes('transaction_push_plugin')" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddSetting()">
                     <i class="fa fa-plus-circle"></i> Setting
                 </button>
@@ -33,7 +43,6 @@
                                 <button class="btn btn-danger" type="button" @click="handleDelete(flip.id)">
                                     <i class="fa fa-minus"></i>
                                 </button>
-                            </td>
                             </td>
                         </tr>
                         </tbody>

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\SettingFlip;
 use App\Repositories\SettingRepository;
 use Illuminate\Http\Request;
@@ -33,5 +35,15 @@ class SettingController extends Controller {
 
     public function deleteFlip($id = null) {
         return response()->json($this->settingRepo->deleteFlip($id));
+    }
+
+    public function indexRole() {
+        $roles = Role::with(['rolePermissions.permission']);
+        return response()->json($roles->get());
+    }
+
+    public function indexPermission() {
+        $roles = Permission::with(['rolePermissions.role']);
+        return response()->json($roles->get());
     }
 }

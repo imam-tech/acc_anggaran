@@ -9,28 +9,39 @@
                 </button>
             </div>
             <div class="row ml-3">
-                <!--<div class="col-md-3">-->
-                    <!--<div class="input-group mb-2">-->
-                        <!--<div class="input-group-prepend">-->
-                            <!--<div class="input-group-text">Title</div>-->
-                        <!--</div>-->
-                        <!--<input type="text" class="form-control" id="title" placeholder="Title" v-model="sortVal.title">-->
-                    <!--</div>-->
-                <!--</div>-->
-                <!--<div class="col-md-3">-->
-                    <!--<div class="input-group mb-2">-->
-                        <!--<div class="input-group-prepend">-->
-                            <!--<div class="input-group-text">Status</div>-->
-                        <!--</div>-->
-                        <!--<select name="status" v-model="sortVal.status" class="form-control">-->
-                            <!--<option value="active" :selected="sortVal.status== null ? true : false">All</option>-->
-                            <!--<option value="active" :selected="sortVal.status== 'active' ? true : false">Active</option>-->
-                            <!--<option value="not_active" :selected="sortVal.status== 'not_active' ? true : false">Not Active</option>-->
-                        <!--</select>-->
-                    <!--</div>-->
-                <!--</div>-->
                 <div class="col-md-3">
-                    <!--<button class="btn btn-success mb-2" @click="sortValue()">Search</button>-->
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Name</div>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Name" v-model="formFilter.name">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Email</div>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Email" v-model="formFilter.email">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Role</div>
+                        </div>
+                        <select name="status" v-model="formFilter.role" class="form-control">
+                            <option value="">All</option>
+                            <option value="administrator">Administrator</option>
+                            <option value="finance">Finance</option>
+                            <option value="accounting">Accounting</option>
+                            <option value="tax">Tax</option>
+                            <option value="staf">Staff</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-success mb-2" @click="getData()">Search</button>
                 </div>
             </div>
             <div class="card-body">
@@ -46,12 +57,20 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(user, index) in users" :key="index">
+                        <tr v-if="users.length == 0">
+                            <td colspan="6" class="text-center">
+                                User Not Found
+                            </td>
+                        </tr>
+                        <tr v-else v-for="(user, index) in users" :key="index">
                             <td>{{ user.name }}</td>
                             <td>{{ user.email}}</td>
                             <td>
                                 <button v-if="$store.state.permissions.includes('user_role')" type="button" class="btn btn-primary" @click="changeRole(user)">
                                     <i class="fa fa-repeat"></i>
+                                </button>
+                                <button type="button" class="btn btn-success" @click="showRolePermission(user.role.role_permissions)">
+                                    <i class="fa fa-eye"></i>
                                 </button>
                                 {{ user.role ? user.role.title : 'No Role'}}
                             </td>
@@ -59,6 +78,9 @@
                             <td v-if="$store.state.permissions.includes('user_create')">
                                 <button type="button" class="btn btn-warning" @click="showEditUser(user)">
                                     <i class="fa fa-pencil"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger" @click="showChangePasswordUser(user)">
+                                    <i class="fa fa-gear"></i>
                                 </button>
                             </td>
                         </tr>
@@ -154,6 +176,64 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="changePassword" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Change Password User</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label>Password<span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    font-style: italic;
+                                ">*) required</span></label>
+                                <input type="password" class="form-control" v-model="formChangePassword.password" placeholder="Password of User">
+                            </div>
+                            <div class="form-group">
+                                <label>Password Confirmation<span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    font-style: italic;
+                                ">*) required</span></label>
+                                <input type="password" class="form-control" v-model="formChangePassword.password_confirmation" placeholder="Password of User">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="submitChangePasswordUser()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="permissionList" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Permission List</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <ul>
+                            <li v-for="(perm, permI) in userRole" :key="permI">
+                                {{ perm.permission.display_title }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -172,10 +252,21 @@
                     password: "",
                     password_confirmation: ""
                 },
+                formChangePassword: {
+                    id: "",
+                    password: "",
+                    password_confirmation: ""
+                },
                 formRole: {
                     role_id: "",
                     user_id: ""
-                }
+                },
+                formFilter: {
+                    name: "",
+                    email: "",
+                    role: ""
+                },
+                userRole: []
             }
         },
         created() {
@@ -183,6 +274,11 @@
             this.getDataRole()
         },
         methods: {
+            showRolePermission(user) {
+                console.log("user", user)
+                this.userRole = user
+                $("#permissionList").modal("show")
+            },
             changeRole(user) {
                 this.formRole.user_id = user.id
                 this.formRole.role_id = user.role_id
@@ -191,7 +287,7 @@
             async getData() {
                 try {
                     this.$vs.loading()
-                    this.users = await this.$axios.get('api/user')
+                    this.users = await this.$axios.get(`api/user?name=${this.formFilter.name}&email=${this.formFilter.email}&role=${this.formFilter.role}`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
@@ -227,6 +323,22 @@
                 this.formData.email = user.email
                 $("#addUser").modal("show")
             },
+            showChangePasswordUser(user) {
+                if (this.formChangePassword.password !== this.formChangePassword.password_confirmation) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: "Password and password confirmation is not same",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    return
+                }
+                this.formChangePassword.id = user.id
+                this.formChangePassword.password = user.password
+                this.formChangePassword.pasword_confirmation = user.pasword_confirmation
+                $("#changePassword").modal("show")
+            },
             showAddUser() {
                 this.labelModal = 'Add'
                 this.formData.id = ""
@@ -251,6 +363,42 @@
                         })
                     } else {
                         $("#changeRole").modal("hide")
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'success',
+                            title: respSave.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(async ()=>{
+                            await this.getData()
+                        })
+                    }
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            },
+            async submitChangePasswordUser() {
+                try {
+                    this.$vs.loading()
+                    const respSave = await this.$axios.post('api/user/change-password', this.formChangePassword)
+                    this.$vs.loading.close()
+                    if (!respSave.status) {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: respSave.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    } else {
+                        $("#changePassword").modal("hide")
                         Swal.fire({
                             position: 'top',
                             icon: 'success',

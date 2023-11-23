@@ -35,7 +35,11 @@
                             </tr>
                             <tr>
                                 <th>Status</th>
-                                <td class="text-right">{{journal.approved_at ? 'Approved' : (journal.rejected_at ? 'Rejected' : 'Requested') }}</td>
+                                <td class="text-right">
+                                    <span :class="(journal.approved_at ? 'approved' : (journal.rejected_at ? 'rejected' : 'requested')) | labelByStatus">
+                                        {{ (journal.approved_at ? 'Approved' : (journal.rejected_at ? 'Rejected' : 'Requested')) }}
+                                    </span>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
