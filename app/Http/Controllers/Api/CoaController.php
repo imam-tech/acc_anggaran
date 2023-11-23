@@ -44,7 +44,7 @@ class CoaController extends Controller {
         if (!empty($filters['category_id'])) {
             $coas = $coas->where('category_id', $filters['category_id']);
         }
-        $coas = $coas->where('company_id', $request->header('company-id'));
+        $coas = $coas->where('company_id', $request->header('company_id'));
         $coas = $coas->get();
         return response()->json($coas);
     }
@@ -69,7 +69,7 @@ class CoaController extends Controller {
     }
 
     public function store(Request $request) {
-        return response()->json($this->coaRepo->store($request->all(), $request->header('company-id')));
+        return response()->json($this->coaRepo->store($request->all(), $request->header('company_id')));
     }
 
     public function indexCashflow() {
