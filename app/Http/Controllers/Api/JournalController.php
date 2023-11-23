@@ -49,6 +49,7 @@ class JournalController extends Controller {
             }
         }
 
+        $journals = $journals->where('company_id', $request->header('company-id'));
         $journals = $journals->orderBy('id', 'desc')->get();
         return response()->json($journals);
     }
@@ -62,23 +63,23 @@ class JournalController extends Controller {
     }
 
     public function balanceProfit(Request $request) {
-        return response()->json($this->journalRepo->balanceProfit($request->all()));
+        return response()->json($this->journalRepo->balanceProfit($request->all(), $request->header('company-id')));
     }
 
     public function cashflow(Request $request) {
-        return response()->json($this->journalRepo->cashflow($request->all()));
+        return response()->json($this->journalRepo->cashflow($request->all(), $request->header('company-id')));
     }
 
     public function cashflowInitial(Request $request) {
-        return response()->json($this->journalRepo->cashflowInitial($request->all()));
+        return response()->json($this->journalRepo->cashflowInitial($request->all(), $request->header('company-id')));
     }
 
     public function journal(Request $request) {
-        return response()->json($this->journalRepo->journal($request->all()));
+        return response()->json($this->journalRepo->journal($request->all(), $request->header('company-id')));
     }
 
     public function generalLedger(Request $request) {
-        return response()->json($this->journalRepo->generalLedger($request->all()));
+        return response()->json($this->journalRepo->generalLedger($request->all(), $request->header('company-id')));
     }
 
     public function store(Request $request) {

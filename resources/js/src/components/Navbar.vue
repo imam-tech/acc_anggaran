@@ -1,5 +1,5 @@
 <template>
-    <ul class="navbar-nav bg-gradient-success sidebar sidebar-dark accordion" id="accordionSidebar">
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <!-- Sidebar - Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
@@ -55,6 +55,11 @@
                 <span>Tax</span>
             </router-link>
         </li>
+        <li class="nav-item bg-warning rounded">
+            <select class="nav-link text-dark font-weight-bold" @change="changeCompany">
+                <option v-for="(company, cI) in companies" :value="company.id" :key="cI" :selected="currentCompany == company.id">{{ company.title }}</option>
+            </select>
+        </li>
         <li class="nav-item">
             <router-link class="nav-link" to="/app/coa">
                 <i class="fas fa-chart-area"></i>
@@ -84,3 +89,47 @@
 
     </ul>
 </template>
+
+<script>
+    import Cookies from 'js-cookie'
+    export default {
+        name: 'Navbar',
+        data() {
+            return {
+                companies: [],
+                currentCompany: Cookies.get('current_company')
+            }
+        },
+        created() {
+            this.getData()
+        },
+        methods: {
+            changeCompany(e) {
+                Cookies.set('current_company', e.target.value, { expires: 1 })
+                window.location.reload();
+            },
+            async getData() {
+                try {
+
+                    this.$vs.loading()
+                    this.companies = await this.$axios.get('api/company')
+                    if (this.companies.length > 0) {
+                        if (!Cookies.get("current_company")) {
+                            Cookies.set('current_company', this.companies[0].id, {expires: 1})
+                        }
+                    }
+                    this.$vs.loading.close()
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            },
+        }
+    }
+</script>

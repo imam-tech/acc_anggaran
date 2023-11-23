@@ -49,7 +49,12 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(coa, index) in coas" :key="index">
+                        <tr v-if="coas.length == 0">
+                            <td colspan="8" class="text-center">
+                                COA Not Found
+                            </td>
+                        </tr>
+                        <tr v-else v-for="(coa, index) in coas" :key="index">
                             <td>{{ coa.account_number }}</td>
                             <td>
                                 <router-link :to="'/app/coa/' + coa.id + '/detail'">{{ coa.account_name }}
@@ -72,7 +77,7 @@
                                 <button v-if="coa.journal_item === null" type="button" class="btn btn-danger" @click="handleDelete(coa.id)">
                                     <i class="fa fa-remove"></i>
                                 </button>
-                                <button type="button" class="btn btn-success" @click="handleInitialBalance(coa)">
+                                <button v-if="coa.coa_category.label === 'balance_sheet'" type="button" class="btn btn-success" @click="handleInitialBalance(coa)">
                                     <i class="fa fa-dollar"></i>
                                 </button>
                             </td>

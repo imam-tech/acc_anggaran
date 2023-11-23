@@ -83,7 +83,11 @@
                                             <td>{{ cl.credit | formatPriceWithDecimal }}</td>
                                             <td>{{ cl.transaction_date | formatDate }}</td>
                                             <td>{{ cl.created_at | formatDate }}</td>
-                                            <td>{{ cl.approved_at ? 'APPROVED' : (cl.rejected_at ? 'REJECTED' : "REQUESTED") }}</td>
+                                            <td>
+                                                <span :class="(cl.approved_at ? 'approved' : (cl.rejected_at ? 'rejected' : 'requested')) | labelByStatus">
+                                                    {{ (cl.approved_at ? 'Approved' : (cl.rejected_at ? 'Rejected' : 'Requested')) }}
+                                                </span>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>

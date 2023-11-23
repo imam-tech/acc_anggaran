@@ -61,7 +61,7 @@ class JournalRepository {
         }
     }
 
-    public function balanceProfit($data) {
+    public function balanceProfit($data, $companyId) {
         try {
             $month = $data['month'];
             $year = $data['year'];
@@ -103,7 +103,7 @@ class JournalRepository {
                     posting.name AS posting_name
                 FROM 
                     coa_categories as ca
-                    LEFT JOIN coas AS c ON ca.id = c.category_id 
+                    LEFT JOIN coas AS c ON ca.id = c.category_id AND c.company_id = " . $companyId . "
                     LEFT JOIN coa_postings AS posting ON  posting.id = c.posting_id
                     LEFT JOIN (
                         SELECT account_id, SUM(debit) as debit, SUM(credit) AS credit, is_first_balance
@@ -117,7 +117,7 @@ class JournalRepository {
                 ORDER by ca.id ASC
             ";
             $queryData = DB::SELECT($query);
-            $allBalances = $this->getInititalBalance(($year));
+            $allBalances = $this->getInititalBalance($year, $companyId);
             $parentChildFormat = $this->parentChildFormat($queryData);
 
             $result = [];
@@ -174,7 +174,7 @@ class JournalRepository {
                 if (collect($response)->where('name', 'KEWAJIBAN DAN MODAL')->first()  !== null) {
                     $totalKewajiban = collect($response)->where('name', 'KEWAJIBAN DAN MODAL')->first();
                     $totalKewajibanBalance = $totalKewajiban['balance'];
-                    $posting[] = [
+                    $postings[] = [
                         "name" => 'TOTAL KEWAJIBAN & MODAL',
                         "balance" => $totalKewajibanBalance
                     ];
@@ -199,8 +199,11 @@ class JournalRepository {
         }
     }
 
-    public function getInititalBalance($year) {
-        $query = "SELECT * FROM journal_items WHERE  is_first_balance = 1 AND approved_at IS NOT NULL AND deleted_at IS NULL AND YEAR(transaction_date) = " . $year;
+    public function getInititalBalance($year, $companyId) {
+        $query = "
+            SELECT * FROM journal_items WHERE  is_first_balance = 1 AND approved_at IS NOT NULL 
+            AND company_id = " . $companyId . "
+            AND deleted_at IS NULL AND YEAR(transaction_date) = " . $year;
         $queryData = DB::SELECT($query);
         return $queryData;
     }
@@ -246,7 +249,8 @@ class JournalRepository {
                 'HUTANG PIHAK KETIGA' => 0,
                 'HUTANG BANK' => 0,
                 'KEWAJIBAN JANGKA PANJANG' => 0,
-                'MODAL' => 0
+                'MODAL' => 0,
+                'KEWAJIBAN DAN MODAL' => 0
             ];
 
             foreach ($categoryList as $key => $cl) {
@@ -277,7 +281,11 @@ class JournalRepository {
             + $categoryList['HUTANG PIHAK KETIGA'];
             $response = $this->setResponse($response, $tKewajibanLancar, 'KEWAJIBAN LANCAR');
 
-            $totalKewajiban = $categoryList['HUTANG BANK'] + $categoryList['KEWAJIBAN JANGKA PANJANG'];
+            $response = $this->setResponse($response, $categoryList['HUTANG BANK'], 'HUTANG BANK');
+
+            $response = $this->setResponse($response, $categoryList['KEWAJIBAN JANGKA PANJANG'], 'KEWAJIBAN JANGKA PANJANG');
+
+            $totalKewajiban = $categoryList['HUTANG BANK'] + $tKewajibanLancar;
             $response = $this->setResponse($response, $totalKewajiban, 'KEWAJIBAN');
             
             $labaRugi = $this->getLabaRugi($year, $month);
@@ -427,7 +435,6 @@ class JournalRepository {
                 'BEBAN PENYUSUTAN' => 0,
                 'BEBAN OPERASI PERUSAHAAN' => 0,
                 'PENDAPATAN DILUAR USAHA' => 0,
-                'BEBAN DILUAR USAHA' => 0,
                 'PAJAK PENGHASILAN' => 0
             ];
 
@@ -483,11 +490,11 @@ class JournalRepository {
             foreach ($response as $keyR => $resp) {
                 $resp['percentage'] = 0;
                 if ($resp['name'] === 'PENDAPATAN') {
-                    $resp['percentage'] = $categoryList['PENDAPATAN'] > 0 ? $this->calcPercentage($resp['balance'], $categoryList['PENDAPATAN']) : 0;
+                    $response[$keyR]['percentage'] = $categoryList['PENDAPATAN'] > 0 ? $this->calcPercentage($resp['balance'], $categoryList['PENDAPATAN']) : 0;
                 } else if ($resp['name'] === 'RETUR') {
-                    $resp['percentage'] = $resp['balance'] > 0 ? $this->calcPercentage($resp['balance'], $categoryList['PENDAPATAN']) : 0;
+                    $response[$keyR]['percentage'] = $resp['balance'] > 0 ? $this->calcPercentage($resp['balance'], $categoryList['PENDAPATAN']) : 0;
                 } else {
-                    $resp['percentage'] = $resp['balance'] > 0 ? $this->calcPercentage($resp['balance'], $pendapatanBersih) : 0;
+                    $response[$keyR]['percentage'] = $resp['balance'] > 0 ? $this->calcPercentage($resp['balance'], $pendapatanBersih) : 0;
                 }
             }
 
@@ -563,14 +570,14 @@ class JournalRepository {
         ];
     }
 
-    public function cashflow($data) {
+    public function cashflow($data, $companyId) {
         try {
             DB::connection('mysql')->select('SET sql_mode = "";');
             $query = "
                 SELECT cash.id AS cash_id, cash.is_negative AS is_negative, cash.name AS cash_name,cash.label AS cash_label, ji.balance as balance FROM cashflows as cash
                 LEFT JOIN (
                     SELECT cashflow_id,sum(debit) - SUM(credit) AS balance FROM journal_items 
-                    WHERE company_id = 1 AND YEAR(transaction_date) = " . $data['year'] . " AND MONTH(transaction_date) = " . $data['month'] . "
+                    WHERE company_id = " . $companyId . " AND YEAR(transaction_date) = " . $data['year'] . " AND MONTH(transaction_date) = " . $data['month'] . "
                     AND deleted_at IS NULL AND approved_at IS NOT NULL
                     GROUP by cashflow_id
                 ) AS ji ON ji.cashflow_id = cash.id
@@ -623,12 +630,12 @@ class JournalRepository {
         }
     }
 
-    public function cashflowInitial($data) {
+    public function cashflowInitial($data, $companyId) {
         try {
             DB::connection('mysql')->select('SET sql_mode = "";');
             $query = "
                 SELECT c.id,SUM(ji.balance) AS balance FROM coa_categories AS c
-                LEFT JOIN coas AS cs ON cs.category_id = c.id AND cs.company_id = 1
+                LEFT JOIN coas AS cs ON cs.category_id = c.id AND cs.company_id = " . $companyId . "
                 LEFT JOIN (
                     SELECT account_id,description,SUM(debit)-SUM(credit) AS balance
                     FROM journal_items
@@ -653,7 +660,7 @@ class JournalRepository {
         }
     }
 
-    public function journal($data) {
+    public function journal($data, $companyId) {
         try {
             $where = '';
             if (isset($data['status'])) {
@@ -662,6 +669,8 @@ class JournalRepository {
                         $where = " AND j.approved_at IS NOT NULL AND j.rejected_at IS NULL AND j.deleted_at IS NULL ";
                     } else if ($data['status'] === 'rejected') {
                         $where = " AND j.approved_at IS NULL AND j.rejected_at IS NOT NULL AND j.deleted_at IS NULL ";
+                    } else {
+                        $where = " AND j.deleted_at is null";
                     }
                 } else {
                     $where = " AND j.deleted_at is null";
@@ -682,8 +691,9 @@ class JournalRepository {
             $query = "
                 SELECT j.*,item.debit, item.credit FROM journals as j
                 LEFT JOIN 
-                (SELECT journal_id, SUM(debit) as debit, SUM(credit) as credit  FROM journal_items WHERE deleted_at IS NULL GROUP BY journal_id) as item ON item.journal_id = j.id
-                WHERE j.company_id = 1
+                (SELECT journal_id, SUM(debit) as debit, SUM(credit) as credit  FROM journal_items WHERE deleted_at IS NULL 
+                GROUP BY journal_id) as item ON item.journal_id = j.id
+                WHERE j.company_id = " . $companyId . "
                 " . $where . "
                 ORDER BY j.transaction_date ASC
                 " . $limit . "
@@ -695,7 +705,7 @@ class JournalRepository {
         }
     }
 
-    public function generalLedger($data) {
+    public function generalLedger($data, $companyId) {
         try {
             $validator = \Validator::make($data, [
                 "start_date" => "required",
@@ -731,7 +741,7 @@ class JournalRepository {
                 LEFT JOIN journals AS jn ON jn.id = ji.journal_id
                 LEFT JOIN coa_categories AS categ ON categ.id = ca.category_id
                 LEFT JOIN cashflows AS cf ON cf.id = ji.cashflow_id
-                WHERE ji.deleted_at IS NULL AND ji.company_id = 1
+                WHERE ji.deleted_at IS NULL AND ji.company_id = " . $companyId . "
                 " . $where . "
                 ORDER BY ji.transaction_date ASC
                 " . $limit . "
@@ -767,7 +777,7 @@ class JournalRepository {
             $journal->transaction_uid = $data['transaction_no'];
             $journal->voucher_no = $voucherNo;
             $journal->title = "manual-input-" . $data['transaction_no'];
-            $journal->transaction_date = $dateNow;
+            $journal->transaction_date = $data['transaction_date'];
             $journal->save();
 
             $journalItems = [];
@@ -784,7 +794,7 @@ class JournalRepository {
                     'description' => $item['description'] ?? "",
                     'debit' => $item['debit'],
                     'credit' => $item['credit'],
-                    'transaction_date' => $dateNow,
+                    'transaction_date' => $data['transaction_date'],
                     'balance' => 0,
                     'is_first_balance' => 0,
                     'created_at' => $dateNow,

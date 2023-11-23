@@ -17,8 +17,8 @@
                 <div class="row mt-3">
                     <div class="col-12">
                         <div class="row">
-                            <div class="col-6">
-                                <table class="table">
+                            <div class="col-6 p-0">
+                                <table class="table table-bordered">
                                     <thead>
                                         <tr class="backgroup bg-light bg-gradient p-2 rounded">
                                             <th>Account</th>
@@ -26,33 +26,40 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>
+                                            <td class="p-0">
                                                 <table class="table table-borderless">
                                                     <tr v-for="(cl, iC) in coaList" :key="iC">
-                                                        <td :class="cl.type === 'bold' ? 'font-weight-bold' : 'pl-4'">{{ cl.label }}</td>
+                                                        <td :class="cl.type === 'bold' ? 'font-weight-bold bg-light' : 'pl-4'">{{ cl.label }}</td>
                                                     </tr>
                                                 </table>
                                             </td>
                                         </tr>
+                                        <tr class="backgroup bg-light bg-gradient p-2 rounded">
+                                            <th>Account</th>
+                                        </tr>
+                                    </thead>
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-6">
-                                <table class="table table-responsive">
+                            <div class="col-6 p-0">
+                                <table class="table table-bordered table-responsive">
                                     <thead>
                                         <tr class="bg-gray-300 p-2 rounded">
-                                            <th v-for="(month, iM) in months" :key="iM">{{ month }}</th>
+                                            <th v-for="(month, iM) in months" :key="iM" v-if="iM < lastMonth">{{ month }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr :class="iM % 2 == 1 ? 'bg-gray' : ''">
-                                            <td v-for="(dataR, iR) in dataReports" :key="iR">
+                                        <tr>
+                                            <td v-for="(dataR, iR) in dataReports" :key="iR" class="p-0">
                                                 <table class="table table-borderless">
                                                     <tr v-for="(j, iJ) in dataR.data" :key="iJ">
-                                                        <td>{{ j | formatPriceWithDecimal}}</td>
+                                                        <td :class="j.type === 'parent' ? 'bg-light' : ''">{{ j.balance | formatPriceWithDecimal}}</td>
                                                     </tr>
                                                 </table>
                                             </td>
+                                        </tr>
+                                        <tr class="bg-gray-300 p-2 rounded">
+                                            <th v-for="(month, iM) in months" :key="iM" v-if="iM < lastMonth">{{ month }}</th>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -72,15 +79,18 @@
             return {
                 months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"],
                 coaList: [],
-                dataReports: []
+                dataReports: [],
+                lastMonth: 0
             }
         },
         created() {
+            const d = new Date();
+            this.lastMonth =  d.getMonth() + 1
             this.initiateData()
         },
         methods: {
             initiateData() {
-                for (let i = 1; i <= 12; i++) {
+                for (let i = 1; i <= this.lastMonth; i++) {
                     this.getData(i < 10 ? "0" + i : i)
                 }
             },
@@ -90,6 +100,10 @@
                     const respData = (await this.$axios.get('api/journal/report/balance-profit?month=' + month + '&year=2023&type=balance_sheet')).data
                     const balances = [];
                     respData.accounts.forEach((x) => {
+                        let type = 'parent';
+                        if (x.account_name !== null) {
+                            type = 'child'
+                        }
                         if (month == "01") {
                             let respCl = {}
                             if (x.account_name !== null) {
@@ -105,7 +119,8 @@
                             }
                             this.coaList.push(respCl)
                         }
-                        balances.push(x.balance)
+                        // balances.push(x.balance)
+                        balances.push({balance: x.balance, type: type})
                     })
                     this.dataReports.push({
                         'month' : month,

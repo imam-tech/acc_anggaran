@@ -670,7 +670,7 @@
             async getDataCoa() {
                 try {
                     this.$vs.loading()
-                    this.coas = await this.$axios.get('api/coa?is_active=1')
+                    this.coas = await this.$axios.get(`api/coa/by-company?is_active=1&transaction_id=${this.$route.params.id}`)
                     this.cashflows = await this.$axios.get('api/coa/cashflow')
                     this.$vs.loading.close()
                 } catch (e) {

@@ -7,6 +7,7 @@ use App\Models\Cashflow;
 use App\Models\Coa;
 use App\Models\CoaCategory;
 use App\Models\CoaPosting;
+use App\Models\Transaction;
 use App\Repositories\CoaRepository;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,20 @@ class CoaController extends Controller {
     {
         $this->coaRepo = new CoaRepository();
     }
+
+    public function indexByCompany(Request $request) {
+        $filters = $request->only(['is_active', 'transaction_id']);
+        $transaction = Transaction::find($filters['transaction_id']);
+        $coas = Coa::with(['coaCategory', 'coaPosting', 'journalItem', 'initialBalance']);
+
+        if (!empty($filters['is_active'])) {
+            $coas = $coas->where('is_active', $filters['is_active']);
+        }
+        $coas = $coas->where('company_id', $transaction->company_id);
+        $coas = $coas->get();
+        return response()->json($coas);
+    }
+
 
     public function index(Request $request) {
         $filters = $request->only(['is_active', 'category_id']);
@@ -29,6 +44,7 @@ class CoaController extends Controller {
         if (!empty($filters['category_id'])) {
             $coas = $coas->where('category_id', $filters['category_id']);
         }
+        $coas = $coas->where('company_id', $request->header('company-id'));
         $coas = $coas->get();
         return response()->json($coas);
     }
@@ -53,7 +69,7 @@ class CoaController extends Controller {
     }
 
     public function store(Request $request) {
-        return response()->json($this->coaRepo->store($request->all()));
+        return response()->json($this->coaRepo->store($request->all(), $request->header('company-id')));
     }
 
     public function indexCashflow() {

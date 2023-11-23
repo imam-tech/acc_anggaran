@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CoaController;
 
 Route:: group(['prefix' => 'coa', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/', [CoaController::class, 'index']);
+    Route::get('/by-company', [CoaController::class, 'indexByCompany']);
     Route::post('/', [CoaController::class, 'store']);
     Route::delete('/{id?}/delete', [CoaController::class, 'delete']);
     Route::get('/{id?}/set-initial-balance/{amount}', [CoaController::class, 'setInitialBalance']);

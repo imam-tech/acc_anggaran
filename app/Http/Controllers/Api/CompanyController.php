@@ -18,7 +18,7 @@ class CompanyController extends Controller {
     public function index() {
         $companies = Company::with(['projects']);
 
-        $companies = $companies->orderBy('id', 'desc')->get();
+        $companies = $companies->get();
         return response()->json($companies);
     }
 

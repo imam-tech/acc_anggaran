@@ -10,7 +10,7 @@ use App\Models\JournalItem;
 use Illuminate\Support\Facades\DB;
 
 class CoaRepository {
-    public function store($data) {
+    public function store($data, $companyId) {
         try {
             $validator = \Validator::make($data, [
                 "category" => "required",
@@ -36,7 +36,7 @@ class CoaRepository {
             } else {
                 $coa = new Coa();
             }
-            $coa->company_id = 1;
+            $coa->company_id = $companyId;
             $coa->category_id = $category->id;
             $coa->posting_id = $posting->id;
             $coa->account_code = $data['account_number'] . '-' . $data['account_name'];

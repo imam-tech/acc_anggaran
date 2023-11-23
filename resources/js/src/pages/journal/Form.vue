@@ -38,52 +38,32 @@
                             </div>
                             <div class="row">
                                 <div class="col-12">
-                                    <div v-for="(items, index) in formData.items" :key="index" class="row mr-2">
+                                    <div v-for="(items, index) in formData.items" :key="index" class="row mr-2 mt-2">
                                         <div class="col-md-4 col-xl-2">
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">Account</div>
-                                                </div>
-                                                <select class="form-control" v-model="formData.items[index].coa">
-                                                    <option value="">--Select Coa--</option>
-                                                    <option v-for="(coa, index) in coas" :key="index" :value="coa.id">{{ coa.account_code }}</option>
-                                                </select>
-                                            </div>
+                                            <label>Account</label>
+                                            <select class="form-control" v-model="formData.items[index].coa">
+                                                <option value="">--Select Coa--</option>
+                                                <option v-for="(coa, index) in coas" :key="index" :value="coa.id">{{ coa.account_code }}</option>
+                                            </select>
                                         </div>
                                         <div class="col-md-4 col-xl-3">
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">Description</div>
-                                                </div>
-                                                <input type="text" class="form-control" v-model="formData.items[index].description" />
-                                            </div>
+                                            <label>Description</label>
+                                            <input type="text" class="form-control" v-model="formData.items[index].description" />
                                         </div>
                                         <div class="col-md-4 col-xl-2">
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">Debit</div>
-                                                </div>
-                                                <input type="number" class="form-control" v-model="formData.items[index].debit" />
-                                            </div>
+                                            <label>Debit</label>
+                                            <input type="number" class="form-control" v-model="formData.items[index].debit" />
                                         </div>
                                         <div class="col-md-4 col-xl-2">
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">Credit</div>
-                                                </div>
-                                                <input type="number" class="form-control" v-model="formData.items[index].credit" />
-                                            </div>
+                                            <label>Credit</label>
+                                            <input type="number" class="form-control" v-model="formData.items[index].credit" />
                                         </div>
                                         <div class="col-md-4 col-xl-2">
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">Cashflow</div>
-                                                </div>
-                                                <select class="form-control" v-model="formData.items[index].cashflow">
-                                                    <option value="">--Select Cashflow--</option>
-                                                    <option v-for="(cashflow, index) in cashflows" :key="index" :value="cashflow.id">{{ cashflow.name }}</option>
-                                                </select>
-                                            </div>
+                                            <label>Cashflow</label>
+                                            <select class="form-control" v-model="formData.items[index].cashflow">
+                                                <option value="">--Select Cashflow--</option>
+                                                <option v-for="(cashflow, index) in cashflows" :key="index" :value="cashflow.id">{{ cashflow.name }}</option>
+                                            </select>
                                         </div>
                                         <div class="col-md-4 col-xl-1 text-right">
                                             <button @click="handleDeleteItem(index)" type="button" class="btn btn-danger"><i class="fas fa-trash"></i></button>
@@ -104,6 +84,7 @@
 </template>
 
 <script>
+    import Cookies from 'js-cookie'
 
     export default {
         name:'Detail',
@@ -111,10 +92,16 @@
             return {
                 formData: {
                     id: "",
-                    company_id: 5,
+                    company_id: Cookies.get('current_company'),
                     transaction_no: "",
                     transaction_date: "",
                     items: [{
+                        coa: "",
+                        description: "",
+                        debit: 0,
+                        credit: 0,
+                        cashflow: ""
+                    },{
                         coa: "",
                         description: "",
                         debit: 0,

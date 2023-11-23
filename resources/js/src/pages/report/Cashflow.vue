@@ -17,8 +17,8 @@
                 <div class="row mt-3">
                     <div class="col-12">
                         <div class="row">
-                            <div class="col-6">
-                                <table class="table table-responsive">
+                            <div class="col-6 p-0">
+                                <table class="table">
                                     <thead>
                                         <tr class="backgroup bg-light bg-gradient p-2 rounded">
                                             <th>Name</th>
@@ -26,10 +26,10 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>
+                                            <td class=" p-0">
                                                 <table class="table table-borderless">
                                                     <tr v-for="(cl, iC) in coaList" :key="iC">
-                                                        <td :class="cl.type === 'parent' ? 'font-weight-bold' : 'pl-4'">{{ cl.label }}</td>
+                                                        <td :class="cl.type === 'parent' ? 'font-weight-bold bg-light' : 'pl-4'">{{ cl.label }}</td>
                                                     </tr>
                                                 </table>
                                             </td>
@@ -37,24 +37,29 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-6">
+                            <div class="col-6 p-0">
                                 <table class="table table-responsive">
                                     <thead>
                                         <tr class="bg-gray-300 p-2 rounded">
-                                            <th v-for="(month, iM) in months" :key="iM">{{ month }}</th>
+                                            <th v-for="(month, iM) in months" :key="iM" v-if="iM < lastMonth">{{ month }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr :class="iM % 2 == 1 ? 'bg-gray' : ''">
-                                            <td v-for="(dataR, iR) in dataReports" :key="iR">
+                                        <tr>
+                                            <td v-for="(dataR, iR) in dataReports" :key="iR" class=" p-0">
                                                 <table class="table table-borderless">
                                                     <tr v-for="(j, iJ) in dataR.data" :key="iJ">
-                                                        <td>{{ j | formatPriceWithDecimal}}</td>
+                                                        <td :class="j.type === 'parent' ? 'bg-light' : ''">{{ j.balance | formatPriceWithDecimal}}</td>
                                                     </tr>
                                                 </table>
                                             </td>
                                         </tr>
                                     </tbody>
+                                    <tfooter>
+                                        <tr class="bg-gray-300 p-2 rounded">
+                                            <th v-for="(month, iM) in months" :key="iM" v-if="iM < lastMonth">{{ month }}</th>
+                                        </tr>
+                                    </tfooter>
                                 </table>
                             </div>
                         </div>
@@ -73,20 +78,23 @@
                 months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"],
                 coaList: [],
                 dataReports: [],
-                initialBalance: 0
+                initialBalance: 0,
+                lastMonth: 0
             }
         },
         created() {
+            const d = new Date();
+            this.lastMonth =  d.getMonth() + 1
             this.initiateData()
-            this.initialBalance()
+            this.handleInitialBalance()
         },
         methods: {
             initiateData() {
-                for (let i = 1; i <= 12; i++) {
+                for (let i = 1; i <= this.lastMonth; i++) {
                     this.getData(i < 10 ? "0" + i : i)
                 }
             },
-            async initialBalance() {
+            async handleInitialBalance() {
                 try {
                     console.log('oke')
                     this.$vs.loading()
@@ -118,7 +126,7 @@
                                 "label" : x.cash_label
                             })
                         }
-                        balances.push(x.total_balance)
+                        balances.push({balance: x.total_balance, type: 'parent'})
                         x.children.map((child) => {
                             if (month === '01') {
                                 this.coaList.push({
@@ -126,13 +134,13 @@
                                     "label" : child.cash_name
                                 })
                             }
-                            balances.push(child.balance)
+                            balances.push({balance: child.balance, type: 'child'})
                         })
                         totalBalance = totalBalance + x.total_balance
                     })
-                    balances.push(totalBalance)
-                    balances.push(this.initialBalance)
-                    balances.push(this.initialBalance + totalBalance)
+                    balances.push({balance:totalBalance, type: 'parent'})
+                    balances.push({balance:this.initialBalance, type: 'parent'})
+                    balances.push({balance:this.initialBalance + totalBalance, type: 'parent'})
                     if (month === '01') {
                         this.coaList.push({
                             "type": 'parent',
