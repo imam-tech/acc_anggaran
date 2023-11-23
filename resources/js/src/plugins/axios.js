@@ -20,7 +20,7 @@ _axios.interceptors.request.use(
     const accessToken = Cookies.get('access_token')
     if(accessToken){
       config.headers['Authorization'] = `Bearer ${ accessToken }`;
-      config.headers['company_id'] = Cookies.get('current_company');
+      config.headers['Company-Id'] = Cookies.get('current_company');
     }
 
     return config

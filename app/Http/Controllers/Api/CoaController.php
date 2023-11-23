@@ -69,7 +69,7 @@ class CoaController extends Controller {
     }
 
     public function store(Request $request) {
-        return response()->json($request->headers());
+        return response()->json($request->header('company_id'));
         return response()->json($this->coaRepo->store($request->all(), $request->header('company_id')));
     }
 
