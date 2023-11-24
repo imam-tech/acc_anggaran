@@ -44,7 +44,6 @@ _axios.interceptors.response.use(
       // return window.location.href = '/error/error-404'
     }
     else if(error.response.status===401){
-      console.log("oke")
       Cookies.remove('access_token')
 
       return window.location.href = '/auth/login'
