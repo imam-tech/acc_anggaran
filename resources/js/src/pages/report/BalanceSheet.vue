@@ -11,7 +11,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-12">
-                        <button type="button" class="btn btn-success">Export</button>
+                        <a :href="'/print/balance-sheet?company_id=' + currentCompany" target="_blank" class="btn btn-success">Export</a>
                     </div>
                 </div>
                 <div class="row mt-3">
@@ -73,6 +73,7 @@
 </template>
 
 <script>
+    import Cookies from 'js-cookie'
     export default {
         name: "BalanceSheet.vue",
         data() {
@@ -80,7 +81,8 @@
                 months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"],
                 coaList: [],
                 dataReports: [],
-                lastMonth: 0
+                lastMonth: 0,
+                currentCompany: Cookies.get('current_company')
             }
         },
         created() {

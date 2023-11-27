@@ -11,7 +11,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-12">
-                        <button type="button" class="btn btn-success">Export</button>
+                        <a :href="'/print/profit-lost?company_id=' + currentCompany" target="_blank" class="btn btn-success">Export</a>
                     </div>
                 </div>
                 <div class="row mt-3">

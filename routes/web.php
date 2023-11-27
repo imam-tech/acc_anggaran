@@ -18,3 +18,5 @@ Route::get('/', function () {
 });
 Route::get('/app/{any?}', [AppController::class, 'index'])->where('any', '.*');
 Route::get('/auth/{any?}', [AppController::class, 'index'])->where('any', '.*');
+Route::get('/print/balance-sheet', [AppController::class, 'printBalanceSheet']);
+Route::get('/print/profit-lost', [AppController::class, 'printProfitLose']);

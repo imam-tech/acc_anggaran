@@ -9,11 +9,6 @@
                 </router-link>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-12">
-                        <button type="button" class="btn btn-success">Export</button>
-                    </div>
-                </div>
                 <div class="row mt-3">
                     <div class="col-12">
                         <div class="row">
