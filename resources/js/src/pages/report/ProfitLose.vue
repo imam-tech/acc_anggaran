@@ -75,6 +75,7 @@
 </template>
 
 <script>
+    import Cookies  from 'js-cookie'
     export default {
         name: "BalanceSheet.vue",
         data() {
@@ -82,7 +83,8 @@
                 months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"],
                 coaList: [],
                 dataReports: [],
-                lastMonth: 0
+                lastMonth: 0,
+                currentCompany: Cookies.get('current_company')
             }
         },
         created() {
