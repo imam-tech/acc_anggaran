@@ -90,10 +90,23 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
               _context3.prev = 0;
-              _this2.$vs.loading();
-              _context3.next = 4;
-              return _this2.$axios.post('api/company', _this2.formData);
+              if (!(_this2.formData.voucherPrefix.length > 3)) {
+                _context3.next = 4;
+                break;
+              }
+              Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: "Maximum character of Voucher Prefix is 4",
+                showConfirmButton: false,
+                timer: 1500
+              });
+              return _context3.abrupt("return");
             case 4:
+              _this2.$vs.loading();
+              _context3.next = 7;
+              return _this2.$axios.post('api/company', _this2.formData);
+            case 7:
               respSave = _context3.sent;
               _this2.$vs.loading.close();
               if (!respSave.status) {
@@ -125,10 +138,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   }, _callee2);
                 })));
               }
-              _context3.next = 13;
+              _context3.next = 16;
               break;
-            case 9:
-              _context3.prev = 9;
+            case 12:
+              _context3.prev = 12;
               _context3.t0 = _context3["catch"](0);
               _this2.$vs.loading.close();
               Swal.fire({
@@ -138,11 +151,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 13:
+            case 16:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[0, 9]]);
+        }, _callee3, null, [[0, 12]]);
       }))();
     },
     handleDelete: function handleDelete(id) {
@@ -252,7 +265,7 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "fa fa-plus-circle"
-  }), _vm._v(" Company\n            ")]) : _vm._e()]), _vm._v(" "), _vm._m(0), _vm._v(" "), _c("div", {
+  }), _vm._v(" Company\n            ")]) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_c("div", {
     staticClass: "row"
@@ -279,9 +292,7 @@ var render = function render() {
     })]), _vm._v(" "), _c("span", {
       staticClass: "align-content-center ml-2"
     }, [_vm._v("\n                                        " + _vm._s(company.projects.length) + " Project\n                                    ")])])])])])], 1);
-  }), 0), _vm._v(" "), _c("div", {
-    staticClass: "table-responsive"
-  })])]), _vm._v(" "), _c("div", {
+  }), 0)])]), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
     attrs: {
       id: "addCompany",
@@ -303,11 +314,11 @@ var render = function render() {
     attrs: {
       id: "exampleModalLabel"
     }
-  }, [_vm._v(_vm._s(_vm.labelModal) + " Company")]), _vm._v(" "), _vm._m(1)]), _vm._v(" "), _c("div", {
+  }, [_vm._v(_vm._s(_vm.labelModal) + " Company")]), _vm._v(" "), _vm._m(0)]), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_c("form", [_c("div", {
     staticClass: "form-group"
-  }, [_vm._m(2), _vm._v(" "), _c("input", {
+  }, [_vm._m(1), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -330,7 +341,7 @@ var render = function render() {
     }
   })]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(3), _vm._v(" "), _c("select", {
+  }, [_vm._m(2), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -364,7 +375,7 @@ var render = function render() {
     }
   }, [_vm._v("Yayasan")])])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(4), _vm._v(" "), _c("input", {
+  }, [_vm._m(3), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -406,14 +417,6 @@ var render = function render() {
   }, [_vm._v("Save changes")])])])])])]);
 };
 var staticRenderFns = [function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "row ml-3"
-  }, [_c("div", {
-    staticClass: "col-md-3"
-  })]);
-}, function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("button", {

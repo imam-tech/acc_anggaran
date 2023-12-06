@@ -2168,42 +2168,60 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     getData: function getData() {
       var _this = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        return _regeneratorRuntime().wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
             case 0:
-              _context.prev = 0;
+              _context2.prev = 0;
               _this.$vs.loading();
-              _context.next = 4;
+              _context2.next = 4;
               return _this.$axios.get('api/company');
             case 4:
-              _this.companies = _context.sent;
+              _this.companies = _context2.sent;
+              _this.$vs.loading.close();
               if (_this.companies.length > 0) {
                 if (!js_cookie__WEBPACK_IMPORTED_MODULE_0__["default"].get("current_company")) {
                   js_cookie__WEBPACK_IMPORTED_MODULE_0__["default"].set('current_company', _this.companies[0].id, {
                     expires: 1
                   });
                 }
+              } else {
+                Swal.fire({
+                  position: 'top',
+                  icon: 'error',
+                  title: 'Please create a company first to use this platform',
+                  showConfirmButton: false,
+                  timer: 3000
+                }).then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+                  return _regeneratorRuntime().wrap(function _callee$(_context) {
+                    while (1) switch (_context.prev = _context.next) {
+                      case 0:
+                        _this.$router.push('/app/company/');
+                      case 1:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }, _callee);
+                })));
               }
-              _this.$vs.loading.close();
-              _context.next = 13;
+              _context2.next = 13;
               break;
             case 9:
-              _context.prev = 9;
-              _context.t0 = _context["catch"](0);
+              _context2.prev = 9;
+              _context2.t0 = _context2["catch"](0);
               _this.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
-                title: _context.t0.message,
+                title: _context2.t0.message,
                 showConfirmButton: false,
                 timer: 1500
               });
             case 13:
             case "end":
-              return _context.stop();
+              return _context2.stop();
           }
-        }, _callee, null, [[0, 9]]);
+        }, _callee2, null, [[0, 9]]);
       }))();
     }
   }
@@ -2472,7 +2490,7 @@ var staticRenderFns = [function () {
     staticClass: "fas fa-laugh-wink"
   })]), _vm._v(" "), _c("div", {
     staticClass: "sidebar-brand-text mx-3"
-  }, [_vm._v("Acc Anggaran")])]);
+  }, [_vm._v("FAT System")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -2787,7 +2805,6 @@ _axios.interceptors.response.use(function (response) {
   if (error.response.status === 404) {
     // return window.location.href = '/error/error-404'
   } else if (error.response.status === 401) {
-    console.log("oke");
     js_cookie__WEBPACK_IMPORTED_MODULE_1__["default"].remove('access_token');
     return window.location.href = '/auth/login';
   }

@@ -202,7 +202,7 @@ var render = function render() {
     staticClass: "fa fa-arrow-left"
   }), _vm._v(" Back\n            ")])], 1), _vm._v(" "), _c("div", {
     staticClass: "card-body"
-  }, [_vm._m(0), _vm._v(" "), _c("div", {
+  }, [_c("div", {
     staticClass: "row mt-3"
   }, [_c("div", {
     staticClass: "col-12"
@@ -212,7 +212,7 @@ var render = function render() {
     staticClass: "col-6 p-0"
   }, [_c("table", {
     staticClass: "table"
-  }, [_vm._m(1), _vm._v(" "), _c("tbody", [_c("tr", [_c("td", {
+  }, [_vm._m(0), _vm._v(" "), _c("tbody", [_c("tr", [_c("td", {
     staticClass: "p-0"
   }, [_c("table", {
     staticClass: "table table-borderless"
@@ -254,19 +254,6 @@ var render = function render() {
   }), 0)])], 1)])])])])])])]);
 };
 var staticRenderFns = [function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "row"
-  }, [_c("div", {
-    staticClass: "col-12"
-  }, [_c("button", {
-    staticClass: "btn btn-success",
-    attrs: {
-      type: "button"
-    }
-  }, [_vm._v("Export")])])]);
-}, function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("thead", [_c("tr", {

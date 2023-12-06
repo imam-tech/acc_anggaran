@@ -36,7 +36,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       formInitialBalance: {
         id: "",
         amount: 0
-      }
+      },
+      excelData: ""
     };
   },
   created: function created() {
@@ -44,29 +45,30 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.getDataCategory();
   },
   methods: {
-    handleInitialBalance: function handleInitialBalance(coa) {
-      this.formInitialBalance.id = coa.id;
-      if (coa.initial_balance) {
-        this.formInitialBalance.amount = coa.initial_balance.debit;
-      }
-      $("#addInitialBalance").modal("show");
-    },
-    submitInitialBalance: function submitInitialBalance() {
+    handleUploadCoaBulk: function handleUploadCoaBulk() {
       var _this = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var resp;
+        var formDataCoa, config, resp;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
+              console.log("c", _this.excelData);
               _this.$vs.loading();
-              _context.next = 4;
-              return _this.$axios.get("api/coa/".concat(_this.formInitialBalance.id, "/set-initial-balance/").concat(_this.formInitialBalance.amount));
-            case 4:
+              formDataCoa = new FormData();
+              config = {
+                headers: {
+                  'content-type': 'multipart/form-data'
+                }
+              };
+              formDataCoa.append('file_excel', _this.excelData);
+              _context.next = 8;
+              return _this.$axios.post("api/coa/upload-bulk", formDataCoa, config);
+            case 8:
               resp = _context.sent;
               _this.$vs.loading.close();
               if (resp['status']) {
-                _context.next = 9;
+                _context.next = 13;
                 break;
               }
               Swal.fire({
@@ -77,13 +79,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 timer: 1500
               });
               return _context.abrupt("return");
-            case 9:
-              $('#addInitialBalance').modal("hide");
-              _this.getData();
-              _context.next = 17;
-              break;
             case 13:
-              _context.prev = 13;
+              $('#uploadCoaBulk').modal("hide");
+              _this.getData();
+              _context.next = 21;
+              break;
+            case 17:
+              _context.prev = 17;
               _context.t0 = _context["catch"](0);
               _this.$vs.loading.close();
               Swal.fire({
@@ -93,30 +95,59 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 17:
+            case 21:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 13]]);
+        }, _callee, null, [[0, 17]]);
       }))();
     },
-    getData: function getData() {
+    uploadFile: function uploadFile() {
+      this.excelData = this.$refs.file.files[0];
+    },
+    handleShowUploadCoaBulk: function handleShowUploadCoaBulk() {
+      $("#uploadCoaBulk").modal('show');
+    },
+    handleInitialBalance: function handleInitialBalance(coa) {
+      this.formInitialBalance.id = coa.id;
+      if (coa.initial_balance) {
+        this.formInitialBalance.amount = coa.initial_balance.debit;
+      }
+      $("#addInitialBalance").modal("show");
+    },
+    submitInitialBalance: function submitInitialBalance() {
       var _this2 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+        var resp;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               _context2.prev = 0;
               _this2.$vs.loading();
               _context2.next = 4;
-              return _this2.$axios.get('api/coa');
+              return _this2.$axios.get("api/coa/".concat(_this2.formInitialBalance.id, "/set-initial-balance/").concat(_this2.formInitialBalance.amount));
             case 4:
-              _this2.coas = _context2.sent;
+              resp = _context2.sent;
               _this2.$vs.loading.close();
-              _context2.next = 12;
+              if (resp['status']) {
+                _context2.next = 9;
+                break;
+              }
+              Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: resp.message,
+                showConfirmButton: false,
+                timer: 1500
+              });
+              return _context2.abrupt("return");
+            case 9:
+              $('#addInitialBalance').modal("hide");
+              _this2.getData();
+              _context2.next = 17;
               break;
-            case 8:
-              _context2.prev = 8;
+            case 13:
+              _context2.prev = 13;
               _context2.t0 = _context2["catch"](0);
               _this2.$vs.loading.close();
               Swal.fire({
@@ -126,14 +157,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 12:
+            case 17:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[0, 8]]);
+        }, _callee2, null, [[0, 13]]);
       }))();
     },
-    getDataCategory: function getDataCategory() {
+    getData: function getData() {
       var _this3 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
@@ -142,18 +173,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _context3.prev = 0;
               _this3.$vs.loading();
               _context3.next = 4;
-              return _this3.$axios.get('api/coa/category?flag=pt');
+              return _this3.$axios.get('api/coa');
             case 4:
-              _this3.categories = _context3.sent;
-              _context3.next = 7;
-              return _this3.$axios.get('api/coa/posting');
-            case 7:
-              _this3.postings = _context3.sent;
+              _this3.coas = _context3.sent;
               _this3.$vs.loading.close();
-              _context3.next = 15;
+              _context3.next = 12;
               break;
-            case 11:
-              _context3.prev = 11;
+            case 8:
+              _context3.prev = 8;
               _context3.t0 = _context3["catch"](0);
               _this3.$vs.loading.close();
               Swal.fire({
@@ -163,11 +190,48 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showConfirmButton: false,
                 timer: 1500
               });
-            case 15:
+            case 12:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[0, 11]]);
+        }, _callee3, null, [[0, 8]]);
+      }))();
+    },
+    getDataCategory: function getDataCategory() {
+      var _this4 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              _context4.prev = 0;
+              _this4.$vs.loading();
+              _context4.next = 4;
+              return _this4.$axios.get('api/coa/category?flag=pt');
+            case 4:
+              _this4.categories = _context4.sent;
+              _context4.next = 7;
+              return _this4.$axios.get('api/coa/posting');
+            case 7:
+              _this4.postings = _context4.sent;
+              _this4.$vs.loading.close();
+              _context4.next = 15;
+              break;
+            case 11:
+              _context4.prev = 11;
+              _context4.t0 = _context4["catch"](0);
+              _this4.$vs.loading.close();
+              Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: _context4.t0.message,
+                showConfirmButton: false,
+                timer: 1500
+              });
+            case 15:
+            case "end":
+              return _context4.stop();
+          }
+        }, _callee4, null, [[0, 11]]);
       }))();
     },
     showEditCoa: function showEditCoa(coa) {
@@ -200,19 +264,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       $("#addCoa").modal("show");
     },
     submitCoa: function submitCoa() {
-      var _this4 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+      var _this5 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
         var respSave;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
             case 0:
-              _context5.prev = 0;
-              _this4.$vs.loading();
-              _context5.next = 4;
-              return _this4.$axios.post('api/coa', _this4.formData);
+              _context6.prev = 0;
+              _this5.$vs.loading();
+              _context6.next = 4;
+              return _this5.$axios.post('api/coa', _this5.formData);
             case 4:
-              respSave = _context5.sent;
-              _this4.$vs.loading.close();
+              respSave = _context6.sent;
+              _this5.$vs.loading.close();
               if (!respSave.status) {
                 Swal.fire({
                   position: 'top-end',
@@ -229,44 +293,44 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   title: respSave.message,
                   showConfirmButton: false,
                   timer: 1500
-                }).then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-                  return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-                    while (1) switch (_context4.prev = _context4.next) {
+                }).then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+                  return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+                    while (1) switch (_context5.prev = _context5.next) {
                       case 0:
-                        _context4.next = 2;
-                        return _this4.getData();
+                        _context5.next = 2;
+                        return _this5.getData();
                       case 2:
                       case "end":
-                        return _context4.stop();
+                        return _context5.stop();
                     }
-                  }, _callee4);
+                  }, _callee5);
                 })));
               }
-              _context5.next = 13;
+              _context6.next = 13;
               break;
             case 9:
-              _context5.prev = 9;
-              _context5.t0 = _context5["catch"](0);
-              _this4.$vs.loading.close();
+              _context6.prev = 9;
+              _context6.t0 = _context6["catch"](0);
+              _this5.$vs.loading.close();
               Swal.fire({
                 position: 'top-end',
                 icon: 'error',
-                title: _context5.t0.message,
+                title: _context6.t0.message,
                 showConfirmButton: false,
                 timer: 1500
               });
             case 13:
             case "end":
-              return _context5.stop();
+              return _context6.stop();
           }
-        }, _callee5, null, [[0, 9]]);
+        }, _callee6, null, [[0, 9]]);
       }))();
     },
     handleDelete: function handleDelete(id) {
-      var _this5 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7() {
-        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
-          while (1) switch (_context7.prev = _context7.next) {
+      var _this6 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8() {
+        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
             case 0:
               Swal.fire({
                 icon: 'warning',
@@ -278,9 +342,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 showCancelButton: true
               }).then(function (result) {
                 if (result.isConfirmed == true) {
-                  _this5.$vs.loading();
-                  _this5.$axios["delete"]("api/coa/".concat(id, "/delete")).then(function (response) {
-                    _this5.$vs.loading.close();
+                  _this6.$vs.loading();
+                  _this6.$axios["delete"]("api/coa/".concat(id, "/delete")).then(function (response) {
+                    _this6.$vs.loading.close();
                     if (response.status) {
                       Swal.fire({
                         icon: 'success',
@@ -290,21 +354,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                         allowEscapeKey: false,
                         allowEnterKey: false
                       }).then( /*#__PURE__*/function () {
-                        var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(res) {
-                          return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-                            while (1) switch (_context6.prev = _context6.next) {
+                        var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(res) {
+                          return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+                            while (1) switch (_context7.prev = _context7.next) {
                               case 0:
                                 if (!(res.isConfirmed == true)) {
-                                  _context6.next = 3;
+                                  _context7.next = 3;
                                   break;
                                 }
-                                _context6.next = 3;
-                                return _this5.getData();
+                                _context7.next = 3;
+                                return _this6.getData();
                               case 3:
                               case "end":
-                                return _context6.stop();
+                                return _context7.stop();
                             }
-                          }, _callee6);
+                          }, _callee7);
                         }));
                         return function (_x) {
                           return _ref2.apply(this, arguments);
@@ -325,9 +389,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               });
             case 1:
             case "end":
-              return _context7.stop();
+              return _context8.stop();
           }
-        }, _callee7);
+        }, _callee8);
       }))();
     }
   }
@@ -357,7 +421,30 @@ var render = function render() {
     staticClass: "card-title"
   }, [_c("h1", {
     staticClass: "h3 mt-3 ml-3 text-gray-800 float-left"
-  }, [_vm._v("Coa List")]), _vm._v(" "), _vm.$store.state.permissions.includes("coa_create_edit") ? _c("button", {
+  }, [_vm._v("Coa List")]), _vm._v(" "), _c("router-link", {
+    attrs: {
+      to: "/app/coa/category"
+    }
+  }, [_c("button", {
+    staticClass: "btn btn-success float-right mr-3 mt-3",
+    attrs: {
+      type: "button"
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-address-book"
+  }), _vm._v(" Coa Category\n                ")])]), _vm._v(" "), _c("button", {
+    staticClass: "btn btn-warning float-right mr-3 mt-3",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.handleShowUploadCoaBulk();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-upload"
+  }), _vm._v(" Bulk Coa\n            ")]), _vm._v(" "), _vm.$store.state.permissions.includes("coa_create_edit") ? _c("button", {
     staticClass: "btn btn-primary float-right mr-3 mt-3",
     attrs: {
       type: "button"
@@ -369,7 +456,7 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "fa fa-plus-circle"
-  }), _vm._v(" Coa\n            ")]) : _vm._e()]), _vm._v(" "), _vm._m(0), _vm._v(" "), _c("div", {
+  }), _vm._v(" Coa\n            ")]) : _vm._e()], 1), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_c("div", {
     staticClass: "table-responsive"
@@ -434,6 +521,52 @@ var render = function render() {
   })], 2)])])])]), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
     attrs: {
+      id: "uploadCoaBulk",
+      tabindex: "-1",
+      role: "dialog",
+      "aria-labelledby": "exampleModalLabel"
+    }
+  }, [_c("div", {
+    staticClass: "modal-dialog",
+    attrs: {
+      role: "document"
+    }
+  }, [_c("div", {
+    staticClass: "modal-content"
+  }, [_vm._m(0), _vm._v(" "), _c("div", {
+    staticClass: "modal-body"
+  }, [_c("form", [_vm._m(1), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_vm._m(2), _vm._v(" "), _c("input", {
+    ref: "file",
+    staticClass: "form-control",
+    attrs: {
+      type: "file"
+    },
+    on: {
+      change: _vm.uploadFile
+    }
+  })])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal-footer flex justify-content-between"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal"
+    }
+  }, [_vm._v("Close")]), _vm._v(" "), _c("button", {
+    staticClass: "btn btn-primary",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.handleUploadCoaBulk();
+      }
+    }
+  }, [_vm._v("Save changes")])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal fade",
+    attrs: {
       id: "addInitialBalance",
       tabindex: "-1",
       role: "dialog",
@@ -446,11 +579,11 @@ var render = function render() {
     }
   }, [_c("div", {
     staticClass: "modal-content"
-  }, [_vm._m(1), _vm._v(" "), _c("div", {
+  }, [_vm._m(3), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_c("form", [_c("div", {
     staticClass: "form-group"
-  }, [_vm._m(2), _vm._v(" "), _c("input", {
+  }, [_vm._m(4), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -510,11 +643,11 @@ var render = function render() {
     attrs: {
       id: "exampleModalLabel"
     }
-  }, [_vm._v(_vm._s(_vm.labelModal) + " Coa")]), _vm._v(" "), _vm._m(3)]), _vm._v(" "), _c("div", {
+  }, [_vm._v(_vm._s(_vm.labelModal) + " Coa")]), _vm._v(" "), _vm._m(5)]), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_c("form", [_c("div", {
     staticClass: "form-group"
-  }, [_vm._m(4), _vm._v(" "), _c("select", {
+  }, [_vm._m(6), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -546,7 +679,7 @@ var render = function render() {
     }, [_vm._v(_vm._s(category.code) + "-" + _vm._s(category.name))]);
   })], 2)]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(5), _vm._v(" "), _c("select", {
+  }, [_vm._m(7), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -578,7 +711,7 @@ var render = function render() {
     }, [_vm._v(_vm._s(posting.name))]);
   })], 2)]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(6), _vm._v(" "), _c("input", {
+  }, [_vm._m(8), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -600,7 +733,7 @@ var render = function render() {
     }
   })]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(7), _vm._v(" "), _c("input", {
+  }, [_vm._m(9), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -622,7 +755,7 @@ var render = function render() {
     }
   })]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(8), _vm._v(" "), _c("select", {
+  }, [_vm._m(10), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -656,7 +789,7 @@ var render = function render() {
     }
   }, [_vm._v("Credit")])])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_vm._m(9), _vm._v(" "), _c("select", {
+  }, [_vm._m(11), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -726,10 +859,52 @@ var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("div", {
-    staticClass: "row ml-3"
-  }, [_c("div", {
-    staticClass: "col-md-3"
-  })]);
+    staticClass: "modal-header"
+  }, [_c("h5", {
+    staticClass: "modal-title",
+    attrs: {
+      id: "exampleModalLabel"
+    }
+  }, [_vm._v("Input Initial Balance")]), _vm._v(" "), _c("button", {
+    staticClass: "close",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal",
+      "aria-label": "Close"
+    }
+  }, [_c("span", {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", {
+    staticClass: "text-danger font-weight-bold font-italic"
+  }, [_vm._v("Template Upload File")]), _vm._v(" "), _c("label", {
+    attrs: {
+      "for": ""
+    }
+  }, [_c("a", {
+    attrs: {
+      href: "https://stage-accounting.sgp1.cdn.digitaloceanspaces.com/Coa%20bulk.xlsx"
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-link"
+  })])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("label", [_vm._v("File COA"), _c("span", {
+    staticStyle: {
+      color: "red",
+      "font-weight": "bold",
+      "font-style": "italic"
+    }
+  }, [_vm._v("*) required")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;

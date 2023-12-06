@@ -39,95 +39,19 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
+  return _vm._m(0);
+};
+var staticRenderFns = [function () {
+  var _vm = this,
+    _c = _vm._self._c;
   return _c("div", {
     staticClass: "container-fluid"
-  }, [_c("vs-row", {
-    attrs: {
-      "vs-justify": "center"
-    }
-  }, [_c("vs-col", {
-    attrs: {
-      type: "flex",
-      "vs-justify": "center",
-      "vs-align": "center",
-      "vs-w": "3"
-    }
-  }, [_c("vs-card", {
-    staticClass: "cardx"
   }, [_c("div", {
-    attrs: {
-      slot: "header"
-    },
-    slot: "header"
-  }, [_c("h3", [_vm._v("\n                        Hello world !\n                    ")])]), _vm._v(" "), _c("div", [_c("span", [_vm._v("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")])]), _vm._v(" "), _c("div", {
-    attrs: {
-      slot: "footer"
-    },
-    slot: "footer"
-  }, [_c("vs-row", {
-    attrs: {
-      "vs-justify": "flex-end"
-    }
-  }, [_c("vs-button", {
-    attrs: {
-      type: "gradient",
-      color: "danger",
-      icon: "favorite"
-    }
-  }), _vm._v(" "), _c("vs-button", {
-    attrs: {
-      color: "primary",
-      icon: "turned_in_not"
-    }
-  }), _vm._v(" "), _c("vs-button", {
-    attrs: {
-      color: "rgb(230,230,230)",
-      "color-text": "rgb(50,50,50)",
-      icon: "settings"
-    }
-  })], 1)], 1)])], 1), _vm._v(" "), _c("vs-col", {
-    attrs: {
-      type: "flex",
-      "vs-justify": "center",
-      "vs-align": "center",
-      "vs-w": "3"
-    }
-  }, [_c("vs-card", {
-    staticClass: "cardx"
+    staticClass: "row"
   }, [_c("div", {
-    attrs: {
-      slot: "header"
-    },
-    slot: "header"
-  }, [_c("h3", [_vm._v("\n                        Hello world !\n                    ")])]), _vm._v(" "), _c("div", [_c("span", [_vm._v("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")])]), _vm._v(" "), _c("div", {
-    attrs: {
-      slot: "footer"
-    },
-    slot: "footer"
-  }, [_c("vs-row", {
-    attrs: {
-      "vs-justify": "flex-end"
-    }
-  }, [_c("vs-button", {
-    attrs: {
-      type: "gradient",
-      color: "danger",
-      icon: "favorite"
-    }
-  }), _vm._v(" "), _c("vs-button", {
-    attrs: {
-      color: "primary",
-      icon: "turned_in_not"
-    }
-  }), _vm._v(" "), _c("vs-button", {
-    attrs: {
-      color: "rgb(230,230,230)",
-      "color-text": "rgb(50,50,50)",
-      icon: "settings"
-    }
-  })], 1)], 1)])], 1)], 1)], 1);
-};
-var staticRenderFns = [];
+    staticClass: "col-12 text-center"
+  }, [_vm._v("\n            Welcome to accounting and finance system\n        ")])])]);
+}];
 render._withStripped = true;
 
 

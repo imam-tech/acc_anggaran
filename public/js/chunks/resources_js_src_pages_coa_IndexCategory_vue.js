@@ -82,7 +82,18 @@ var render = function render() {
     staticClass: "container-fluid"
   }, [_c("div", {
     staticClass: "card shadow mb-4"
-  }, [_vm._m(0), _vm._v(" "), _c("div", {
+  }, [_c("div", {
+    staticClass: "card-title"
+  }, [_c("h1", {
+    staticClass: "h3 mt-3 ml-3 text-gray-800 float-left"
+  }, [_vm._v("Coa Category List")]), _vm._v(" "), _c("router-link", {
+    staticClass: "btn btn-success float-right mt-3 mr-3",
+    attrs: {
+      to: "/app/coa"
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-arrow-left"
+  }), _vm._v(" Back\n            ")])], 1), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_c("div", {
     staticClass: "table-responsive"
@@ -128,15 +139,7 @@ var render = function render() {
     })], 2);
   }), 0)])])]);
 };
-var staticRenderFns = [function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "card-title"
-  }, [_c("h1", {
-    staticClass: "h3 mt-3 ml-3 text-gray-800 float-left"
-  }, [_vm._v("Coa Category List")])]);
-}];
+var staticRenderFns = [];
 render._withStripped = true;
 
 
