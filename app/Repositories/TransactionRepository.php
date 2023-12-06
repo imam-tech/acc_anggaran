@@ -434,7 +434,7 @@ class TransactionRepository {
     {
         try {
             $validator = \Validator::make($request->all(), [
-                'file' => 'required|mimes:jpg,jpeg,png|max:500',
+                'files' => 'required|mimes:jpg,jpeg,png|max:500',
             ]);
 
             if ($validator->fails()) {
