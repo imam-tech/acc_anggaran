@@ -53,7 +53,7 @@ class CoaController extends Controller {
         $filters = $request->only(['flag']);
         $coaCategories = CoaCategory::with([]);
 
-        if (!empty($filters['is_active'])) {
+        if (!empty($filters['flag'])) {
             $coaCategories = $coaCategories->where('flag', $filters['flag']);
         }
 
