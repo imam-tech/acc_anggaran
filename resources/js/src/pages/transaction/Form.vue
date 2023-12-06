@@ -222,6 +222,7 @@
                                     font-style: italic;
                                 ">*) required</span></label>
                                 <input type="file" class="form-control" @change="handleUploadImage" >
+                                <label class="text-danger"><i><b>The size maximize of image is 800 pixel</b></i></label>
                             </div>
                         </form>
                     </div>
