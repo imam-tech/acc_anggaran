@@ -434,7 +434,7 @@ class TransactionRepository {
     {
         try {
             $validator = \Validator::make($request->all(), [
-                'files' => 'requiredmax:800',
+                'files' => 'required|max:800',
             ]);
 
             if ($validator->fails()) {
