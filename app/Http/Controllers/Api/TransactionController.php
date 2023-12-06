@@ -69,7 +69,7 @@ class TransactionController extends Controller {
     }
 
     public function uploadImage(Request $request) {
-        return response()->json($this->transactionRepo->uploadImage($request->file('files')));
+        return response()->json($this->transactionRepo->uploadImage($request));
     }
 
     public function callbackFlip(Request $request) {

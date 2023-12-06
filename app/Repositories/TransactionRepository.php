@@ -430,9 +430,18 @@ class TransactionRepository {
         }
     }
 
-    public function uploadImage($image)
+    public function uploadImage($request)
     {
         try {
+            $validator = \Validator::make($request->all(), [
+                'file' => 'required|mimes:jpg,jpeg,png|max:500',
+            ]);
+
+            if ($validator->fails()) {
+                return resultFunction('Error AC-UI: Error Validator ' . $validator->errors());
+            }
+
+            $image = $request->file('files');
             if (!$image) {
                 return resultFunction("Err code TR-Ui: Please attach the image");
             }
