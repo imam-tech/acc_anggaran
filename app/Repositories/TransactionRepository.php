@@ -435,6 +435,7 @@ class TransactionRepository {
         try {
             $validator = \Validator::make($request->all(), [
                 'files' => 'required|max:800',
+                'folder' => 'required'
             ]);
 
             if ($validator->fails()) {
@@ -449,7 +450,7 @@ class TransactionRepository {
                 return resultFunction('Err code TR-Ui: ' . $image->getErrorMessage());
             }
 
-            return (new DigitalOceanService())->uploadImageToDO($image, "transaction");
+            return (new DigitalOceanService())->uploadImageToDO($image, $request->get('folder'));
         } catch (\Exception $e) {
             return resultFunction("Err code TR-Ui: catch " . $e->getMessage());
         }

@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Imports\CoaImport;
+use App\Models\CashAndBank;
 use App\Models\Coa;
 use App\Models\CoaCategory;
 use App\Models\CoaPosting;
@@ -33,7 +34,7 @@ class CoaRepository {
             $message = "Creating";
             if ($data['id']) {
                 $coa = Coa::find($data['id']);
-                if (!$posting) return resultFunction("Err code CR-S: coa not found for ID " . $data['id']);
+                if (!$coa) return resultFunction("Err code CR-S: coa not found for ID " . $data['id']);
                 $message = 'Updating';
             } else {
                 $coa = new Coa();
@@ -48,6 +49,16 @@ class CoaRepository {
             $coa->account_type = $data['account_type'];
             $coa->is_active = $data['is_active'];
             $coa->save();
+
+            if (!$data['id']) {
+                if (in_array($category->name, ['KAS DAN SETARA KAS', "KAS", "BANK", "HUTANG BANK & LEMBAGA KEUANGAN"])) {
+                    $cashBank = new CashAndBank();
+                    $cashBank->company_id = $companyId;
+                    $cashBank->type = in_array($category->name, ['KAS DAN SETARA KAS', "KAS"]) ? "Cash" : ($category->name === 'BANK' ? "Bank" : "Credit Card");
+                    $cashBank->coa_id = $coa->id;
+                    $cashBank->save();
+                }
+            }
 
             return resultFunction($message . " coa is successfully", true);
         } catch (\Exception $e) {
@@ -188,12 +199,24 @@ class CoaRepository {
 
     public function delete($id) {
         try {
-            $coa = Coa::find($id);
+            DB::beginTransaction();
+            $coa = Coa::with(['coaCategory'])->find($id);
             if (!$coa) return resultFunction("Err code CR-D: coa not found");
+
+            if (in_array($coa->coaCategory->name, ['KAS DAN SETARA KAS', "KAS", "BANK", "HUTANG BANK & LEMBAGA KEUANGAN"])) {
+                $cashbank = CashAndBank::with([])
+                    ->where('coa_id', $coa->id)
+                    ->first();
+                if ($cashbank) {
+                    $cashbank->delete();
+                }
+            }
 
             $journalItem = JournalItem::where('account_id', $coa->id)->first();
             if ($journalItem) return resultFunction("Err code CR-D: the coa can't be deleted because it has the item.");
             $coa->delete();
+
+            DB::commit();
 
             return resultFunction("Deleting coa is successfully", true);
         } catch (\Exception $e) {

@@ -1,30 +1,64 @@
 <template>
     <div class="container-fluid">
-
-        <div class="card shadow mb-4">
+        <div class="card">
             <div class="card-title">
-                <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Profit Lose</h1>
-                <router-link to="/app/report" class="btn btn-success float-right mt-3 mr-3">
+                <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Budget Form</h1>
+                <router-link to="/app/budget" class="btn btn-success float-right mt-3 mr-3">
                     <i class="fa fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-12">
-                        <a :href="'/print/profit-lost?company_id=' + currentCompany" target="_blank" class="btn btn-success">Export</a>
+                <form>
+                    <div class="row">
+                        <div class="col-xl-3">
+                            <div class="form-group">
+                                <label for="">Budget Name</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-xl-2">
+                            <div class="form-group">
+                                <label for="">Start Period</label>
+                                <input type="month" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-xl-2">
+                            <div class="form-group">
+                                <label for="">No Period</label>
+                                <select class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="col-xl-2">
+                            <div class="form-group">
+                                <label for="">Previous Period</label>
+                                <select class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 d-flex justify-content-end align-items-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Apply
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-6 p-0">
-                                <table class="table">
-                                    <thead>
+                    <hr class="mb-2">
+                    <div class="row">
+                        <div class="col-12 text-center d-flex flex-column">
+                            <span>{{ currentCompany }}</span>
+                            <span><b>Budget Management</b></span>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-6 p-0">
+                                    <table class="table">
+                                        <thead>
                                         <tr class="backgroup bg-light bg-gradient p-2 rounded">
                                             <th>Account</th>
                                         </tr>
-                                    </thead>
-                                    <tbody>
+                                        </thead>
+                                        <tbody>
                                         <tr>
                                             <td class="p-0">
                                                 <table class="table table-borderless">
@@ -34,22 +68,22 @@
                                                 </table>
                                             </td>
                                         </tr>
-                                    </tbody>
-                                    <tfooter>
-                                    <tr class="backgroup bg-light bg-gradient p-2 rounded">
-                                        <th>Account</th>
-                                    </tr>
-                                    </tfooter>
-                                </table>
-                            </div>
-                            <div class="col-6 p-0">
-                                <table class="table table-bordered table-responsive">
-                                    <thead>
+                                        </tbody>
+                                        <tfooter>
+                                            <tr class="backgroup bg-light bg-gradient p-2 rounded">
+                                                <th>Account</th>
+                                            </tr>
+                                        </tfooter>
+                                    </table>
+                                </div>
+                                <div class="col-6 p-0">
+                                    <table class="table table-bordered table-responsive">
+                                        <thead>
                                         <tr class="bg-gray-300 p-2 rounded">
                                             <th v-for="(month, iM) in months" :key="iM" v-if="iM < lastMonth">{{ month }}</th>
                                         </tr>
-                                    </thead>
-                                    <tbody>
+                                        </thead>
+                                        <tbody>
                                         <tr>
                                             <td v-for="(dataR, iR) in dataReports" :key="iR" class="p-0">
                                                 <table class="table table-bordered">
@@ -63,33 +97,51 @@
                                         <tr class="bg-gray-300 p-2 rounded">
                                             <th v-for="(month, iM) in months" :key="iM" v-if="iM < lastMonth">{{ month }}</th>
                                         </tr>
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-    import Cookies  from 'js-cookie'
+    import Cookies from 'js-cookie'
+
     export default {
-        name: "BalanceSheet.vue",
+        name:'Detail',
         data() {
             return {
+                formData: {
+                    supplier_name: "",
+                    invoice_date: "",
+                    due_date: "",
+                    reference_number:"None",
+                    products: [{
+                        product: "Samsung",
+                        quantity: 1,
+                        unit: 'Pcs',
+                        rate: 163,
+                        discount: 0,
+                        tax_amount: 0,
+                        amount: 0
+                    }],
+                    description: ""
+                },
+                selectedProduct: "",
+                currentCompany: Cookies.get('current_company_title'),
                 months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                 coaList: [],
                 dataReports: [],
-                lastMonth: 0,
-                currentCompany: Cookies.get('current_company')
+                lastMonth: 3,
             }
         },
-        created() {
-            const d = new Date();
-            this.lastMonth =  d.getMonth() + 1
+
+        mounted() {
             this.initiateData()
         },
         methods: {

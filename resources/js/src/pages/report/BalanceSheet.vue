@@ -78,7 +78,7 @@
         name: "BalanceSheet.vue",
         data() {
             return {
-                months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"],
+                months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                 coaList: [],
                 dataReports: [],
                 lastMonth: 0,

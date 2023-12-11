@@ -16,6 +16,11 @@ import coaRouter from './coaRouter';
 import journalRouter from './journalRouter';
 import reportRouter from './reportRouter';
 import settingRouter from './settingRouter';
+import cashAndBankRouter from './cashAndBankRouter';
+import salesRouter from './salesRouter';
+import purchaseRouter from './purchaseRouter';
+import inventoryRouter from './inventoryRouter';
+import budgetRouter from './budgetRouter';
 
 Vue.use(Router)
 
@@ -85,6 +90,31 @@ const router = new Router({
                     path: 'setting',
                     component: MenuLayout,
                     children: settingRouter
+                },
+                {
+                    path: 'cash-and-bank',
+                    component: MenuLayout,
+                    children: cashAndBankRouter
+                },
+                {
+                    path: 'sales',
+                    component: MenuLayout,
+                    children: salesRouter
+                },
+                {
+                    path: 'purchase',
+                    component: MenuLayout,
+                    children: purchaseRouter
+                },
+                {
+                    path: 'inventory',
+                    component: MenuLayout,
+                    children: inventoryRouter
+                },
+                {
+                    path: 'budget',
+                    component: MenuLayout,
+                    children: budgetRouter
                 },
             ]
         },

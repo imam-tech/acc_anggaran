@@ -156,10 +156,9 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select v-model="formData.category" class="form-control">
-                                    <option value="">--Select Category--</option>
-                                    <option v-for="(category, index) in categories" :key="index" :value="category.id">{{ category.code }}-{{ category.name }}</option>
-                                </select>
+                                <v-select v-model="formData.category" :options="categories" :reduce="category => category.id" label="label" style="width: 100%">
+                                    <span slot="no-options">Coa category not found</span>
+                                </v-select>
                             </div>
                             <div class="form-group">
                                 <label>Posting<span style="
@@ -350,7 +349,13 @@
             async getDataCategory() {
                 try {
                     this.$vs.loading()
-                    this.categories = await this.$axios.get('api/coa/category?flag=pt')
+                    const cats = await this.$axios.get('api/coa/category?flag=pt')
+                    cats.forEach((x) => {
+                        this.categories.push({
+                            id: x.id,
+                            label: x.code + '-' + x.name
+                        })
+                    })
                     this.postings = await this.$axios.get('api/coa/posting')
                     this.$vs.loading.close()
                 } catch (e) {
