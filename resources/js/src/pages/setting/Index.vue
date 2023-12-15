@@ -23,11 +23,11 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>Flip Name</th>
-                            <th>Flip Key</th>
-                            <th>Is Active</th>
-                            <th>Created At</th>
-                            <th v-if="$store.state.permissions.includes('transaction_push_plugin')">#</th>
+                            <th class="text-center">Flip Name</th>
+                            <th class="text-center">Flip Key</th>
+                            <th class="text-center">Is Active</th>
+                            <th class="text-center">Created At</th>
+                            <th v-if="$store.state.permissions.includes('transaction_push_plugin')" class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -36,7 +36,7 @@
                             <td>***********</td>
                             <td>{{ flip.is_active ? 'Active' : 'In Active' }}</td>
                             <td>{{ flip.created_at | formatDate }}</td>
-                            <td v-if="$store.state.permissions.includes('transaction_push_plugin')">
+                            <td v-if="$store.state.permissions.includes('transaction_push_plugin')" class="text-right">
                                 <button type="button" class="btn btn-warning" @click="showEditSetting(flip)">
                                     <i class="fa fa-pencil"></i>
                                 </button>

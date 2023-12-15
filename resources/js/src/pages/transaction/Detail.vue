@@ -19,7 +19,63 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body pt-0">
+                <div class="row mb-3 d-flex flex-row align-items-center">
+                    <div class="col-xl-2 d-flex align-items-center">
+                        <h5><span :class="status.published ? 'badge badge-primary p-3' : 'badge badge-light p-3'">
+                            <i v-if="status.published" class="fas fa-check-circle text-dark"></i>
+                            <i v-else class="fas fa-times text-dark"></i>
+                        </span></h5>
+                        <div class="ml-2">
+                            <span>Published</span>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 d-flex align-items-center">
+                        <h5><span :class="status.coa ? 'badge badge-primary p-3' : 'badge badge-light p-3'">
+                            <i v-if="status.coa" class="fas fa-check-circle text-dark"></i>
+                            <i v-else class="fas fa-times text-dark"></i>
+                        </span></h5>
+                        <div class="ml-2">
+                            <span>Set Coa</span>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 d-flex align-items-center">
+                        <h5><span :class="status.tax ? 'badge badge-primary p-3' : 'badge badge-light p-3'">
+                            <i v-if="status.tax" class="fas fa-check-circle text-dark"></i>
+                            <i v-else class="fas fa-times text-dark"></i>
+                        </span></h5>
+                        <div class="ml-2">
+                            <span>Set Tax</span>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 d-flex align-items-center">
+                        <h5><span :class="status.method ? 'badge badge-primary p-3' : 'badge badge-light p-3'">
+                            <i v-if="status.method" class="fas fa-check-circle text-dark"></i>
+                            <i v-else class="fas fa-times text-dark"></i>
+                        </span></h5>
+                        <div class="ml-2">
+                            <span>Set Method</span>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 d-flex align-items-center">
+                        <h5><span :class="status.processed ? 'badge badge-primary p-3' : 'badge badge-light p-3'">
+                            <i v-if="status.processed" class="fas fa-check-circle text-dark"></i>
+                            <i v-else class="fas fa-times text-dark"></i>
+                        </span></h5>
+                        <div class="ml-2">
+                            <span>Processed</span>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 d-flex align-items-center">
+                        <h5><span :class="status.completed ? 'badge badge-primary p-3' : 'badge badge-light p-3'">
+                            <i v-if="status.completed" class="fas fa-check-circle text-dark"></i>
+                            <i v-else class="fas fa-times text-dark"></i>
+                        </span></h5>
+                        <div class="ml-2">
+                            <span>Completed</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-6 col-xl-8">
                         <table class="table table-striped">
@@ -116,12 +172,12 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>No</th>
-                            <th>Title</th>
-                            <th>Attachment</th>
-                            <th>Input Total</th>
-                            <th>Total</th>
-                            <th>#</th>
+                            <th class="text-center">No</th>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Attachment</th>
+                            <th class="text-right">Input Total</th>
+                            <th class="text-right">Total</th>
+                            <th class="text-right">#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -131,22 +187,22 @@
                             </td>
                         </tr>
                         <tr v-for="(item, key) in transactionData.transaction_items">
-                            <td><strong>{{ key+1 }}</strong></td>
+                            <td class="text-center"><strong>{{ key+1 }}</strong></td>
                             <td>{{ item.title }}</td>
                             <td>
                                 <a :href="item.attachment" target="_blank"><i class="fas fa-link"></i></a>
                             </td>
-                            <td>Rp. {{ item.input_amount | formatPriceWithDecimal }}</td>
-                            <td>Rp. {{ item.total_amount | formatPriceWithDecimal }}</td>
-                            <td>
-                                <button :disabled="!handleCheckSet(transactionData, 'transaction_edit_tax')" type="button" class="btn btn-info" @click="handleSetTax(item)">
-                                    Set Tax
+                            <td class="text-right">Rp. {{ item.input_amount | formatPriceWithDecimal }}</td>
+                            <td class="text-right">Rp. {{ item.total_amount | formatPriceWithDecimal }}</td>
+                            <td class="text-right">
+                                <button :disabled="!handleCheckSet(transactionData, 'transaction_edit_tax')" type="button" class="btn btn-warning mt-2" @click="handleSetTax(item)">
+                                    <i class="fas fa-taxi"></i> Set Tax
                                 </button>
-                                <button :disabled="!handleCheckSet(transactionData, 'transaction_edit_coa')"  type="button" class="btn btn-primary" @click="handleSetCoa(item)">
-                                    Set Coa
+                                <button :disabled="!handleCheckSet(transactionData, 'transaction_edit_coa')"  type="button" class="btn btn-secondary mt-2" @click="handleSetCoa(item)">
+                                    <i class="fas fa-dollar-sign"></i> Set Coa
                                 </button>
-                                <button type="button" class="btn btn-success" @click="handleSetCoa(item, 'view')">
-                                    Detail
+                                <button type="button" class="btn btn-primary mt-2" @click="handleSetCoa(item, 'view')">
+                                    <i class="fas fa-eye"></i> Detail
                                 </button>
                             </td>
                         </tr>
@@ -251,9 +307,9 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
+                            <form @submit.prevent="handleSubmitEditTax">
+                                <div class="modal-body">
 
-                                <form>
                                     <div class="row">
                                         <div class="col-4">
                                             <label>Title</label>
@@ -271,7 +327,7 @@
                                 ">*) required</span></label>
                                         </div>
                                         <div class="col-8">
-                                            <select v-model="formData.tax_type" class="form-control" @change="handleCalculate">
+                                            <select v-model="formData.tax_type" class="form-control" @change="handleCalculate" required>
                                                 <option value="" selected>--Select Tax Type--</option>
                                                 <option value="ppn_gross">Include PPN gross up pph</option>
                                                 <option value="ppn_reduce">Include PPN reduce pph</option>
@@ -288,9 +344,9 @@
                                 ">*) required</span></label>
                                         </div>
                                         <div class="col-8">
-                                            <select v-model="formData.ppn" class="form-control" @change="handleCalculate">
-                                                <option value="" selected>--No PPN--</option>
-                                                <option v-for="(ppn, index) in ppns" :key="index" :value="{label: ppn.title, value: ppn.amount}">{{ ppn.title }} - {{ ppn.amount }}%</option>
+                                            <select v-model="formData.ppn" class="form-control" @change="handleCalculate" required>
+                                                <option value="">--Choose PPn--</option>
+                                                <option v-for="(ppn, index) in ppns" :key="index" :value="{label: ppn.title + ' ' + parseFloat(ppn.amount) + '%', value: parseFloat(ppn.amount)}">{{ ppn.title }} - {{ ppn.amount }}%</option>
                                             </select>
                                         </div>
                                     </div>
@@ -303,7 +359,7 @@
                                 ">*) required</span></label>
                                         </div>
                                         <div class="col-8">
-                                            <select v-model="formData.pph" class="form-control" @change="handleCalculate">
+                                            <select v-model="formData.pph" class="form-control" @change="handleCalculate" required>
                                                 <option value="" selected>--No PPH--</option>
                                                 <option v-for="(pph, index) in pphs" :key="index" :value="{label: pph.title, value: pph.amount}">{{ pph.title }} - {{ pph.amount }}%</option>
                                             </select>
@@ -323,7 +379,7 @@
                                                     Rp. {{ formData.input_tax | formatPriceWithDecimal }}
                                                 </div>
                                                 <div class="col-6">
-                                                    <input type="text" class="form-control" v-model="formData.input" @keyup="handleCalculate">
+                                                    <input type="text" class="form-control" v-model="formData.input" @keyup="handleCalculate" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -376,12 +432,16 @@
                                             {{ formData.total_value }}
                                         </div>
                                     </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" @click="handleSubmitEditTax()">Save changes</button>
-                            </div>
+                                </div>
+                                <div class="modal-footer flex justify-content-between">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                        <i class="fas fa-times"></i> Close
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -394,9 +454,8 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
-
-                                <form>
+                            <form @submit.prevent="handleSubmitEditCoa">
+                                <div class="modal-body">
                                     <div class="row">
                                         <div class="col-4">
                                             <label>Title</label>
@@ -493,21 +552,21 @@
                                         </div>
                                     </div>
                                     <hr>
-                                    <div v-for="(coaItem, index) in formDataCoa.coa_items" :key="index" class="row mt-3">
+                                    <div v-for="(coaItem, index) in formDataCoa.coa_items" :key="index" class="row mt-3 pr-3">
                                         <div class="col-3">
                                             <label for="">Account</label>
-                                            <select :disabled="formDataCoa.type !== 'edit'" class="form-control" v-model="formDataCoa.coa_items[index].coa">
+                                            <select :disabled="formDataCoa.type !== 'edit'" class="form-control" v-model="formDataCoa.coa_items[index].coa" required>
                                                 <option value="">--Select Coa--</option>
                                                 <option v-for="(coa, index) in coas" :key="index" :value="coa.id">{{ coa.account_code }}</option>
                                             </select>
                                         </div>
                                         <div class="col-2">
                                             <label for="">Debit</label>
-                                            <input :disabled="formDataCoa.type !== 'edit'" type="number" class="form-control" v-model="formDataCoa.coa_items[index].debit" />
+                                            <input :disabled="formDataCoa.type !== 'edit'" type="number" class="form-control" v-model="formDataCoa.coa_items[index].debit" required />
                                         </div>
                                         <div class="col-2">
                                             <label for="">Credit</label>
-                                            <input :disabled="formDataCoa.type !== 'edit'" type="number" class="form-control" v-model="formDataCoa.coa_items[index].credit" />
+                                            <input :disabled="formDataCoa.type !== 'edit'" type="number" class="form-control" v-model="formDataCoa.coa_items[index].credit" required />
                                         </div>
                                         <div class="col-4">
                                             <label for="">Cashflow</label>
@@ -516,18 +575,31 @@
                                                 <option v-for="(cashflow, index) in cashflows" :key="index" :value="cashflow.id">{{ cashflow.name }}</option>
                                             </select>
                                         </div>
-                                        <div v-if="formDataCoa.type === 'edit'" class="col-1 align-content-center">
-                                            <button @click="handleDeleteCoaItem(index)" type="button" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                                        <div class="col-1 d-flex align-items-end">
+                                            <div v-if="formDataCoa.type === 'edit'" class="col-1 align-content-center">
+                                                <button @click="handleDeleteCoaItem(index)" type="button" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <button v-if="formDataCoa.type === 'edit'" type="button" class="btn btn-primary" @click="handleAddCoaItem()">Add Item</button>
-                                </form>
-                            </div>
-                            <div class="modal-footer flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" v-if="formDataCoa.type === 'edit'"  class="btn btn-primary" @click="handleSubmitEditCoa()">Save changes</button>
-                            </div>
+                                    <div class="row mt-2">
+                                        <div class="col-12 d-flex justify-content-center">
+                                            <button v-if="formDataCoa.type === 'edit'" type="button" class="btn btn-primary" @click="handleAddCoaItem()">
+                                                <i class="fas fa-plus-circle"></i> Add Item
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer flex justify-content-between">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                        <i class="fas fa-times"></i> Close
+                                    </button>
+                                    <button v-if="formDataCoa.type === 'edit'" type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -542,6 +614,14 @@
         name:'Detail',
         data() {
             return {
+                status: {
+                    published: true,
+                    coa: false,
+                    tax:  false,
+                    method: false,
+                    processed: false,
+                    completed: false
+                },
                 transactionData: null,
                 formData: {
                     id: "",
@@ -850,7 +930,7 @@
                     id: item.id,
                     title: item.title,
                     attachment: item.attachment,
-                    tax_type: "",
+                    tax_type: item.tax_type,
                     ppn: {label: "", value: 0},
                     pph: {label: "", value: 0},
                     input_tax: item.input_amount,
@@ -972,6 +1052,31 @@
                         })
                     } else {
                         this.transactionData = respDe.data
+                        if (this.transactionData.transaction_statuses.find(x => x.title === 'published')) {
+                            this.status.published = true;
+                        }
+                        if (this.transactionData.transaction_statuses.find(x => x.title === 'processed')) {
+                            this.status.processed = true;
+                        }
+                        if (this.transactionData.transaction_statuses.find(x => x.title === 'completed')) {
+                            this.status.completed = true;
+                        }
+                        if (this.transactionData.method !==  null) {
+                            this.status.method = true
+                        }
+                        this.status.coa = true;
+                        this.transactionData.transaction_items.forEach((x) => {
+                            if (x.transaction_item_coas.length === 0) {
+                                this.status.coa = false
+                            }
+                        })
+                        this.status.tax = true
+                        this.transactionData.transaction_items.forEach((x) => {
+                            if (x.tax_type === null) {
+                                this.status.tax = false
+                            }
+                        })
+                        console.log("transaction", this.transactionData)
                     }
                 } catch (e) {
                     this.$vs.loading.close()

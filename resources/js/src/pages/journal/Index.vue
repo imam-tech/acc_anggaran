@@ -62,24 +62,26 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-xl-1 col-md-6">
-                    <button class="btn btn-success mb-2" @click="getData()">Search</button>
+                <div class="col-xl-1 col-md-6 text-right">
+                    <button class="btn btn-success mb-2" @click="getData()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>Transaction UID</th>
-                            <th>Title</th>
-                            <th>Voucher NO</th>
-                            <th>Transaction Date</th>
-                            <th>Created At</th>
-                            <th>Status</th>
-                            <th>Debit (IDR)</th>
-                            <th>Credit (IDR)</th>
-                            <th>#</th>
+                            <th class="text-center">Transaction UID</th>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Voucher NO</th>
+                            <th class="text-center">Transaction Date</th>
+                            <th class="text-center">Created At</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Debit (IDR)</th>
+                            <th class="text-center">Credit (IDR)</th>
+                            <th class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -98,14 +100,20 @@
                                     {{ (journal.approved_at ? 'Approved' : (journal.rejected_at ? 'Rejected' : 'Requested')) }}
                                 </span>
                             </td>
-                            <td>{{ showDebitAndCredit(journal.journal_items, 'debit') | formatPriceWithDecimal}}</td>
-                            <td>{{ showDebitAndCredit(journal.journal_items, 'credit') | formatPriceWithDecimal }}</td>
-                            <td>
+                            <td class="text-right">{{ showDebitAndCredit(journal.journal_items, 'debit') | formatPriceWithDecimal}}</td>
+                            <td class="text-right">{{ showDebitAndCredit(journal.journal_items, 'credit') | formatPriceWithDecimal }}</td>
+                            <td class="text-right">
+                                <router-link :to="'/app/journal/' + journal.id + '/detail'" target="_blank">
+                                    <button type="button" class="btn btn-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </router-link>
                                 <router-link v-if="journal.approved_at === null && journal.rejected_at === null" :to="'/app/journal/form/' + journal.id">
                                     <button type="button" class="btn btn-warning">
                                         <i class="fa fa-pencil"></i>
                                     </button>
                                 </router-link>
+
                                 <button @click="handleDelete(journal.id)" v-if="journal.approved_at === null && journal.rejected_at === null" type="button" class="btn btn-danger">
                                     <i class="fa fa-remove"></i>
                                 </button>

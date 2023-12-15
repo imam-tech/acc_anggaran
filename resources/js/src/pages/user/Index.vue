@@ -40,20 +40,22 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <button class="btn btn-success mb-2" @click="getData()">Search</button>
+                <div class="col-md-3 text-right">
+                    <button class="btn btn-success mb-2 mr-3" @click="getData()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Created At</th>
-                            <th v-if="$store.state.permissions.includes('user_create')">#</th>
+                            <th class="text-center">Name</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Role</th>
+                            <th class="text-center">Created At</th>
+                            <th v-if="$store.state.permissions.includes('user_create')" class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -75,7 +77,7 @@
                                 {{ user.role ? user.role.title : 'No Role'}}
                             </td>
                             <td>{{ user.created_at | formatDate }}</td>
-                            <td v-if="$store.state.permissions.includes('user_create')">
+                            <td v-if="$store.state.permissions.includes('user_create')" class="text-right">
                                 <button type="button" class="btn btn-warning" @click="showEditUser(user)">
                                     <i class="fa fa-pencil"></i>
                                 </button>
@@ -101,16 +103,15 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-
-                        <form>
+                    <form submit.prevent="submitUser">
+                        <div class="modal-body">
                             <div class="form-group">
                                 <label>Name<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.name" placeholder="Name of User">
+                                <input type="text" class="form-control" v-model="formData.name" placeholder="Name of User" required>
                             </div>
                             <div class="form-group">
                                 <label>Email<span style="
@@ -118,7 +119,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="email" class="form-control" v-model="formData.email" placeholder="Email of User">
+                                <input type="email" class="form-control" v-model="formData.email" placeholder="Email of User" required>
                             </div>
                             <div v-if="!formData.id" class="form-group">
                                 <label>Password<span style="
@@ -126,7 +127,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="password" class="form-control" v-model="formData.password" placeholder="Password of User">
+                                <input type="password" class="form-control" v-model="formData.password" placeholder="Password of User" required>
                             </div>
                             <div v-if="!formData.id" class="form-group">
                                 <label>Password Confirmation<span style="
@@ -134,14 +135,18 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="password" class="form-control" v-model="formData.password_confirmation" placeholder="Password of User">
+                                <input type="password" class="form-control" v-model="formData.password_confirmation" placeholder="Password of User" required>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="submitUser()">Save changes</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -154,25 +159,28 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-
-                        <form>
+                    <form submit.prevent="handleChangeRole">
+                        <div class="modal-body">
                             <div class="form-group">
                                 <label>Role<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select class="form-control" v-model="formRole.role_id">
+                                <select class="form-control" v-model="formRole.role_id" required>
                                     <option v-for="(role, index) in roles" :value="role.id" :key="index">{{ role.title }}</option>
                                 </select>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="handleChangeRole()">Save changes</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -185,15 +193,15 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <form>
+                    <form submit.prevent="submitChangePasswordUser">
+                        <div class="modal-body">
                             <div class="form-group">
                                 <label>Password<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="password" class="form-control" v-model="formChangePassword.password" placeholder="Password of User">
+                                <input type="password" class="form-control" v-model="formChangePassword.password" placeholder="Password of User" required>
                             </div>
                             <div class="form-group">
                                 <label>Password Confirmation<span style="
@@ -201,14 +209,18 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="password" class="form-control" v-model="formChangePassword.password_confirmation" placeholder="Password of User">
+                                <input type="password" class="form-control" v-model="formChangePassword.password_confirmation" placeholder="Password of User" required>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="submitChangePasswordUser()">Save changes</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

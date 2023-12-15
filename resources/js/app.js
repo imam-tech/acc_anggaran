@@ -7,8 +7,10 @@ import './src/plugins/axios.js'
 import './src/plugins/vuesax.js'
 import './src/plugins/filter.js'
 import 'vue-select/dist/vue-select.css';
+import Pagination from 'vue-pagination-2';
 
 Vue.component('v-select', vSelect)
+Vue.component('pagination', Pagination);
 
 new Vue({
     router,

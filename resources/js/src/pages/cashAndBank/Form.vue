@@ -59,7 +59,7 @@
                         <div class="col-xl-4"></div>
                         <div class="col-xl-4 text-right">
                             <button type="submit" class="btn btn-primary">
-                                Create Account
+                                <i class="fas fa-save"></i> Create Account
                             </button>
                         </div>
                         <div class="col-xl-4"></div>

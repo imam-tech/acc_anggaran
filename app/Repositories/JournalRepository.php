@@ -760,6 +760,7 @@ class JournalRepository {
             DB::beginTransaction();
             $validator = \Validator::make($data, [
                 "company_id" => "required",
+                "project_id" => "required",
                 "transaction_no" => "required",
                 "transaction_date" => "required",
                 "items" => "required"
@@ -776,6 +777,7 @@ class JournalRepository {
             $voucherNo = $company->voucher_prefix . "-" . date("y").date('m').date('d') . "-" . ($transactionApproveds + 1);
             $journal = new Journal();
             $journal->company_id = $company->id;
+            $journal->project_id = $data['project_id'];
             $journal->transaction_uid = $data['transaction_no'];
             $journal->voucher_no = $voucherNo;
             $journal->title = "manual-input-" . $data['transaction_no'];
@@ -790,6 +792,7 @@ class JournalRepository {
                 $credit = $credit + $item['credit'];
                 $journalItems[] = [
                     'company_id' => $company->id,
+                    'project_id' => $data['project_id'],
                     'journal_id' => $journal->id,
                     'account_id' => $item['coa'],
                     'cashflow_id' => $item['cashflow'],

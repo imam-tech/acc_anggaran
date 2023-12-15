@@ -31,18 +31,12 @@
                 <span>Company</span>
             </router-link>
         </li>
-        <li v-if="$store.state.permissions.includes('transaction_push_plugin')" class="nav-item">
-            <router-link class="nav-link" to="/app/setting">
-                <i class="fas fa-gear"></i>
-                <span>Setting</span>
-            </router-link>
-        </li>
-        <li class="nav-item">
-            <router-link class="nav-link" to="/app/project">
-                <i class="fas fa-project-diagram"></i>
-                <span>Project</span>
-            </router-link>
-        </li>
+        <!--<li class="nav-item">-->
+            <!--<router-link class="nav-link" to="/app/project">-->
+                <!--<i class="fas fa-project-diagram"></i>-->
+                <!--<span>Project</span>-->
+            <!--</router-link>-->
+        <!--</li>-->
         <li class="nav-item">
             <router-link class="nav-link" to="/app/user">
                 <i class="fas fa-user"></i>
@@ -53,6 +47,12 @@
             <router-link class="nav-link" to="/app/tax">
                 <i class="fas fa-money"></i>
                 <span>Tax</span>
+            </router-link>
+        </li>
+        <li v-if="$store.state.permissions.includes('transaction_push_plugin')" class="nav-item">
+            <router-link class="nav-link" to="/app/setting">
+                <i class="fas fa-gear"></i>
+                <span>Setting</span>
             </router-link>
         </li>
         <li class="nav-item bg-warning rounded">
@@ -124,6 +124,26 @@
             </div>
         </li>
         <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseManufacture"
+               aria-expanded="true" aria-controls="collapseManufacture">
+                <i class="fas fa-tractor"></i>
+                <span>Manufacture</span>
+            </a>
+            <div id="collapseManufacture" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <router-link class="collapse-item" to="/app/manufacture/product/">
+                        <span>Products</span>
+                    </router-link>
+                    <router-link class="collapse-item" to="/app/manufacture/semi-finished-material/">
+                        <span>Semi Finished Material</span>
+                    </router-link>
+                    <router-link class="collapse-item" to="/app/manufacture/material/">
+                        <span>Material</span>
+                    </router-link>
+                </div>
+            </div>
+        </li>
+        <li class="nav-item">
             <router-link class="nav-link" to="/app/budget">
                 <i class="fas fa-money-bill"></i>
                 <span>Budget</span>
@@ -152,7 +172,7 @@
         <hr class="sidebar-divider d-none d-md-block">
 
         <!-- Sidebar Toggler (Sidebar) -->
-        <div class="text-center d-none d-md-inline">
+        <div class="text-center d-none d-md-inline mb-5">
             <button class="rounded-circle border-0" id="sidebarToggle"></button>
         </div>
 

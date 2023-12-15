@@ -9,8 +9,22 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-8">
-                        <form>
+                    <div class="col-xl-8">
+                        <form @submit.prevent="submitProcess">
+                            <div v-if="$route.params.id === 'create'" class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="">Company<span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    font-style: italic;
+                                ">*) required</span></label>
+                                        <select class="form-control" v-model="selectedCompany" @change="handleChangeCompany" required>
+                                            <option v-for="(c, cI) in companies" :value="c.id" :key="cI">{{ c.title }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-6">
                                     <div class="form-group">
@@ -19,7 +33,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <input type="text" class="form-control" v-model="formData.title" placeholder="Title">
+                                        <input type="text" class="form-control" v-model="formData.title" placeholder="Title" required>
                                     </div>
                                 </div>
                                 <div class="col-6">
@@ -29,7 +43,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select v-model="formData.project_id" class="form-control">
+                                        <select v-model="formData.project_id" class="form-control" required>
                                             <option v-for="(project, index) in projects" :value="project.id" :key="index">{{ project.title }}</option>
                                         </select>
                                     </div>
@@ -50,7 +64,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select v-model="formData.bank" class="form-control" @change="getDataInquiry()">
+                                        <select v-model="formData.bank" class="form-control" @change="getDataInquiry()" required>
                                             <option v-for="(bank, index) in banks" :value="bank.bank_code" :key="index">{{ bank.name }}</option>
                                         </select>
                                     </div>
@@ -62,22 +76,24 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select v-model="formData.inquiry_id" class="form-control">
-                                            <option v-for="(inquiry, index) in inquiries" :value="inquiry.id" :key="index">{{ inquiry.name }}-{{ inquiry.account_number }} </option>
+                                        <select v-model="formData.inquiry_id" class="form-control" required>
+                                            <option v-for="(inquiry, index) in inquiries" :value="inquiry.id" :key="index">{{ inquiry.name }}  {{ inquiry.account_number ?? "" }} </option>
                                         </select>
                                     </div>
                                 </div>
-                                <button type="button" @click="showAddInquiry()" class="btn btn-info float-right mt-3">
-                                    <i class="fa fa-plus"></i> Bank Account
-                                </button>
+                                <div class="col-12 d-flex justify-content-center">
+                                    <button type="button" @click="showAddInquiry()" class="btn btn-info float-right mt-3">
+                                        <i class="fa fa-plus"></i> Bank Account
+                                    </button>
+                                </div>
                             </div>
 
-                            <hr>
+                            <hr class="mt-5">
                             <div class="text-center">Items</div>
                             <hr>
                             <div class="row mb-2">
                                 <div class="col-12">
-                                    <button type="button" @click="showAddItem()" class="btn btn-warning float-right mt-3 mr-3">
+                                    <button type="button" @click="showAddItem()" class="btn btn-primary float-right mt-3 mr-3">
                                         <i class="fa fa-plus"></i> Items
                                     </button>
                                 </div>
@@ -114,12 +130,12 @@
                                 </div>
                             </div>
 
-                            <button type="button" @click="submitProcess()" class="btn btn-primary float-right mt-3 mr-3">
+                            <button type="submit" class="btn btn-primary float-right mt-3 mr-3">
                                 <i class="fa fa-save"></i> Submit
                             </button>
                         </form>
                     </div>
-                    <div class="col-4">
+                    <div class="col-xl-4">
                         <label>Finance Approval</label>
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <tbody>
@@ -147,22 +163,21 @@
         <div class="modal fade" id="addInquiry" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Add Inquiry</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-
-                        <form>
+                    <form @submit.prevent="handleAddInquiry">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Add Inquiry</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
                             <div class="form-group">
                                 <label>Bank Name<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select v-model="formInquiry.bank" class="form-control">
+                                <select v-model="formInquiry.bank" class="form-control" required>
                                     <option v-for="(bank, index) in banks" :value="bank.bank_code" :key="index">{{ bank.name }}</option>
                                 </select>
                             </div>
@@ -172,36 +187,39 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formInquiry.account_number">
+                                <input type="text" class="form-control" v-model="formInquiry.account_number" required>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="handleAddInquiry()">Save changes</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
         <div class="modal fade" id="addItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-
-                        <form>
+                    <form @submit.prevent="handleAddItem">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
                             <div class="form-group">
                                 <label>Title<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formItem.title">
+                                <input type="text" class="form-control" v-model="formItem.title" required>
                             </div>
                             <div class="form-group">
                                 <label>Amount<span style="
@@ -209,7 +227,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formItem.amount">
+                                <input type="text" class="form-control" v-model="formItem.amount" required>
                             </div>
                             <div class="form-group">
                                 <label>Note</label>
@@ -221,15 +239,19 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="file" class="form-control" @change="handleUploadImage" >
+                                <input type="file" class="form-control" @change="handleUploadImage" required>
                                 <label class="text-danger"><i><b>The size maximize of image is 800 pixel</b></i></label>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="handleAddItem()">Save changes</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -265,16 +287,28 @@
                     amount: "",
                     note: "",
                     attachment: "https://firebasestorage.googleapis.com/v0/b/anggaran-v2.appspot.com/o/anggaran-new%2F1688468222456.png?alt=media&token=b398d9bc-38b1-4af5-a948-d2c4b3c8940b"
-                }
+                },
+                companies: [],
+                selectedCompany: "",
+                paramCompany: this.$route.params.id
             }
         },
 
         mounted() {
-            this.getDataProject()
+            if (this.$route.params.id === 'create') {
+                this.getListCompany()
+            } else {
+                this.getDataProject()
+                this.getDataCompany()
+            }
             this.getDataBank()
-            this.getDataCompany()
         },
         methods: {
+            handleChangeCompany() {
+                this.paramCompany = this.selectedCompany
+                this.getDataProject()
+                this.getDataCompany()
+            },
             handleUploadImage(e) {
                 this.file = e.target.files[0]
                 var form_data = new FormData()
@@ -431,10 +465,33 @@
                     })
                 }
             },
+            async getListCompany() {
+                try {
+                    this.$vs.loading()
+                    this.companies.push({
+                        id: "",
+                        title: "--Choose Company--"
+                    })
+                    const compLocals = await this.$axios.get(`api/company`)
+                    compLocals.forEach((x) => {
+                        this.companies.push(x)
+                    })
+                    this.$vs.loading.close()
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            },
             async getDataCompany() {
                 try {
                     this.$vs.loading()
-                    const respCompany = await this.$axios.get(`api/company/${this.$route.params.id}/detail`)
+                    const respCompany = await this.$axios.get(`api/company/${this.paramCompany}/detail`)
                     this.$vs.loading.close()
                     if (!respCompany.status) {
                         Swal.fire({
@@ -461,7 +518,10 @@
             async getDataInquiry() {
                 try {
                     this.$vs.loading()
-                    this.inquiries = await this.$axios.get(`api/inquiry?bank=${this.formData.bank}`)
+                    this.inquiries = []
+                    this.inquiries.push({id: "", name: '--Choose Bank--'})
+                    const inqLocals = await this.$axios.get(`api/inquiry?bank=${this.formData.bank}`)
+                    inqLocals.forEach((x) => this.inquiries.push(x))
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
@@ -477,7 +537,11 @@
             async getDataProject() {
                 try {
                     this.$vs.loading()
-                    this.projects = await this.$axios.get(`api/project?company_id=${this.$route.params.id}`)
+                    this.projects.push({id: "", title: '--Choose Project--'})
+                    const projLocals = await this.$axios.get(`api/project?company_id=${this.paramCompany}`)
+                    projLocals.forEach((x) => {
+                        this.projects.push(x)
+                    })
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
@@ -493,7 +557,9 @@
             async getDataBank() {
                 try {
                     this.$vs.loading()
-                    this.banks = (await this.$axios.get(`https://old.importir.com/api/list-bank-inquiry?token=syigdfjhagsjdf766et4wff6`)).message.banks
+                    this.banks.push({bank_code: '', name: '--Choose Bank--'})
+                    const bankLocals = (await this.$axios.get(`https://old.importir.com/api/list-bank-inquiry?token=syigdfjhagsjdf766et4wff6`)).message.banks
+                    bankLocals.forEach((x) => this.banks.push(x))
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()

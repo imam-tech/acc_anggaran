@@ -31,7 +31,7 @@ class TransactionController extends Controller {
     }
 
     public function index(Request $request) {
-        $filters = $request->only(['company_id', 'status']);
+        $filters = $request->only(['company_id', 'status', 'transaction_number', 'all']);
         $transactions = Transaction::with(['project.company', 'userCreatedBy', 'transactionApprovalNulls.user']);
 
         if (!empty($filters['company_id'])) {
@@ -40,7 +40,14 @@ class TransactionController extends Controller {
         if (!empty($filters['status'])) {
             $transactions = $transactions->where('current_status', $filters['status']);
         }
-        $transactions = $transactions->orderBy('id', 'desc')->get();
+        if (!empty($filters['transaction_number'])) {
+            $transactions = $transactions->where('transaction_number', 'LIKE', "%" . $filters['transaction_number'] . '%');
+        }
+        if (isset($filters['all'])) {
+            $transactions = $transactions->orderBy('id', 'desc')->get();
+        } else {
+            $transactions = $transactions->orderBy('id', 'desc')->paginate(25);
+        }
         return response()->json($transactions);
     }
 

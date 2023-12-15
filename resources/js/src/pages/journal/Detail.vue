@@ -9,7 +9,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-lg-4">
                         <table class="table table-striped">
                             <thead>
                             <tr>
@@ -44,66 +44,61 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-lg-12">
-                        <h3 class="h3 text-gray-800 float-left">Items</h3>
+                    <div class="col-lg-8 table-responsive">
+                        <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th class="text-center">Account Number</th>
+                                <th class="text-center">Account</th>
+                                <th class="text-center">Cashflow</th>
+                                <th class="text-center">Description</th>
+                                <th class="text-center">Debit (IDR)</th>
+                                <th class="text-center">Credit (IDR)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-show="journal.journal_items.length == 0">
+                                <td colspan="6" class="text-center">
+                                    Empty Items
+                                </td>
+                            </tr>
+                            <tr v-for="(item, key) in journal.journal_items">
+                                <td>{{ item.account.account_number }}</td>
+                                <td>{{ item.account.account_name }}</td>
+                                <td>{{ item.cashflow_id ? item.cashflow.name : '-' }}</td>
+                                <td>{{ item.description }}</td>
+                                <td class="text-right">{{ item.debit | formatPriceWithDecimal }}</td>
+                                <td class="text-right">{{ item.credit | formatPriceWithDecimal }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"></td>
+                                <td class="text-right">
+                                    <div class="d-flex flex-column">
+                                        <span><b>Total Debit</b></span>
+                                        <span><b>{{ showDebitAndCredit(journal.journal_items, 'debit') | formatPriceWithDecimal}}</b></span>
+                                    </div>
+                                </td>
+                                <td class="text-right">
+                                    <div class="d-flex flex-column">
+                                        <span><b>Total Credit</b></span>
+                                        <span><b>{{ showDebitAndCredit(journal.journal_items, 'credit') | formatPriceWithDecimal}}</b></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr v-if="journal.approved_at === null && journal.rejected_at === null && $store.state.permissions.includes('transaction_edit_coa')">
+                                <td colspan="6" class="text-right">
+                                    <button @click="handleApproveReject('approved')" type="button" class="btn btn-primary">
+                                        <i class="fa fa-check"></i> Approved
+                                    </button>
+                                    <button type="button" @click="handleRejectShow()" class="btn btn-danger">
+                                        <i class="fa fa-times"></i> Rejected
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                        <tr>
-                            <th>Account Number</th>
-                            <th>Account</th>
-                            <th>Cashflow</th>
-                            <th>Description</th>
-                            <th>Debit (IDR)</th>
-                            <th>Credit (IDR)</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-show="journal.journal_items.length == 0">
-                            <td colspan="6" class="text-center">
-                                Empty Items
-                            </td>
-                        </tr>
-                        <tr v-for="(item, key) in journal.journal_items">
-                            <td>{{ item.account.account_number }}</td>
-                            <td>{{ item.account.account_name }}</td>
-                            <td>{{ item.cashflow_id ? item.cashflow.name : '-' }}</td>
-                            <td>{{ item.description }}</td>
-                            <td>{{ item.debit | formatPriceWithDecimal }}</td>
-                            <td>{{ item.credit | formatPriceWithDecimal }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="4"></td>
-                            <td>
-                                <div class="d-flex flex-column">
-                                    <span>Total Debit</span>
-                                    <span>{{ showDebitAndCredit(journal.journal_items, 'debit') | formatPriceWithDecimal}}</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex flex-column">
-                                    <span>Total Credit</span>
-                                    <span>{{ showDebitAndCredit(journal.journal_items, 'credit') | formatPriceWithDecimal}}</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr v-if="journal.approved_at === null && journal.rejected_at === null && $store.state.permissions.includes('transaction_edit_coa')">
-                            <td colspan="6" class="text-right">
-                                <button @click="handleApproveReject('approved')" type="button" class="btn btn-primary">
-                                    <i class="fa fa-check"></i> Approved
-                                </button>
-                                <button type="button" @click="handleRejectShow()" class="btn btn-danger">
-                                    <i class="fa fa-times"></i> Rejected
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
             <div class="modal fade" id="rejectedModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
@@ -115,23 +110,26 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div class="modal-body">
-
-                            <form>
+                        <form submit.prevent="handleApproveReject('rejected')">
+                            <div class="modal-body">
                                 <div class="form-group">
                                     <label>Rejected Note<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                    <input type="text" class="form-control" v-model="rejectedNote" />
+                                    <input type="text" class="form-control" v-model="rejectedNote" required />
                                 </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer flex justify-content-between">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" @click="handleApproveReject('rejected')">Save changes</button>
-                        </div>
+                            </div>
+                            <div class="modal-footer flex justify-content-between">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                    <i class="fas fa-times"></i> Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -163,7 +161,7 @@
                     $("#rejectedModal").modal("hide")
                 }
                 Swal.fire({
-                    position: 'top-end',
+                    position: 'top',
                     icon: 'warning',
                     title: "Are you sure?",
                     showConfirmButton: true,

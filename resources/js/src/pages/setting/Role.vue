@@ -15,10 +15,10 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>Title</th>
-                            <th>Displayed Title</th>
-                            <th>Permissions</th>
-                            <th>Created At</th>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Displayed Title</th>
+                            <th class="text-center">Permissions</th>
+                            <th class="text-center">Created At</th>
                         </tr>
                         </thead>
                         <tbody>

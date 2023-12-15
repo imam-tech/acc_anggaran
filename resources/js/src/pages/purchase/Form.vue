@@ -60,7 +60,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xl-4">
+                        <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
                                 <label>Type<span style="
                                     color: red;
@@ -74,7 +74,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-xl-8">
+                        <div class="col-lg-6 col-xl-8">
                             <div class="form-group">
                                 <label>{{ formData.type }} Name<span style="
                                     color: red;
@@ -287,6 +287,7 @@
                     phone: ""
                 },
                 formData: {
+                    id: "",
                     supplier: "",
                     invoice_date: "",
                     due_date: "",
@@ -312,8 +313,68 @@
 
         mounted() {
             this.handleGetSupplier()
+            if (this.$route.params.type !== 'create') {
+                this.handleGet()
+            }
         },
         methods: {
+            async handleGet() {
+                try {
+                    this.$vs.loading()
+                    const purchaseLocal = await this.$axios.get(`api/purchase/${this.$route.params.type}/detail`)
+                    console.log("purchase loca", purchaseLocal)
+                    this.$vs.loading.close()
+                    if (!purchaseLocal.status) {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'error',
+                            title: purchaseLocal.message,
+                            showConfirmButton: false,
+                            timer: 2500
+                        })
+                        return
+                    }
+                    if (purchaseLocal.data.bill_number !== 'DRAFT') {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'warning',
+                            title: "Purchase can't be editable, the status  is not draft",
+                            showConfirmButton: false,
+                            timer: 2500
+                        }).then(()=>{
+                            this.$router.push(`/app/purchase/${purchaseLocal.data.id}/detail`);
+                        })
+                        return
+                    }
+                    this.formData.id = purchaseLocal.data.id
+                    this.formData.bill_number = purchaseLocal.data.bill_number
+                    this.formData.invoice_date = purchaseLocal.data.invoice_date
+                    this.formData.due_date = purchaseLocal.data.due_date
+                    purchaseLocal.data.purchase_items.forEach((x) => {
+                        this.formData.products.push({
+                            id: x.product_id !== null ? x.product_id : x.material_id,
+                            type: x.product_id !== null ? "Product" : "Material",
+                            name: x.product_id !== null ? x.product.product_name : x.material.name,
+                            quantity: x.quantity,
+                            unit: x.product_id !== null ? x.product.unit : x.material.unit,
+                            amount_per_unit: x.price_per_unit,
+                            amount_total: x.amount_total
+                        })
+                        this.formData.type = x.product_id !== null ? "Product" : "Material"
+                    })
+                    this.formData.supplier = purchaseLocal.data.supplier_id
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 2500
+                    })
+                }
+            },
+
             async handleSubmit() {
                 try {
                     this.$vs.loading()
@@ -329,7 +390,15 @@
                         })
                         return
                     } else {
-
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'success',
+                            title: resp.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(()=>{
+                            this.$router.push(`/app/purchase/${resp.data.id}/detail`);
+                        })
                     }
                 } catch (e) {
                     this.$vs.loading.close()
@@ -359,7 +428,8 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
-                }},
+                }
+            },
 
             handleShowAddModalSupplier() {
                 $("#addNewSupplier").modal('show')

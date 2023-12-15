@@ -18,7 +18,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-lg-6">
                         <table class="table table-striped">
                             <thead>
                             <tr>
@@ -28,23 +28,23 @@
                             <tbody>
                             <tr>
                                 <th>Title</th>
-                                <td>{{companyData.title}}</td>
+                                <td class="text-right">{{companyData.title}}</td>
                             </tr>
                             <tr>
                                 <th>Type</th>
-                                <td>{{companyData.type}}</td>
+                                <td class="text-right">{{companyData.type}}</td>
                             </tr>
                             <tr>
                                 <th>Voucher Prefix</th>
-                                <td>{{companyData.voucher_prefix}}</td>
+                                <td class="text-right">{{companyData.voucher_prefix}}</td>
                             </tr>
                             <tr>
                                 <th>User Count</th>
-                                <td>{{companyData.projects.length}} Projects</td>
+                                <td class="text-right">{{companyData.projects.length}} Projects</td>
                             </tr>
                             <tr>
                                 <th>Setting Flip</th>
-                                <td>
+                                <td class="text-right d-flex flex-column">
                                     <span v-if="companyData.setting_flip">{{ companyData.setting_flip.flip_name }}</span>
                                     <span v-else> - </span>
                                     <button v-if="$store.state.permissions.includes('transaction_push_plugin')" type="button" class="btn btn-primary  float-right mt-3 mr-3" @click="handleChangeSettingFlip()">
@@ -55,7 +55,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-6">
+                    <div class="col-lg-6">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
@@ -99,11 +99,11 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>No</th>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Created At</th>
-                            <th>#</th>
+                            <th class="text-center">No</th>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Description</th>
+                            <th class="text-center">Created At</th>
+                            <th class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -113,11 +113,11 @@
                             </td>
                         </tr>
                         <tr v-for="(project, key) in companyData.projects" :key="key">
-                            <td><strong>{{ key+1 }}</strong></td>
+                            <td class="text-center"><strong>{{ key+1 }}</strong></td>
                             <td>{{ project.title }}</td>
                             <td>{{ project.description }}</td>
                             <td>{{ project.created_at | formatDate }}</td>
-                            <td>
+                            <td class="text-right">
                                 <router-link :to="'/app/project/'+project.id+'/detail'" class="btn btn-info">
                                     <i class="fa fa-eye"></i>
                                 </router-link>
@@ -135,22 +135,21 @@
                 <div class="modal fade" id="addProject" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">{{ labelModal }} Project</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-
-                                <form>
+                            <form @submit.prevent="submitProject">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">{{ labelModal }} Project</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
                                     <div class="form-group">
                                         <label>Title<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <input type="text" class="form-control" v-model="formData.title" placeholder="Title of Project">
+                                        <input type="text" class="form-control" v-model="formData.title" placeholder="Title of Project" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Description<span style="
@@ -158,14 +157,18 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <input type="text" class="form-control" v-model="formData.description" placeholder="Description of Project">
+                                        <input type="text" class="form-control" v-model="formData.description" placeholder="Description of Project" required>
                                     </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" @click="submitProject()">Save changes</button>
-                            </div>
+                                </div>
+                                <div class="modal-footer flex justify-content-between">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                        <i class="fas fa-times"></i> Close
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -178,16 +181,15 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
-
-                                <form>
+                            <form submit.prevent="handleAdminApproval">
+                                <div class="modal-body">
                                     <div class="form-group">
                                         <label>Finance Manager<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select class="form-control" v-model="formAdmin.finance_manager">
+                                        <select class="form-control" v-model="formAdmin.finance_manager" required>
                                             <option v-for="(userData, index) in userNotStafs" :key="index" :value="userData.id">{{ userData.email }}</option>
                                         </select>
                                     </div>
@@ -197,7 +199,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select class="form-control" v-model="formAdmin.finance_staf">
+                                        <select class="form-control" v-model="formAdmin.finance_staf" required>
                                             <option v-for="(userData, index) in userNotStafs" :key="index" :value="userData.id">{{ userData.email }}</option>
                                         </select>
                                     </div>
@@ -207,7 +209,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select class="form-control" v-model="formAdmin.tax_admin">
+                                        <select class="form-control" v-model="formAdmin.tax_admin" required>
                                             <option v-for="(userData, index) in userNotStafs" :key="index" :value="userData.id">{{ userData.email }}</option>
                                         </select>
                                     </div>
@@ -217,16 +219,20 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select class="form-control" v-model="formAdmin.accounting_admin">
+                                        <select class="form-control" v-model="formAdmin.accounting_admin" required>
                                             <option v-for="(userData, index) in userNotStafs" :key="index" :value="userData.id">{{ userData.email }}</option>
                                         </select>
                                     </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" @click="handleAdminApproval()">Save changes</button>
-                            </div>
+                                </div>
+                                <div class="modal-footer flex justify-content-between">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                        <i class="fas fa-times"></i> Close
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -234,30 +240,33 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Change Admin Approval</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">Add Setting</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
-
-                                <form>
+                            <form submit.prevent="handleSubmitChangeSettingFlip">
+                                <div class="modal-body">
                                     <div class="form-group">
                                         <label>Flip Account<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select class="form-control" v-model="settingFlipId">
+                                        <select class="form-control" v-model="settingFlipId" required>
                                             <option v-for="(settingFlip, index) in settingFlips" :key="index" :value="settingFlip.id">{{ settingFlip.flip_name }}</option>
                                         </select>
                                     </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" @click="handleSubmitChangeSettingFlip()">Save changes</button>
-                            </div>
+                                </div>
+                                <div class="modal-footer flex justify-content-between">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                        <i class="fas fa-times"></i> Close
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

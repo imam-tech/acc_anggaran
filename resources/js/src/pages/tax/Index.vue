@@ -35,30 +35,29 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>Title</th>
-                            <th>Type</th>
-                            <th>Amount</th>
-                            <th>Created At</th>
-                            <th v-if="$store.state.permissions.includes('tax_create')">#</th>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Type</th>
+                            <th class="text-center">Amount</th>
+                            <th class="text-center">Created At</th>
+                            <th v-if="$store.state.permissions.includes('tax_create')" class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr v-for="(tax, index) in taxes" :key="index">
                             <td>{{ tax.title }}</td>
                             <td>{{ tax.type}}</td>
-                            <td>{{ tax.amount }}</td>
+                            <td class="text-right">{{ tax.amount }}</td>
                             <td>{{ tax.created_at | formatDate }}</td>
-                            <td v-if="$store.state.permissions.includes('tax_edit')">
+                            <td v-if="$store.state.permissions.includes('tax_edit')" class="text-right">
                                 <button type="button" class="btn btn-warning" @click="showEditTax(tax)">
                                     <i class="fa fa-pencil"></i>
                                 </button>
                                 <button class="btn btn-danger" type="button" @click="handleDelete(tax.id)">
                                     <i class="fa fa-minus"></i>
                                 </button>
-                            </td>
                             </td>
                         </tr>
                         </tbody>
@@ -78,16 +77,15 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-
-                        <form>
+                    <form submit.prevent="submitTax">
+                        <div class="modal-body">
                             <div class="form-group">
                                 <label>Title<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.title" placeholder="Title of Tax">
+                                <input type="text" class="form-control" v-model="formData.title" placeholder="Title of Tax" required>
                             </div>
                             <div class="form-group">
                                 <label>Type<span style="
@@ -95,7 +93,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select v-model="formData.type" class="form-control">
+                                <select v-model="formData.type" class="form-control" required>
                                     <option value="" selected>--Select type of tax--</option>
                                     <option value="ppn">PPn</option>
                                     <option value="pph">PPh</option>
@@ -107,14 +105,18 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.amount" placeholder="Example: 2.8">
+                                <input type="text" class="form-control" v-model="formData.amount" placeholder="Example: 2.8" required>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="submitTax()">Save changes</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

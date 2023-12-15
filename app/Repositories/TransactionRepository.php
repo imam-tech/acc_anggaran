@@ -368,6 +368,7 @@ class TransactionRepository {
             $voucherNo = $company->voucher_prefix . "-" . date("y").date('m').date('d') . "-" . ($transactionApproveds + 1);
             $journal = new Journal();
             $journal->company_id = $transaction->company_id;
+            $journal->project_id = $transaction->project_id;
             $journal->transaction_uid = $transaction->transaction_number;
             $journal->voucher_no = $voucherNo;
             $journal->title = $transaction->title;
@@ -379,6 +380,7 @@ class TransactionRepository {
                 foreach ($item->transactionItemCoas as $coa) {
                     $journalItems[] = [
                         'company_id' => $company->id,
+                        'project_id' => $transaction->project_id,
                         'journal_id' => $journal->id,
                         'account_id' => $coa->account_id,
                         'cashflow_id' => $coa->cashflow_id,

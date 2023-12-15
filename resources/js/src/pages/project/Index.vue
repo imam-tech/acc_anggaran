@@ -35,12 +35,12 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>Company</th>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>User Count</th>
-                            <th>Created At</th>
-                            <th>#</th>
+                            <th class="text-center">Company</th>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Description</th>
+                            <th class="text-center">User Count</th>
+                            <th class="text-center">Created At</th>
+                            <th class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -52,7 +52,7 @@
                             <td>{{ project.description}}</td>
                             <td>{{ project.project_users.length }} member</td>
                             <td>{{ project.created_at | formatDate }}</td>
-                            <td>
+                            <td class="text-right">
                                 <router-link :to="'/app/project/'+project.id+'/detail'" class="btn btn-info">
                                     <i class="fa fa-eye"></i>
                                 </router-link>

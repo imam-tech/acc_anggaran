@@ -18,17 +18,17 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>Account Code</th>
-                            <th>Account Name</th>
-                            <th>Category</th>
-                            <th>Account Type</th>
-                            <th>Description</th>
-                            <th>Initial Balance</th>
-                            <th>Is Active</th>
-                            <th v-if="$store.state.permissions.includes('coa_create_edit')">#</th>
+                            <th class="text-center">Account Code</th>
+                            <th class="text-center">Account Name</th>
+                            <th class="text-center">Category</th>
+                            <th class="text-center">Account Type</th>
+                            <th class="text-center">Description</th>
+                            <th class="text-center">Initial Balance</th>
+                            <th class="text-center">Is Active</th>
+                            <th v-if="$store.state.permissions.includes('coa_create_edit')" class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -46,14 +46,14 @@
                             <td>{{ coa.coa_category.name }} </td>
                             <td>{{ coa.account_type }}</td>
                             <td>{{ coa.description }}</td>
-                            <div>
+                            <div class="text-right">
                                 <span v-if="coa.initial_balance !== null">{{ coa.initial_balance.debit | formatPriceWithDecimal }}</span>
                                 <span v-else>0</span>
                             </div>
-                            <td>
+                            <td class="text-center">
                                 <span :class="coa.is_active === 1 ? 'badge badge-primary' : 'badge badge-danger'">{{ coa.is_active === 1 ? 'Active' : "In Active" }}</span>
                             </td>
-                            <td v-if="$store.state.permissions.includes('coa_create_edit')">
+                            <td v-if="$store.state.permissions.includes('coa_create_edit')" class="text-right">
                                 <button type="button" class="btn btn-warning" @click="showEditCoa(coa)">
                                     <i class="fa fa-pencil"></i>
                                 </button>
@@ -82,8 +82,8 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <form>
+                    <form submit.prevent="handleUploadCoaBulk">
+                        <div class="modal-body">
                             <div class="form-group">
                                 <label  class="text-danger font-weight-bold font-italic">Template Upload File</label>
                                 <label for="">
@@ -98,14 +98,18 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="file" ref="file" class="form-control" @change="uploadFile">
+                                <input type="file" ref="file" class="form-control" @change="uploadFile" required>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="handleUploadCoaBulk()">Save changes</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -147,9 +151,8 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-
-                        <form>
+                    <form submit.prevent="submitCoa">
+                        <div class="modal-body">
                             <div class="form-group">
                                 <label>Category<span style="
                                     color: red;
@@ -157,7 +160,14 @@
                                     font-style: italic;
                                 ">*) required</span></label>
                                 <v-select v-model="formData.category" :options="categories" :reduce="category => category.id" label="label" style="width: 100%">
-                                    <span slot="no-options">Coa category not found</span>
+                                    <template #search="{attributes, events}">
+                                        <input
+                                            class="vs__search"
+                                            :required="!formData.category"
+                                            v-bind="attributes"
+                                            v-on="events"
+                                        />
+                                    </template>
                                 </v-select>
                             </div>
                             <div class="form-group">
@@ -166,7 +176,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select v-model="formData.posting" class="form-control">
+                                <select v-model="formData.posting" class="form-control" required>
                                     <option value="">--Select Posting--</option>
                                     <option v-for="(posting, index) in postings" :key="index" :value="posting.id">{{ posting.name }}</option>
                                 </select>
@@ -177,7 +187,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.account_number">
+                                <input type="text" class="form-control" v-model="formData.account_number" required>
                             </div>
                             <div class="form-group">
                                 <label>Account Name<span style="
@@ -185,7 +195,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.account_name">
+                                <input type="text" class="form-control" v-model="formData.account_name" required>
                             </div>
                             <div class="form-group">
                                 <label>Account Type<span style="
@@ -193,7 +203,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select v-model="formData.account_type" class="form-control">
+                                <select v-model="formData.account_type" class="form-control" required>
                                     <option value="" selected>--Select Account Type--</option>
                                     <option value="Debit">Debit</option>
                                     <option value="Credit">Credit</option>
@@ -205,7 +215,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select v-model="formData.is_active" class="form-control">
+                                <select v-model="formData.is_active" class="form-control" required>
                                     <option value="1">Active</option>
                                     <option value="0">In Active</option>
                                 </select>
@@ -214,12 +224,16 @@
                                 <label>Description</label>
                                 <textarea class="form-control" v-model="formData.description"></textarea>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="submitCoa()">Save changes</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

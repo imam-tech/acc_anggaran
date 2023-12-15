@@ -74,17 +74,17 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th><input type="checkbox" v-model="checkAllStatus" @click="checkBoxAll()" /></th>
-                            <th>Transaction Number</th>
-                            <th>Author</th>
-                            <th>Company</th>
-                            <th>Method</th>
-                            <th>Title</th>
-                            <th>Total</th>
-                            <th>Bank</th>
-                            <th>Bank Account</th>
-                            <th>Created At</th>
-                            <th>#</th>
+                            <th class="text-center"><input type="checkbox" v-model="checkAllStatus" @click="checkBoxAll()" /></th>
+                            <th class="text-center">Transaction Number</th>
+                            <th class="text-center">Author</th>
+                            <th class="text-center">Company</th>
+                            <th class="text-center">Method</th>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center">Bank</th>
+                            <th class="text-center">Bank Account</th>
+                            <th class="text-center">Created At</th>
+                            <th class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -94,7 +94,7 @@
                             </td>
                         </tr>
                         <tr v-for="(transaction, key) in transactions" :key="key">
-                            <td>
+                            <td class="text-center">
                                 <input type="checkbox" @click="handleCheckItem(key)" :checked="transaction.is_selected === undefined ? false : transaction.is_selected " />
                             </td>
                             <td>
@@ -108,12 +108,14 @@
                                 <span class="badge  rounded-pill text-bg-primary">{{ transaction.method ?? "-" }}</span>
                             </td>
                             <td>{{ transaction.title }}</td>
-                            <td>Rp. {{ transaction.total_amount | formatPriceWithDecimal }}</td>
+                            <td class="text-right">Rp. {{ transaction.total_amount | formatPriceWithDecimal }}</td>
                             <td>{{ transaction.bank }}</td>
                             <td>{{ transaction.account_holder }} <br>{{ transaction.account_number }}</td>
                             <td>{{ transaction.created_at | formatDate }}</td>
-                            <td>
-                                <button type="button" class="btn btn-danger">Reject</button>
+                            <td class="text-right">
+                                <button type="button" class="btn btn-danger">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
                             </td>
                         </tr>
                         </tbody>
@@ -241,7 +243,7 @@
             async getData() {
                 try {
                     this.$vs.loading()
-                    const respDe = await this.$axios.get(`api/transaction?company_id=${this.$route.params.id}&status=approved`)
+                    const respDe = await this.$axios.get(`api/transaction?company_id=${this.$route.params.id}&status=approved&all=1`)
                     this.$vs.loading.close()
                     this.transactions = respDe
                     const manualTransfers = respDe.filter((x) => x.method === 'manual')

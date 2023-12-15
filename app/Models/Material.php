@@ -13,4 +13,8 @@ class Material extends Model
     
     protected $table = 'materials';
     protected $guarded = [];
+
+    public function material_histories() {
+        return $this->hasMany(MaterialHistory::class, 'material_id', 'id');
+    }
 }

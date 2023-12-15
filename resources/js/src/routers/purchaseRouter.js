@@ -3,7 +3,7 @@ import hasLoggedIn from "../middleware/hasLoggedIn";
 const purchaseRouter = [
     {
         path: '',
-        name: 'sales-index',
+        name: 'purchase-index',
         component:  () => import('../pages/purchase/Index'),
         meta: {
             middleware: hasLoggedIn,
@@ -13,6 +13,14 @@ const purchaseRouter = [
         path: ':type/form',
         name: 'purchase-form',
         component:  () => import('../pages/purchase/Form'),
+        meta: {
+            middleware: hasLoggedIn,
+        },
+    },
+    {
+        path: ':type/detail',
+        name: 'purchase-detail',
+        component:  () => import('../pages/purchase/Detail'),
         meta: {
             middleware: hasLoggedIn,
         },

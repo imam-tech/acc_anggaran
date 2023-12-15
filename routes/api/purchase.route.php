@@ -12,4 +12,7 @@ Route:: group(['prefix' => 'purchase', 'middleware' => 'auth:sanctum'], function
 
     Route::get('/get-product-material/{type}', [PurchaseController::class, 'getProductMaterial']);
     Route::post('/', [PurchaseController::class, 'store']);
+    Route::get('/', [PurchaseController::class, 'index']);
+    Route::get('/{id}/detail', [PurchaseController::class, 'detail']);
+    Route::get('/{id}/approve', [PurchaseController::class, 'approve']);
 });

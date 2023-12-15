@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Material;
 use App\Models\Product;
+use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Repositories\PurchaseRepository;
 use Illuminate\Http\Request;
@@ -63,5 +64,22 @@ class PurchaseController extends Controller {
 
     public function store(Request $request) {
         return response()->json($this->purchaseRepo->store($request->all(), $request->header('company_id')));
+    }
+
+    public function index(Request $request) {
+        $filters = $request->only([]);
+        $purchases = Purchase::with(['purchase_items', 'supplier']);
+
+        $purchases = $purchases->where('company_id', $request->header('company_id'));
+        $purchases = $purchases->orderBy('id', 'desc')->get();
+        return response()->json($purchases);
+    }
+
+    public function detail($id) {
+        return response()->json($this->purchaseRepo->detail($id));
+    }
+
+    public function approve($id) {
+        return response()->json($this->purchaseRepo->approve($id));
     }
 }

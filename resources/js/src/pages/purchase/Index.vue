@@ -1,6 +1,5 @@
 <template>
     <div class="container-fluid">
-
         <div class="card shadow mb-4">
             <div class="card-title">
                 <div class="mt-3 d-flex justify-content-between">
@@ -57,19 +56,19 @@
                         </div>
                     </div>
                     <div class="col-lg-12 col-xl-1 d-flex align-items-center justify-content-end">
-                        <button type="button" class="btn btn-warning"><i class="fas fa-search"></i></button>
+                        <button type="button" class="btn btn-primary"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th><b>Supplier Name</b></th>
+                            <th><b>Supplier Name | Phone</b></th>
                             <th><b>Bill Number</b></th>
-                            <th><b>Date</b></th>
+                            <th><b>Invoice Date</b></th>
+                            <th><b>Due Date</b></th>
                             <th class="text-right"><b>Total</b></th>
-                            <th><b>Status</b></th>
-                            <th>#</th>
+                            <th class="text-right">#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -79,12 +78,23 @@
                             </td>
                         </tr>
                         <tr v-else v-for="(p, pI) in purchases" :key="pI">
-                            <td>{{ p.supplier_name }}</td>
+                            <td>{{ p.supplier.name }} | {{ p.supplier.phone }}</td>
                             <td>{{ p.bill_number }}</td>
-                            <td>{{ p.date }}</td>
-                            <td class="text-right">{{ p.total }}</td>
-                            <td>{{ p.status }}</td>
-                            <td></td>
+                            <td>{{ p.invoice_date }}</td>
+                            <td>{{ p.due_date }}</td>
+                            <td class="text-right">{{ p.amount_total | formatPrice }}</td>
+                            <td class="text-right">
+                                <button type="button" :disabled="p.bill_number !== 'DRAFT'" class="btn btn-warning">
+                                    <router-link :to="'/app/purchase/'+p.id+'/form'">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </router-link>
+                                </button>
+                                <router-link :to="'/app/purchase/'+p.id+'/detail'">
+                                    <button type="button" class="btn btn-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </router-link>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -99,19 +109,7 @@
         name: "Index.vue",
         data() {
             return {
-                purchases: [{
-                    "supplier_name": "Budi",
-                    "bill_number": "DRAFT",
-                    "date": "2023-01-02",
-                    "total": 1980,
-                    "status" : "DRAFT"
-                },{
-                    "supplier_name": "hartono",
-                    "bill_number": "SalInvP217SalInvS",
-                    "date": "2023-01-02",
-                    "total": 1980,
-                    "status" : "DRAFT"
-                }],
+                purchases: [],
                 formFilter: {
                     from_date: "",
                     to_date: "",
@@ -121,6 +119,25 @@
             }
         },
         created() {
+            this.getData()
         },
+        methods: {
+            async getData() {
+                try {
+                    this.$vs.loading()
+                    this.purchases = await this.$axios.get(`api/purchase`)
+                    this.$vs.loading.close()
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            },
+        }
     }
 </script>
