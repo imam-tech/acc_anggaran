@@ -14,8 +14,16 @@ class Purchase extends Model
     protected $table = 'purchases';
     protected $guarded = [];
 
-    public function purchase_items() {
-        return $this->hasMany(PurchaseItem::class, 'purchase_id', 'id');
+    public function purchase_products() {
+        return $this->hasMany(PurchaseProduct::class, 'purchase_id', 'id');
+    }
+
+    public function purchase_attachments() {
+        return $this->hasMany(PurchaseAttachment::class, 'purchase_id', 'id');
+    }
+
+    public function purchase_journals() {
+        return $this->hasMany(PurchaseJournal::class, 'purchase_id', 'id');
     }
 
     public function supplier() {

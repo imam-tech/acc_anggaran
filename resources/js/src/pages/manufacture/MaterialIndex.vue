@@ -4,7 +4,7 @@
             <div class="card-title">
                 <div class="mt-3 d-flex justify-content-between">
                     <h1 class="h3 ml-3 text-gray-800 float-left">Material</h1>
-                    <button @click="handleShowAddNewMaterial()" type="button" class="btn btn-success float-right mr-3">
+                    <button @click="handleShowAddNewMaterial()" type="button" class="btn btn-primary float-right mr-3">
                         <i class="fa fa-plus-circle"></i> Create New Material
                     </button>
                 </div>
@@ -84,11 +84,11 @@
                             <td>{{ p.unit }}</td>
                             <td class="text-right">Rp. {{ p.last_price_per_unit | formatPrice }}</td>
                             <td class="text-right">
-                                <button @click="handleShowHistory(p)" type="button" class="btn btn-primary">
-                                    <i class="fas fa-eye"></i>
-                                </button>
                                 <button @click="handleShowAddNewMaterial(p)" type="button" class="btn btn-warning">
                                     <i class="fas fa-pencil-alt"></i>
+                                </button>
+                                <button @click="handleShowHistory(p)" type="button" class="btn btn-primary">
+                                    <i class="fas fa-eye"></i>
                                 </button>
                             </td>
                         </tr>

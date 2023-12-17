@@ -4,7 +4,7 @@
             <div class="card-title">
                 <div class="mt-3 d-flex justify-content-between">
                     <h1 class="h3 ml-3 text-gray-800 float-left">Semi Finished Material</h1>
-                    <button @click="handleShowAddNewMaterial()" type="button" class="btn btn-success float-right mr-3">
+                    <button @click="handleShowAddNewMaterial()" type="button" class="btn btn-primary float-right mr-3">
                         <i class="fa fa-plus-circle"></i> Create New Semi Finished Material
                     </button>
                 </div>

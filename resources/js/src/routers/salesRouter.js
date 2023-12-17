@@ -18,17 +18,33 @@ const salesRouter = [
         },
     },
     {
-        path: 'customers',
-        name: 'sales-customer-index',
-        component:  () => import('../pages/sales/IndexCustomer'),
+        path: 'payment/:type/form',
+        name: 'sales-payment/form',
+        component:  () => import('../pages/sales/PaymentForm'),
         meta: {
             middleware: hasLoggedIn,
         },
     },
     {
-        path: 'customers/:type/form',
+        path: ':type/detail',
+        name: 'sales-detail',
+        component:  () => import('../pages/sales/Detail'),
+        meta: {
+            middleware: hasLoggedIn,
+        },
+    },
+    {
+        path: 'customer',
+        name: 'sales-customer-index',
+        component:  () => import('../pages/sales/CustomerIndex'),
+        meta: {
+            middleware: hasLoggedIn,
+        },
+    },
+    {
+        path: 'customer/:type/form',
         name: 'sales-customer-form',
-        component:  () => import('../pages/sales/FormCustomer'),
+        component:  () => import('../pages/sales/CustomerForm'),
         meta: {
             middleware: hasLoggedIn,
         },

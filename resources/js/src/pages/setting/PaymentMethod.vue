@@ -3,24 +3,9 @@
 
         <div class="card shadow mb-4">
             <div class="card-title">
-                <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Setting List</h1>
-                <router-link to="/app/setting/role">
-                    <button type="button" class="btn btn-success float-right mr-3 mt-3">
-                        <i class="fas fa-gear"></i> Role
-                    </button>
-                </router-link>
-                <router-link to="/app/setting/payment-method">
-                    <button type="button" class="btn btn-warning float-right mr-3 mt-3">
-                        <i class="fas fa-dollar-sign"></i> Payment Methods
-                    </button>
-                </router-link>
-                <router-link to="/app/setting/permission">
-                    <button type="button" class="btn btn-warning float-right mr-3 mt-3">
-                        <i class="fas fa-deaf"></i> Permission
-                    </button>
-                </router-link>
-                <button v-if="$store.state.permissions.includes('transaction_push_plugin')" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddSetting()">
-                    <i class="fa fa-plus-circle"></i> Setting
+                <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Payment Methods List</h1>
+                <button  type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddSetting()">
+                    <i class="fa fa-plus-circle"></i> Create New Payment Methods
                 </button>
             </div>
             <div class="card-body">
@@ -28,24 +13,20 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th class="text-center">Flip Name</th>
-                            <th class="text-center">Flip Key</th>
-                            <th class="text-center">Is Active</th>
+                            <th class="text-center">Name</th>
                             <th class="text-center">Created At</th>
                             <th v-if="$store.state.permissions.includes('transaction_push_plugin')" class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(flip, index) in flips" :key="index">
-                            <td>{{ flip.flip_name }}</td>
-                            <td>***********</td>
-                            <td>{{ flip.is_active ? 'Active' : 'In Active' }}</td>
-                            <td>{{ flip.created_at | formatDate }}</td>
+                        <tr v-for="(pM, index) in paymentMethods" :key="index">
+                            <td>{{ pM.name }}</td>
+                            <td>{{ pM.created_at | formatDate }}</td>
                             <td v-if="$store.state.permissions.includes('transaction_push_plugin')" class="text-right">
-                                <button type="button" class="btn btn-warning" @click="showEditSetting(flip)">
+                                <button type="button" class="btn btn-warning" @click="showEditSetting(pM)">
                                     <i class="fa fa-pencil"></i>
                                 </button>
-                                <button class="btn btn-danger" type="button" @click="handleDelete(flip.id)">
+                                <button class="btn btn-danger" type="button" @click="handleDelete(pM.id)">
                                     <i class="fa fa-minus"></i>
                                 </button>
                             </td>
@@ -67,42 +48,26 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-
-                        <form>
+                    <form @submit.prevent="submitSetting">
+                        <div class="modal-body">
                             <div class="form-group">
-                                <label>Title<span style="
+                                <label>Name<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.flip_name" placeholder="Ex: imamflip30">
+                                <input type="text" class="form-control" v-model="formData.name">
                             </div>
-                            <div class="form-group">
-                                <label>Flip Key<span v-if="formData.id === ''" style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                <input type="password" class="form-control" v-model="formData.flip_key" placeholder="Your secret key, please paste it">
-                            </div>
-                            <div class="form-group">
-                                <label>Is Active<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                <select class="form-control" v-model="formData.is_active">
-                                    <option value="1">Active</option>
-                                    <option value="0">In Active</option>
-                                </select>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="submitSetting()">Save changes</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -114,36 +79,34 @@
         name: "Index.vue",
         data() {
             return {
-                flips: [],
+                paymentMethods: [],
                 labelModal: "Add",
                 formData: {
                     id: "",
-                    flip_name: "",
-                    flip_key: "",
-                    is_active: 1
+                    name: "",
                 },
             }
         },
         created() {
-            if (!this.$store.state.permissions.includes('transaction_push_plugin')) {
-                Swal.fire({
-                    position: 'top',
-                    icon: 'error',
-                    title: 'You don\'t have an access this page',
-                    showConfirmButton: false,
-                    timer: 3000
-                }).then(async ()=>{
-                    this.$router.push('/app/')
-                })
-                return
-            }
+            // if (!this.$store.state.permissions.includes('transaction_push_plugin')) {
+            //     Swal.fire({
+            //         position: 'top',
+            //         icon: 'error',
+            //         title: 'You don\'t have an access this page',
+            //         showConfirmButton: false,
+            //         timer: 3000
+            //     }).then(async ()=>{
+            //         this.$router.push('/app/')
+            //     })
+            //     return
+            // }
             this.getData()
         },
         methods: {
             async getData() {
                 try {
                     this.$vs.loading()
-                    this.flips = await this.$axios.get('api/setting/flip')
+                    this.paymentMethods = await this.$axios.get('api/setting/payment-method')
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
@@ -159,23 +122,19 @@
             showEditSetting(tax) {
                 this.labelModal = 'Edit'
                 this.formData.id = tax.id
-                this.formData.flip_name = tax.flip_name
-                this.formData.flip_key = ""
-                this.formData.is_active = tax.is_active
+                this.formData.name = tax.name
                 $("#addSetting").modal("show")
             },
             showAddSetting() {
                 this.labelModal = 'Add'
                 this.formData.id = ""
-                this.formData.flip_name = ""
-                this.formData.flip_key = ''
-                this.formData.is_active = 1
+                this.formData.name = ""
                 $("#addSetting").modal("show")
             },
             async submitSetting() {
                 try {
                     this.$vs.loading()
-                    const respSave = await this.$axios.post('api/setting/flip', this.formData)
+                    const respSave = await this.$axios.post('api/setting/payment-method', this.formData)
                     this.$vs.loading.close()
                     if (!respSave.status) {
                         Swal.fire({
@@ -211,7 +170,7 @@
             async handleDelete(id) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Are You Sure Want To Delete This Setting?',
+                    title: 'Are You Sure Want To Delete This Payment Method?',
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     allowEnterKey: false,
@@ -220,7 +179,7 @@
                 }).then((result)=>{
                     if(result.isConfirmed == true){
                         this.$vs.loading()
-                        this.$axios.delete(`api/setting/flip/${id}/delete`).then((response)=>{
+                        this.$axios.delete(`api/setting/payment-method/${id}/delete`).then((response)=>{
                             this.$vs.loading.close()
                             if(response.status){
                                 Swal.fire({
@@ -237,7 +196,7 @@
                                 Swal.fire({
                                     icon: "error",
                                     title: "Opps...",
-                                    text: "Failed To Delete Setting : " + response.message ,
+                                    text: "Failed To Delete Payment Method : " + response.message ,
                                     allowOutsideClick: false,
                                     allowEscapeKey: false,
                                     allowEnterKey: false,

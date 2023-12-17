@@ -4,10 +4,10 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <div class="mt-3 d-flex justify-content-between">
-                    <h1 class="h3 ml-3 text-gray-800 float-left">Supplier</h1>
-                    <router-link to="/app/purchase/suppliers/create/form">
-                        <button type="button" class="btn btn-success float-right mr-3">
-                            <i class="fa fa-plus-circle"></i> Create New Supplier
+                    <h1 class="h3 ml-3 text-gray-800 float-left">Customer</h1>
+                    <router-link to="/app/sales/customer/create/form">
+                        <button type="button" class="btn btn-primary float-right mr-3">
+                            <i class="fa fa-plus-circle"></i> Create New Customer
                         </button>
                     </router-link>
                 </div>
@@ -17,31 +17,32 @@
                     <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th><b>Name</b></th>
-                            <th><b>Email</b></th>
-                            <th><b>Phone</b></th>
-                            <th><b>Identity Number</b></th>
-                            <th><b>NPWP Number</b></th>
-                            <th><b>Address</b></th>
-                            <th>#</th>
+                            <th class="text-center"><b>Name</b></th>
+                            <th class="text-center"><b>Email</b></th>
+                            <th class="text-center"><b>Phone</b></th>
+                            <th class="text-center"><b>Identity Number</b></th>
+                            <th class="text-center"><b>NPWP Number</b></th>
+                            <th class="text-center"><b>Address</b></th>
+                            <th class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-if="suppliers.length == 0">
+                        <tr v-if="customers.length == 0">
                             <td colspan="7" class="text-center">
-                                Supplier Not Found
+                                Customer Not Found
                             </td>
                         </tr>
-                        <tr v-else v-for="(c, cI) in suppliers" :key="cI">
+                        <tr v-else v-for="(c, cI) in customers" :key="cI">
                             <td>{{ c.name }}</td>
                             <td>{{ c.email }}</td>
                             <td>{{ c.phone }}</td>
                             <td>{{ c.identity_number }}</td>
                             <td>{{ c.npwp_number }}</td>
                             <td>{{ c.address }}</td>
-                            <td>
-                                <router-link :to="'suppliers/' + c.id + '/form'">
-                                    <button class="btn btn-success" type="button">
+                            <td class="text-right">
+
+                                <router-link :to="'customer/' + c.id + '/form'">
+                                    <button class="btn btn-warning" type="button">
                                         <i class="fas fa-pencil-alt"></i>
                                     </button>
                                 </router-link>
@@ -63,7 +64,7 @@
         name: "Index.vue",
         data() {
             return {
-                suppliers: []
+                customers: []
             }
         },
         created() {
@@ -73,7 +74,7 @@
             async getData() {
                 try {
                     this.$vs.loading()
-                    this.suppliers = await this.$axios.get(`api/purchase/supplier`)
+                    this.customers = await this.$axios.get(`api/sales/customer`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()

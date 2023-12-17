@@ -181,7 +181,7 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <form submit.prevent="handleAdminApproval">
+                            <form @submit.prevent="handleAdminApproval">
                                 <div class="modal-body">
                                     <div class="form-group">
                                         <label>Finance Manager<span style="
@@ -245,7 +245,7 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <form submit.prevent="handleSubmitChangeSettingFlip">
+                            <form @submit.prevent="handleSubmitChangeSettingFlip">
                                 <div class="modal-body">
                                     <div class="form-group">
                                         <label>Flip Account<span style="

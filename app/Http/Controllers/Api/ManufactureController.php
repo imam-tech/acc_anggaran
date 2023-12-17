@@ -51,8 +51,12 @@ class ManufactureController extends Controller {
         return response()->json($this->manufactureRepo->storeProduct($request->all(), $request->header('company_id')));
     }
 
-    public function indexProduct() {
+    public function indexProduct(Request $request) {
+        $filters = $request->only(['status']);
         $manufactureProducts = ManufactureProduct::with(['manufacture_product_details.manufacture_product_detail_items']);
+        if (!empty($filters['status'])) {
+            $manufactureProducts = $manufactureProducts->where('status', $filters['status']);
+        }
         $manufactureProducts = $manufactureProducts->orderByDesc('id')->get();
         return response()->json($manufactureProducts);
     }

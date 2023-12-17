@@ -9,7 +9,7 @@
                         <h1 class="h3 ml-3 text-gray-800 float-left">Accounts</h1>
                     </div>
                     <router-link to="/app/cash-and-bank/create/form">
-                        <button type="button" class="btn btn-success float-right mr-3 mt-3">
+                        <button type="button" class="btn btn-primary float-right mr-3 mt-3">
                             <i class="fa fa-plus-circle"></i> Create New Account
                         </button>
                     </router-link>

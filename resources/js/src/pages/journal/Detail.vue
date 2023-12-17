@@ -110,7 +110,7 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <form submit.prevent="handleApproveReject('rejected')">
+                        <form @submit.prevent="handleApproveReject('rejected')">
                             <div class="modal-body">
                                 <div class="form-group">
                                     <label>Rejected Note<span style="

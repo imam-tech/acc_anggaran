@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <div class="col-xl-6 text-right">
-                    <button class="btn btn-success mb-2 mr-3" @click="getData()">
+                    <button class="btn btn-success mb-2 mr-3" @click="handleGetData()">
                         <i class="fas fa-search"></i> Search
                     </button>
                 </div>
@@ -95,7 +95,7 @@
                         </tr>
                         <tr>
                             <td colspan="11" class="text-end">
-                                <pagination v-model="page" :records="totalData" :per-page="perPage" @paginate="getData"/>
+                                <pagination v-model="page" :records="totalData" :per-page="perPage" @paginate="handleGetData"/>
                             </td>
                         </tr>
                         </tbody>
@@ -128,10 +128,10 @@
             }
         },
         created() {
-            this.getData()
+            this.handleGetData()
         },
         methods: {
-            async getData() {
+            async handleGetData() {
                 try {
                     this.$vs.loading()
                     const transLocal = await this.$axios.get(`api/transaction?page=${this.page}&` + new URLSearchParams(this.formFilter).toString())

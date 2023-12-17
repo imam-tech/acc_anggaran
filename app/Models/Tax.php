@@ -13,4 +13,12 @@ class Tax extends Model
     
     protected $table = 'taxes';
     protected $guarded = [];
+
+    public function sell_coa() {
+        return $this->hasOne(Coa::class, 'id', 'sell_account_id');
+    }
+
+    public function buy_coa() {
+        return $this->hasOne(Coa::class, 'id', 'buy_account_id');
+    }
 }

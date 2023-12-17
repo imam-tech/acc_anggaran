@@ -5,8 +5,8 @@
             <div class="card-title">
                 <div class="mt-3 d-flex justify-content-between">
                     <h1 class="h3 ml-3 text-gray-800 float-left">Product</h1>
-                    <router-link to="/app/inventory/product/create/form">
-                        <button type="button" class="btn btn-success float-right mr-3">
+                    <router-link to="/app/product/create/form">
+                        <button type="button" class="btn btn-primary float-right mr-3">
                             <i class="fa fa-plus-circle"></i> Create New Product
                         </button>
                     </router-link>
@@ -17,15 +17,13 @@
                     <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th><b>Code/Sku</b></th>
-                            <th><b>Product Name</b></th>
-                            <th><b>Unit Name</b></th>
-                            <th><b>Brand Name</b></th>
-                            <th><b>Category Name</b></th>
-                            <th><b>Stock</b></th>
-                            <th class="text-right"><b>Purchase Rate</b></th>
-                            <th class="text-right"><b>Sales Rate</b></th>
-                            <th>#</th>
+                            <th class="text-center"><b>SKU Code</b></th>
+                            <th class="text-center"><b>Name</b></th>
+                            <th class="text-center"><b>Unit Name</b></th>
+                            <th class="text-center"><b>Category Name</b></th>
+                            <th class="text-center"><b>Sales Price</b></th>
+                            <th class="text-center"><b>Purchase Price</b></th>
+                            <th class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -35,23 +33,21 @@
                             </td>
                         </tr>
                         <tr v-else v-for="(p, pI) in products" :key="pI">
-                            <td>{{ p.id }}</td>
-                            <td>{{ p.product_name }}</td>
-                            <td>{{ p.unit }}</td>
-                            <td>{{ p.brand }}</td>
-                            <td>{{ p.category }}</td>
-                            <td>{{ p.stock }}</td>
-                            <td class="text-right">{{ p.purchase_price }}</td>
-                            <td class="text-right">{{ p.selling_price }}</td>
-                            <td>
+                            <td>{{ p.sku_code ?? '-' }}</td>
+                            <td>{{ p.name }}</td>
+                            <td>{{ p.unit ? p.unit.name : '-' }}</td>
+                            <td>{{ p.category ? p.category.name : '-' }}</td>
+                            <td class="text-right">{{ p.unit_sale_price | formatPrice}}</td>
+                            <td class="text-right">{{ p.unit_purchase_price | formatPrice }}</td>
+                            <td class="text-right">
                                 <router-link :to="'product/' + p.id + '/form'">
-                                    <button class="btn btn-success" type="button">
+                                    <button class="btn btn-warning" type="button">
                                         <i class="fas fa-pencil-alt"></i>
                                     </button>
                                 </router-link>
-                                <button class="btn btn-danger" type="button">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <!--<button class="btn btn-danger" type="button">-->
+                                    <!--<i class="fas fa-trash"></i>-->
+                                <!--</button>-->
                             </td>
                         </tr>
                         </tbody>
@@ -71,10 +67,10 @@
             }
         },
         created() {
-            this.getData()
+            this.handleGetData()
         },
         methods: {
-            async getData() {
+            async handleGetData() {
                 try {
                     this.$vs.loading()
                     this.products = await this.$axios.get(`api/product`)
@@ -82,11 +78,11 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             },

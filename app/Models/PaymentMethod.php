@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ProductHistory extends Model
+class PaymentMethod extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     
-    protected $table = 'product_histories';
+    protected $table = 'payment_methods';
     protected $guarded = [];
 }

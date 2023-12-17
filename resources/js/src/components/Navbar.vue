@@ -31,22 +31,10 @@
                 <span>Company</span>
             </router-link>
         </li>
-        <!--<li class="nav-item">-->
-            <!--<router-link class="nav-link" to="/app/project">-->
-                <!--<i class="fas fa-project-diagram"></i>-->
-                <!--<span>Project</span>-->
-            <!--</router-link>-->
-        <!--</li>-->
         <li class="nav-item">
             <router-link class="nav-link" to="/app/user">
                 <i class="fas fa-user"></i>
                 <span>User</span>
-            </router-link>
-        </li>
-        <li class="nav-item">
-            <router-link class="nav-link" to="/app/tax">
-                <i class="fas fa-money"></i>
-                <span>Tax</span>
             </router-link>
         </li>
         <li v-if="$store.state.permissions.includes('transaction_push_plugin')" class="nav-item">
@@ -57,7 +45,7 @@
         </li>
         <li class="nav-item bg-warning rounded">
             <select class="nav-link text-dark font-weight-bold" @change="changeCompany">
-                <option v-for="(company, cI) in companies" :value="company" :key="cI" :selected="currentCompany == company.id">{{ company.title }}</option>
+                <option v-for="(company, cI) in companies" :value="company.id" :key="cI" :selected="currentCompany == company.id">{{ company.title }}</option>
             </select>
         </li>
         <li class="nav-item">
@@ -77,7 +65,7 @@
                     <router-link class="collapse-item" to="/app/sales">
                         <span>Sales Invoice</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/sales/customers">
+                    <router-link class="collapse-item" to="/app/sales/customer">
                         <span>Customer</span>
                     </router-link>
                 </div>
@@ -92,10 +80,10 @@
             <div id="collapsePurchase" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <router-link class="collapse-item" to="/app/purchase">
-                        <span>Purchase Bills</span>
+                        <span>Purchase Bill</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/purchase/suppliers">
-                        <span>Suppliers</span>
+                    <router-link class="collapse-item" to="/app/purchase/supplier">
+                        <span>Supplier</span>
                     </router-link>
                 </div>
             </div>
@@ -104,21 +92,18 @@
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInventory"
                aria-expanded="true" aria-controls="collapseInventory">
                 <i class="fas fa-box"></i>
-                <span>Inventory</span>
+                <span>Product</span>
             </a>
             <div id="collapseInventory" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <router-link class="collapse-item" to="/app/inventory/product/">
-                        <span>Products</span>
+                    <router-link class="collapse-item" to="/app/product">
+                        <span>List</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/inventory/product-category/">
-                        <span>Product Category</span>
+                    <router-link class="collapse-item" to="/app/product/category">
+                        <span>Category</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/inventory/product-brand/">
-                        <span>Product Brand</span>
-                    </router-link>
-                    <router-link class="collapse-item" to="/app/inventory/unit/">
-                        <span>Unit Of Measurement</span>
+                    <router-link class="collapse-item" to="/app/product/unit">
+                        <span>Unit</span>
                     </router-link>
                 </div>
             </div>
@@ -131,13 +116,13 @@
             </a>
             <div id="collapseManufacture" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <router-link class="collapse-item" to="/app/manufacture/product/">
+                    <router-link class="collapse-item" to="/app/manufacture/product">
                         <span>Products</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/manufacture/semi-finished-material/">
+                    <router-link class="collapse-item" to="/app/manufacture/semi-finished-material">
                         <span>Semi Finished Material</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/manufacture/material/">
+                    <router-link class="collapse-item" to="/app/manufacture/material">
                         <span>Material</span>
                     </router-link>
                 </div>
@@ -150,16 +135,24 @@
             </router-link>
         </li>
         <li class="nav-item">
-            <router-link class="nav-link" to="/app/coa">
-                <i class="fas fa-chart-area"></i>
-                <span>Coa</span>
-            </router-link>
-        </li>
-        <li class="nav-item">
-            <router-link class="nav-link" to="/app/journal">
-                <i class="fas fa-journal-whills"></i>
-                <span>Journal</span>
-            </router-link>
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAccounting"
+               aria-expanded="true" aria-controls="collapseAccounting">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Accounting</span>
+            </a>
+            <div id="collapseAccounting" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <router-link class="collapse-item" to="/app/journal">
+                        <span>Journal</span>
+                    </router-link>
+                    <router-link class="collapse-item" to="/app/coa">
+                        <span>Chart of Account</span>
+                    </router-link>
+                    <router-link class="collapse-item" to="/app/tax">
+                        <span>Tax</span>
+                    </router-link>
+                </div>
+            </div>
         </li>
         <li class="nav-item">
             <router-link class="nav-link" to="/app/report">
@@ -194,7 +187,7 @@
         },
         methods: {
             changeCompany(e) {
-                const comp = e.target.value
+                const comp = this.companies.find((x) => x.id == e.target.value)
                 Cookies.set('current_company', comp.id, { expires: 1 })
                 Cookies.set('current_company_title', comp.title, { expires: 1 })
                 window.location.reload();

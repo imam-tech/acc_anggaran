@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\PaymentMethod;
 use App\Models\SettingFlip;
 use App\Services\FlipService;
 
@@ -56,6 +57,45 @@ class SettingRepository {
             $settingFlip->delete();
 
             return resultFunction("Deleting SettingFlip successfully", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code PR-Dl: catch " . $e->getMessage());
+        }
+    }
+
+    public function storePm($data) {
+        try {
+            $validator = \Validator::make($data, [
+                "name" => "required",
+            ]);
+
+            if ($validator->fails()) return resultFunction("Err code TR-St: " . collect($validator->errors()->all())->implode(" , "));
+
+
+            if ($data['id']) {
+                $pm = PaymentMethod::find($data['id']);
+                if (!$pm) return resultFunction("Err code TR-St: payment method not found for ID " . $data['id']);
+            } else {
+                $pm = new PaymentMethod();
+            }
+
+            $pm->name = $data['name'];
+            $pm->save();
+
+            $message = $data['id'] ? "Updating Payment Method successfully" : "Creating Payment Method successfully";
+            return resultFunction($message, true, $pm);
+        } catch (\Exception $e) {
+            return resultFunction("Err code TR-St: catch " . $e->getMessage());
+        }
+    }
+
+    public function deletePm($id) {
+        try {
+            $pm = PaymentMethod::find($id);
+            if (!$pm) return resultFunction("Err code PR-Dl: payment method not found for ID " .$id);
+
+            $pm->delete();
+
+            return resultFunction("Deleting Payment Method successfully", true);
         } catch (\Exception $e) {
             return resultFunction("Err code PR-Dl: catch " . $e->getMessage());
         }

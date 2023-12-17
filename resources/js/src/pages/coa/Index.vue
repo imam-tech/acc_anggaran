@@ -82,7 +82,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form submit.prevent="handleUploadCoaBulk">
+                    <form @submit.prevent="handleUploadCoaBulk">
                         <div class="modal-body">
                             <div class="form-group">
                                 <label  class="text-danger font-weight-bold font-italic">Template Upload File</label>
@@ -151,7 +151,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form submit.prevent="submitCoa">
+                    <form @submit.prevent="submitCoa">
                         <div class="modal-body">
                             <div class="form-group">
                                 <label>Category<span style="

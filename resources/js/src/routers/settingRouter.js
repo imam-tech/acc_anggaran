@@ -24,6 +24,14 @@ const settingRouter = [
         meta: {
             middleware: hasLoggedIn,
         },
+    },
+    {
+        path: 'payment-method',
+        name: 'setting-pm',
+        component:  () => import('../pages/setting/PaymentMethod'),
+        meta: {
+            middleware: hasLoggedIn,
+        },
     }
 ];
 

@@ -35,23 +35,6 @@ class ProductController extends Controller {
         return response()->json($this->productRepo->deleteUnit($id));
     }
 
-    public function indexBrand(Request $request) {
-        $filters = $request->only([]);
-        $productBrands = ProductBrand::with([]);
-
-        $productBrands = $productBrands->where('company_id', $request->header('company_id'));
-        $productBrands = $productBrands->get();
-        return response()->json($productBrands);
-    }
-
-    public function storeBrand(Request $request) {
-        return response()->json($this->productRepo->storeBrand($request->all(), $request->header('company_id')));
-    }
-
-    public function deleteBrand($id) {
-        return response()->json($this->productRepo->deleteBrand($id));
-    }
-
     public function indexCategory(Request $request) {
         $filters = $request->only([]);
         $productCategorys = ProductCategory::with([]);
@@ -62,7 +45,7 @@ class ProductController extends Controller {
     }
 
     public function storeCategory(Request $request) {
-        return response()->json($this->productRepo->storeCategory($request->all(), $request->header('company_id')));
+        return response()->json($this->productRepo->storeCategory($request, $request->header('company_id')));
     }
 
     public function deleteCategory($id) {
@@ -70,19 +53,22 @@ class ProductController extends Controller {
     }
 
     public function store(Request $request) {
-        return response()->json($this->productRepo->store($request->all(), $request->header('company_id')));
+        return response()->json($this->productRepo->store($request, $request->header('company_id')));
     }
 
     public function index(Request $request) {
-        $filters = $request->only([]);
-        $productBrands = Product::with([]);
+        $filters = $request->only(['is_sale', 'is_purchase']);
+        $products = Product::with(['category', 'unit', 'sale_tax', 'purchase_tax']);
 
-        $productBrands = $productBrands->where('company_id', $request->header('company_id'));
-        $productBrands = $productBrands->get();
-        return response()->json($productBrands);
+        if (!empty($filters['is_sale'])) $products = $products->where('is_sale', $filters['is_sale']);
+        if (!empty($filters['is_purchase'])) $products = $products->where('is_purchase', $filters['is_purchase']);
+
+        $products = $products->where('company_id', $request->header('company_id'));
+        $products = $products->get();
+        return response()->json($products);
     }
 
-    public function detail($id) {
-        return response()->json($this->productRepo->detail($id));
+    public function detail($id, Request $request) {
+        return response()->json($this->productRepo->detail($id, $request->header('company_id')));
     }
 }

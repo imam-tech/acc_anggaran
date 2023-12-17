@@ -4,8 +4,8 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <div class="mt-3 d-flex justify-content-between">
-                    <h1 class="h3 ml-3 text-gray-800 float-left">Unit Of Measurement</h1>
-                    <button @click="handleShowCrudModal()" type="button" class="btn btn-success float-right mr-3">
+                    <h1 class="h3 ml-3 text-gray-800 float-left">Unit</h1>
+                    <button @click="handleShowCrudModal()" type="button" class="btn btn-primary float-right mr-3">
                         <i class="fa fa-plus-circle"></i> Create New Unit
                     </button>
                 </div>
@@ -15,20 +15,20 @@
                     <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th><b>Unit Name</b></th>
-                            <th>#</th>
+                            <th class="text-center"><b>Name</b></th>
+                            <th class="text-center"><b>#</b></th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr v-if="units.length == 0">
                             <td colspan="3" class="text-center">
-                                Product Unit Not Found
+                                Unit Not Found
                             </td>
                         </tr>
                         <tr v-else v-for="(p, pI) in units" :key="pI">
-                            <td>{{ p.title }}</td>
-                            <td>
-                                <button @click="handleShowCrudModal(p)" class="btn btn-success" type="button">
+                            <td>{{ p.name }}</td>
+                            <td class="text-right">
+                                <button @click="handleShowCrudModal(p)" class="btn btn-warning" type="button">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
                                 <button @click="handleDelete(p.id)" class="btn btn-danger" type="button">
@@ -46,24 +46,28 @@
                 <div class="modal-content">
                     <form @submit.prevent="handleSubmit()">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">{{ labelModal }} Category</h5>
+                            <h5 class="modal-title" id="exampleModalLabel">{{ labelModal }} Unit</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <label>Unit<span style="
+                                <label>Name<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.title" required>
+                                <input type="text" class="form-control" v-model="formData.name" required>
                             </div>
                         </div>
                         <div class="modal-footer flex justify-content-between">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -74,22 +78,22 @@
 
 <script>
     export default {
-        name: "Index.vue",
+        name: "UnitIndex.vue",
         data() {
             return {
                 units: [],
                 labelModal: "Add",
                 formData: {
                     'id': "",
-                    'title': ""
+                    'name': ""
                 }
             }
         },
         created() {
-            this.getData()
+            this.handleGetData()
         },
         methods: {
-            async getData() {
+            async handleGetData() {
                 try {
                     this.$vs.loading()
                     this.units = await this.$axios.get(`api/product/unit`)
@@ -97,14 +101,15 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             },
+
             async handleSubmit() {
                 try {
                     this.$vs.loading()
@@ -128,24 +133,25 @@
                             timer: 2500
                         })
                         $("#addProductCategory").modal('hide')
-                        this.getData()
+                        this.handleGetData()
                     }
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             },
+
             handleShowCrudModal(p = null) {
                 if (p === null) {
                     this.formData = {
                         'id': "",
-                        'title': ""
+                        'name': ""
                     }
                 } else {
                     this.formData = p
@@ -156,7 +162,7 @@
             async handleDelete(id) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Are You Sure Want To Delete This Product Unit?',
+                    title: 'Are You Sure Want To Delete This Unit?',
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     allowEnterKey: false,
@@ -176,13 +182,13 @@
                                     allowEscapeKey: false,
                                     allowEnterKey: false
                                 }).then(async (res)=>{
-                                    if(res.isConfirmed == true) await this.getData()
+                                    if(res.isConfirmed == true) await this.handleGetData()
                                 })
                             }else{
                                 Swal.fire({
                                     icon: "error",
                                     title: "Opps...",
-                                    text: "Failed To Delete Product Unit : " + response.message ,
+                                    text: "Failed To Delete Unit : " + response.message ,
                                     allowOutsideClick: false,
                                     allowEscapeKey: false,
                                     allowEnterKey: false,

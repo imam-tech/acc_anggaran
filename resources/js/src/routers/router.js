@@ -19,7 +19,7 @@ import settingRouter from './settingRouter';
 import cashAndBankRouter from './cashAndBankRouter';
 import salesRouter from './salesRouter';
 import purchaseRouter from './purchaseRouter';
-import inventoryRouter from './inventoryRouter';
+import productRouter from './productRouter';
 import budgetRouter from './budgetRouter';
 import manufactureRouter from './manufactureRouter';
 
@@ -108,9 +108,9 @@ const router = new Router({
                     children: purchaseRouter
                 },
                 {
-                    path: 'inventory',
+                    path: 'product',
                     component: MenuLayout,
-                    children: inventoryRouter
+                    children: productRouter
                 },
                 {
                     path: 'budget',

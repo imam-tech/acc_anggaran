@@ -18,8 +18,8 @@ class CreateSuppliersTable extends Migration
             $table->integer('company_id');
             $table->string('name');
             $table->string('email')->nullable();
-            $table->string('phone');
-            $table->string('identity_number');
+            $table->string('phone')->nullable();
+            $table->string('identity_number')->nullable();
             $table->string('npwp_number')->nullable();
             $table->string('address')->nullable();
             $table->timestamps();

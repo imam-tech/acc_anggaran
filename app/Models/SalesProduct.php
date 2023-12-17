@@ -13,4 +13,12 @@ class SalesProduct extends Model
     
     protected $table = 'sales_products';
     protected $guarded = [];
+
+    public function product() {
+        return $this->hasOne(Product::class, 'id', 'product_id');
+    }
+
+    public function tax() {
+        return $this->hasOne(Tax::class, 'id', 'tax_id');
+    }
 }

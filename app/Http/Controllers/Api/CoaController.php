@@ -7,6 +7,7 @@ use App\Models\Cashflow;
 use App\Models\Coa;
 use App\Models\CoaCategory;
 use App\Models\CoaPosting;
+use App\Models\Company;
 use App\Models\Transaction;
 use App\Repositories\CoaRepository;
 use Illuminate\Http\Request;
@@ -28,13 +29,14 @@ class CoaController extends Controller {
             $coas = $coas->where('is_active', $filters['is_active']);
         }
         $coas = $coas->where('company_id', $transaction->company_id);
-        $coas = $coas->get();
+        $coas = $coas->orderBy('account_code')->get();
         return response()->json($coas);
     }
 
 
     public function index(Request $request) {
-        $filters = $request->only(['is_active', 'category_id']);
+
+        $filters = $request->only(['is_active', 'category_id', 'coa_name']);
         $coas = Coa::with(['coaCategory', 'coaPosting', 'journalItem', 'initialBalance']);
 
         if (!empty($filters['is_active'])) {
@@ -44,8 +46,15 @@ class CoaController extends Controller {
         if (!empty($filters['category_id'])) {
             $coas = $coas->where('category_id', $filters['category_id']);
         }
+
+        if (!empty($filters['coa_name'])) {
+            $company = Company::find($request->header('company_id'));
+            $coaCategory = CoaCategory::where('flag', $company->type)->where('name', $filters['coa_name'])->first();
+            $coas = $coas->where('category_id', $coaCategory->id);
+        }
+
         $coas = $coas->where('company_id', $request->header('company_id'));
-        $coas = $coas->get();
+        $coas = $coas->orderBy('account_code')->get();
         return response()->json($coas);
     }
 

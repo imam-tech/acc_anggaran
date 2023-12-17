@@ -8,31 +8,28 @@
                 </router-link>
             </div>
             <div class="card-body">
-                <form>
+                <form @submit.prevent="handleSubmit">
                     <div class="row">
                         <div class="col-lg-6 col-xl-3">
                             <div class="form-group">
-                                <label>#Invoice Number<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                <input type="text" class="form-control" value="DRAFT" disabled>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-xl-3">
-                            <div class="form-group">
-                                <label>Customer Name<span style="
+                                <label>Customer<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
                                 <div class="d-flex justify-content-between">
-                                    <select class="form-control" v-model="formData.customer_name">
-                                        <option value="">--Choose--</option>
-                                        <option v-for="(c, cI) in customers" :value="c.id">{{ c.name }}</option>
-                                    </select>
-                                    <button class="btn btn-warning ml-2" type="button">
+                                    <v-select v-model="formData.customer_id" :options="customers" :reduce="p => p.id" style="width: 100%" label="name" @input="handleChangeCustomer">
+                                        <template #search="{attributes, events}">
+                                            <input
+                                                class="vs__search"
+                                                :required="!formData.customer_id"
+                                                v-bind="attributes"
+                                                v-on="events"
+                                            />
+                                        </template>
+                                        <span slot="no-options">Customer not found</span>
+                                    </v-select>
+                                    <button class="btn btn-warning ml-2" type="button" @click="handleShowAddModalCustomer()">
                                         <i class="fas fa-plus-circle"></i>
                                     </button>
                                 </div>
@@ -40,12 +37,26 @@
                         </div>
                         <div class="col-lg-6 col-xl-3">
                             <div class="form-group">
-                                <label>Invoice date<span style="
+                                <label>Email</label>
+                                <input type="email" class="form-control" v-model="formData.customer_email">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 col-xl-3">
+                            <div class="form-group">
+                                <label>#Transaction Number</label>
+                                <input type="text" class="form-control" value="DRAFT" disabled>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-xl-3">
+                            <div class="form-group">
+                                <label>Transaction date<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="date" class="form-control" v-model="formData.invoice_date">
+                                <input type="date" class="form-control" v-model="formData.transaction_date" required>
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-3">
@@ -55,22 +66,35 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="date" class="form-control" v-model="formData.due_date">
+                                <input type="date" class="form-control" v-model="formData.due_date" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-xl-3">
+                            <div class="form-group">
+                                <label>Billing Address</label>
+                                <textarea class="form-control" v-model="formData.billing_address" cols="30" rows="5"></textarea>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                                <label>Product Name<span style="
+                                <label>Product<span v-if="formData.products.length === 0 ? !selectedProduct : false" style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select class="form-control" v-model="selectedProduct" @change="handleChangeProduct">
-                                    <option value=""></option>
-                                    <option v-for="(c, cI) in products" :value="cI" :key="cI">{{ c.product_name }}</option>
-                                </select>
+                                <v-select v-model="selectedProduct" :options="products" :reduce="p => p.id" style="width: 100%" label="name" @input="handleChangeProduct">
+                                    <template #search="{attributes, events}">
+                                        <input
+                                                class="vs__search"
+                                                :required="formData.products.length === 0 ? !selectedProduct : false"
+                                                v-bind="attributes"
+                                                v-on="events"
+                                        />
+                                    </template>
+                                    <span slot="no-options">Product not found</span>
+                                </v-select>
                             </div>
                         </div>
                     </div>
@@ -79,11 +103,15 @@
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
-                                    <th>Product/Service</th>
+                                    <th>Product</th>
+                                    <th>Description</th>
                                     <th>Quantity</th>
-                                    <th>Unit</th>
-                                    <th>Rate</th>
-                                    <th>Amount</th>
+                                    <th>Units</th>
+                                    <th>Unit Price</th>
+                                    <th>Sub Total</th>
+                                    <th>Tax</th>
+                                    <th>Tax Amount</th>
+                                    <th>Grand Total</th>
                                     <th>#</th>
                                 </tr>
                                 </thead>
@@ -91,13 +119,23 @@
                                 <tr v-for="(fp, fpI) in formData.products" :key="fpI">
                                     <td>{{ fp.product }}</td>
                                     <td>
+                                        <input type="text" class="form-control" v-model="formData.products[fpI].description">
+                                    </td>
+                                    <td>
                                         <input type="number" class="form-control" v-model="formData.products[fpI].quantity" @keyup="handleChange()">
                                     </td>
                                     <td>{{ fp.unit }}</td>
                                     <td>
-                                        <input type="number" class="form-control" v-model="formData.products[fpI].rate" @keyup="handleChange()">
+                                        <input type="number" class="form-control" v-model="formData.products[fpI].unit_price" @keyup="handleChange()">
                                     </td>
-                                    <td>{{ fp.amount }}</td>
+                                    <td>{{ fp.sub_total | formatPrice }}</td>
+                                    <td>
+                                        <v-select v-model="formData.products[fpI].tax_id" :options="taxes" :reduce="p => p.id" style="width: 100%" label="title" @input="handleChangeTax(fpI)">
+                                            <span slot="no-options">Tax not found</span>
+                                        </v-select>
+                                    </td>
+                                    <td>{{ fp.tax_amount | formatPrice }}</td>
+                                    <td>{{ fp.grand_total | formatPrice }}</td>
                                     <td>
                                         <button class="btn btn-danger" @click="handleDeleteProduct(fpI)" type="button">
                                             <i class="fas fa-trash"></i>
@@ -110,21 +148,79 @@
                     </div>
                     <div class="row">
                         <div class="col-xl-6">
-                            <div class="form-group">
-                                <label>Description<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                <textarea v-model="formData.description" class="form-control" cols="30" rows="5"></textarea>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Message</label>
+                                        <textarea v-model="formData.message" class="form-control" cols="30" rows="5"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Attachment</label>
+                                        <table class="table table-striped">
+                                            <tr v-for="(f, fI) in fileImages" :key="fI">
+                                                <td>
+                                                    <i :class="handleShowIconFile(f.type)"></i>
+                                                </td>
+                                                <td>
+                                                    <span class="d-flex flex-column">
+                                                        <span class="text-primary">{{ f.name }}</span>
+                                                        <span>{{ handleSizeFile(f.size) }}</span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <button @click="handleDeleteAttachment(fI)" type="button" class="btn btn-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div v-if="fileImages.length < 5">
+                                            <input type="file" class="form-control" @change="handleChangeImage" />
+                                            <span>Files can be Excel, Word, PDF, JPG, or PNG (maximum 5 files and 5 MB per file).</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xl-6">
                             <table class="table">
                                 <tr>
-                                    <td>Grand Total</td>
+                                    <td>Sub Total</td>
+                                    <td class="text-right">
+                                        {{ subTotal | formatPrice }}
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>
-                                        <input type="text" class="form-control" :value="grandTotal">
+                                        Discount
+                                        <div class="">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <select class="form-control" v-model="formData.discount_type" @change="handleChange">
+                                                        <option value="%">%</option>
+                                                        <option value="Rp">Rp</option>
+                                                    </select>
+                                                </div>
+                                                <input type="text" class="form-control" v-model="formData.discount_amount" @keyup="handleChange">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-danger text-right">
+                                        ({{ discountAmount | formatPrice }})
+                                    </td>
+                                </tr>
+                                <tr v-if="taxAmountTotal > 0">
+                                    <td>Tax Amount Total</td>
+                                    <td class="text-right">
+                                        {{ taxAmountTotal | formatPrice }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Grand Total</td>
+                                    <td class="text-right">
+                                        {{ grandTotal | formatPrice }}
                                     </td>
                                 </tr>
                             </table>
@@ -139,6 +235,72 @@
                     </div>
                 </form>
             </div>
+            <div class="modal fade" id="addNewCustomer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <form @submit.prevent="handleSubmitAddNewCustomer">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Add New Customer</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Name<span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    font-style: italic;
+                                ">*) required</span></label>
+                                            <input type="text" class="form-control" v-model="formAddCustomer.name" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Email</label>
+                                            <input type="text" class="form-control" v-model="formAddCustomer.email">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Phone</label>
+                                            <input type="text" class="form-control" v-model="formAddCustomer.phone">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Identity Number</label>
+                                            <input type="text" class="form-control" v-model="formAddCustomer.identity_number">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>NPWP Number</label>
+                                            <input type="text" class="form-control" v-model="formAddCustomer.npwp_number">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Address</label>
+                                            <input type="text" class="form-control" v-model="formAddCustomer.address">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer flex justify-content-between">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                    <i class="fas fa-times"></i> Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -150,61 +312,349 @@
         data() {
             return {
                 formData: {
-                    customer_name: "",
-                    invoice_date: "",
+                    id: "",
+                    customer_id: "",
+                    customer_email: "",
+                    billing_address: "",
+                    transaction_date: (new Date()).toISOString().split('T')[0],
                     due_date: "",
                     products: [],
-                    description: ""
+                    discount_type: '%',
+                    discount_amount: 0,
+                    message: ""
                 },
                 selectedProduct: "",
                 customers: [],
                 products: [],
-                grandTotal: 0
+                subTotal: 0,
+                discountAmount: 0,
+                taxAmountTotal: 0,
+                grandTotal: 0,
+                formAddCustomer: {
+                    id: "",
+                    name: "",
+                    email: "",
+                    phone: "",
+                    identity_number: "",
+                    npwp_number: "",
+                    address: ""
+                },
+                taxes: [],
+                fileImages: [],
             }
         },
 
         mounted() {
             this.getDataOther()
+            if (this.$route.params.type !== 'create') {
+                this.handleGet()
+            }
         },
         methods: {
+            handleDeleteAttachment(index) {
+                this.fileImages = this.fileImages.filter((item, ind) => ind !== index)
+            },
+
+            handleChangeCustomer(e) {
+                const selectCustomer = this.customers.find((x) => x.id === e)
+                this.formData.customer_email = selectCustomer.email
+            },
+
+            async handleGet() {
+                try {
+                    this.$vs.loading()
+                    const salesLocal = await this.$axios.get(`api/sales/${this.$route.params.type}/detail`)
+                    this.$vs.loading.close()
+                    if (!salesLocal.status) {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'error',
+                            title: salesLocal.message,
+                            showConfirmButton: false,
+                            timer: 2500
+                        })
+                        return
+                    }
+                    if (salesLocal.data.paid_date) {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'warning',
+                            title: "Sales can't be editable, the status is already paid",
+                            showConfirmButton: false,
+                            timer: 2500
+                        }).then(()=>{
+                            this.$router.push(`/app/sales/${salesLocal.data.id}/detail`);
+                        })
+                        return
+                    }
+                    this.formData.id = salesLocal.data.id
+                    this.formData.customer_id = salesLocal.data.customer_id
+                    this.formData.customer_email = salesLocal.data.customer_email ?? null
+                    this.formData.billing_address = salesLocal.data.billing_address ?? ''
+                    this.formData.transaction_date = salesLocal.data.transaction_date
+                    this.formData.due_date = salesLocal.data.due_date ?? ''
+                    this.formData.message = salesLocal.data.message ?? ''
+                    this.formData.discount_type = salesLocal.data.discount_type
+                    this.formData.discount_amount = salesLocal.data.discount_amount
+                    salesLocal.data.sales_products.forEach((x) => {
+                        this.formData.products.push({
+                            id: x.product_id,
+                            product: x.product.name,
+                            description: x.description ?? '',
+                            quantity: x.quantity,
+                            unit: x.unit,
+                            unit_price: x.unit_price,
+                            sub_total: 0,
+                            tax_id: x.tax_id ?? '',
+                            tax_percentage: x.tax_percentage ?? '',
+                            tax_amount: 0,
+                            grand_total: 0
+                        })
+                    })
+                    salesLocal.data.sales_attachments.forEach((x) => {
+                        this.fileImages.push({
+                            name: x.name,
+                            type: x.type,
+                            size: x.size,
+                            ori: x.id
+                        })
+                    })
+                    this.handleChange()
+
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 2500
+                    })
+                }
+            },
+
+            async handleSubmit() {
+                const formData = new FormData()
+                formData.append('id', this.formData.id)
+                formData.append('customer_id', this.formData.customer_id)
+                formData.append('customer_email', this.formData.customer_email ?? '')
+                formData.append('billing_address', this.formData.billing_address)
+                formData.append('products', JSON.stringify(this.formData.products))
+                formData.append('transaction_date', this.formData.transaction_date)
+                formData.append('due_date', this.formData.due_date)
+                formData.append('discount_type', this.formData.discount_type)
+                formData.append('discount_amount', this.formData.discount_amount)
+                formData.append('message', this.formData.message)
+                this.fileImages.forEach((x, i) => {
+                    formData.append(`attachment${i}`, x.ori)
+                })
+
+                try {
+                    this.$vs.loading()
+                    const resp = await this.$axios.post(`api/sales`,
+                        formData, {
+                            headers: {
+                                "Content-Type": "multipart/form-data"
+                            }
+                        })
+                    this.$vs.loading.close()
+                    if (!resp.status)  {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'error',
+                            title: resp.message,
+                            showConfirmButton: false,
+                            timer: 2500
+                        })
+                        return
+                    } else {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'success',
+                            title: resp.message,
+                            showConfirmButton: false,
+                            timer: 2500
+                        })
+                        this.$router.push(`/app/sales/${resp.data.id}/detail`)
+                    }
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 2500
+                    })
+                }
+            },
+
+            handleSizeFile(size) {
+                if (size < 1000000)  {
+                    return parseFloat(size/1000).toFixed(0) + ' Kb'
+                } else {
+                    return parseFloat(size / 1000000).toFixed(2) + ' Mb'
+                }
+            },
+
+            handleShowIconFile(type) {
+                if (type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'fas fa-file-word-o';
+                if (type === 'application/pdf') return 'fas fa-file-pdf-o';
+                if (type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') return 'fas fa-file-excel-o'
+                if (['image/jpg', 'image/jpeg'].includes(type)) return 'fas fa-file-image-o'
+                if (type === 'image/png') return 'fa-picture-o'
+            },
+
+            handleChangeImage(e) {
+                const fileSel = e.target.files[0]
+                if (fileSel.size > 5000000) {
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: "Maximum size of file is 5 Mb",
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                    return
+                }
+                const types = ['application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/pdf',
+                    'image/jpg', 'image/jpeg', 'image/png'];
+                if (!types.includes(fileSel.type)) {
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: "Please input the type of file from Excel, Word, PDF, JPG, or PNG",
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                    return
+                }
+                this.fileImages.push({
+                    name: fileSel.name,
+                    type: fileSel.type,
+                    size: fileSel.size,
+                    ori: fileSel
+                })
+            },
+
+            handleChangeTax(index) {
+                const selectTax = this.taxes.find((x) => x.id === this.formData.products[index].tax_id)
+                this.formData.products[index].tax_percentage = selectTax.amount
+                this.handleChange()
+            },
+
+            handleShowAddModalCustomer() {
+                $("#addNewCustomer").modal('show')
+            },
+
+            async handleSubmitAddNewCustomer() {
+                try {
+                    this.$vs.loading()
+                    const resp = await this.$axios.post(`api/sales/customer`, this.formAddCustomer)
+                    this.$vs.loading.close()
+                    if (!resp.status)  {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'error',
+                            title: resp.message,
+                            showConfirmButton: false,
+                            timer: 2500
+                        })
+                        return
+                    } else {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'success',
+                            title: resp.message,
+                            showConfirmButton: false,
+                            timer: 2500
+                        })
+                        $("#addNewCustomer").modal('hide')
+                        this.getDataOther()
+                    }
+                } catch (e) {
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 2500
+                    })
+                }
+            },
+
             handleChange() {
                 let grandTotal = 0
+                let taxAmountTotal = 0
+                let subTotal = 0
                 const prods = this.formData.products
                 prods.forEach((x, i) => {
-                    this.formData.products[i].amount = x.quantity * x.rate
-                    grandTotal = grandTotal + this.formData.products[i].amount
+                    this.formData.products[i].sub_total = x.quantity * x.unit_price
+                    let taxAmount = 0;
+                    if (x.tax_id) {
+                        taxAmount = x.tax_percentage * this.formData.products[i].sub_total / 100;
+                    }
+                    this.formData.products[i].tax_amount = taxAmount;
+                    this.formData.products[i].grand_total = this.formData.products[i].sub_total + this.formData.products[i].tax_amount;
+                    subTotal = subTotal + this.formData.products[i].sub_total
+                    grandTotal = grandTotal + this.formData.products[i].grand_total
+                    taxAmountTotal = taxAmountTotal + this.formData.products[i].tax_amount
                 })
-                this.grandTotal = grandTotal
+                let discountAmount = 0;
+                if (this.formData.discount_amount > 0) {
+                    if (this.formData.discount_type === '%') {
+                        discountAmount = this.formData.discount_amount * subTotal / 100;
+                    }  else {
+                        discountAmount = this.formData.discount_amount
+                    }
+                }
+                this.subTotal = subTotal
+                this.discountAmount = discountAmount
+                this.taxAmountTotal = taxAmountTotal
+                this.grandTotal = discountAmount > 0 ? (grandTotal - discountAmount) : grandTotal
             },
+
             handleDeleteProduct(index) {
                 this.formData.products = this.formData.products.filter((item, ind) => ind !== index)
                 this.handleChange()
+                this.selectedProduct = '';
             },
+
             handleChangeProduct(e) {
-                const prod = this.products[e.target.value]
+                const selectProdLocal = this.products.find((x) => x.id === e)
                 this.formData.products.push({
-                    product: prod.product_name,
+                    id: selectProdLocal.id,
+                    product: selectProdLocal.name,
+                    description: selectProdLocal.description ?? '',
                     quantity: 1,
-                    unit: prod.unit,
-                    rate: prod.selling_price,
-                    amount: prod.selling_price
+                    unit: selectProdLocal.unit ?? 'Unit',
+                    unit_price: selectProdLocal.unit_sale_price,
+                    sub_total: 0,
+                    tax_id: selectProdLocal.sale_tax_id,
+                    tax_percentage: selectProdLocal.sale_tax ? selectProdLocal.sale_tax.amount : 0,
+                    tax_amount: 0,
+                    grand_total: 0
                 })
                 this.handleChange()
             },
+
             async getDataOther() {
                 try {
                     this.$vs.loading()
                     this.customers = await this.$axios.get(`api/sales/customer`)
-                    this.products = await this.$axios.get(`api/product`)
+                    this.products = await this.$axios.get(`api/product?is_sale=1`)
+                    this.taxes = await this.$axios.get(`api/tax`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2000
                     })
                 }
             },

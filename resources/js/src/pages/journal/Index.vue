@@ -115,7 +115,7 @@
                                 </router-link>
 
                                 <button @click="handleDelete(journal.id)" v-if="journal.approved_at === null && journal.rejected_at === null" type="button" class="btn btn-danger">
-                                    <i class="fa fa-remove"></i>
+                                    <i class="fa fa-trash"></i>
                                 </button>
                             </td>
                         </tr>

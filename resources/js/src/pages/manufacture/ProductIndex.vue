@@ -5,7 +5,7 @@
                 <div class="mt-3 d-flex justify-content-between">
                     <h1 class="h3 ml-3 text-gray-800 float-left">Manufacture Product</h1>
                     <router-link to="/app/manufacture/product/create/form">
-                        <button type="button" class="btn btn-success float-right mr-3">
+                        <button type="button" class="btn btn-primary float-right mr-3">
                             <i class="fa fa-plus-circle"></i> Create New Manufacture Product
                         </button>
                     </router-link>
@@ -107,11 +107,11 @@
                                 </table>
                             </td>
                             <td class="text-right">
-                                <button type="button" :disabled="p.status !== 'DRAFT'" class="btn btn-warning">
-                                    <router-link :to="'/app/manufacture/product/'+p.id+'/form'">
-                                        <i class="fas fa-pencil-alt"></i>
-                                    </router-link>
-                                </button>
+                                <router-link :to="'/app/manufacture/product/'+p.id+'/form'">
+                                        <button type="button" :disabled="p.status !== 'DRAFT'" class="btn btn-warning">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </button>
+                                </router-link>
                                 <router-link :to="'/app/manufacture/product/'+p.id+'/detail'">
                                     <button type="button" class="btn btn-primary">
                                         <i class="fas fa-eye"></i>

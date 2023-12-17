@@ -14,12 +14,6 @@ Route:: group(['prefix' => 'product', 'middleware' => 'auth:sanctum'], function 
         Route::delete('/{id}/delete', [ProductController::class, 'deleteUnit']);
     });
 
-    Route::group(['prefix' => 'brand'], function () {
-        Route::post('/', [ProductController::class, 'storeBrand']);
-        Route::get('/', [ProductController::class, 'indexBrand']);
-        Route::delete('/{id}/delete', [ProductController::class, 'deleteBrand']);
-    });
-
     Route::group(['prefix' => 'category'], function () {
         Route::post('/', [ProductController::class, 'storeCategory']);
         Route::get('/', [ProductController::class, 'indexCategory']);

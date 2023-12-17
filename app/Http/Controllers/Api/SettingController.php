@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\PaymentMethod;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\SettingFlip;
@@ -45,5 +46,20 @@ class SettingController extends Controller {
     public function indexPermission() {
         $roles = Permission::with(['rolePermissions.role']);
         return response()->json($roles->get());
+    }
+
+    public function indexPm(Request $request) {
+        $filters = $request->only([]);
+        $pms = PaymentMethod::with([]);
+        $pms = $pms->orderBy('id', 'desc')->get();
+        return response()->json($pms);
+    }
+
+    public function storePm(Request $request) {
+        return response()->json($this->settingRepo->storePm($request->all()));
+    }
+
+    public function deletePm($id = null) {
+        return response()->json($this->settingRepo->deletePm($id));
     }
 }

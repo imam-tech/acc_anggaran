@@ -41,6 +41,8 @@
                             <th class="text-center">Title</th>
                             <th class="text-center">Type</th>
                             <th class="text-center">Amount</th>
+                            <th class="text-center">Sell Account</th>
+                            <th class="text-center">Buy Account</th>
                             <th class="text-center">Created At</th>
                             <th v-if="$store.state.permissions.includes('tax_create')" class="text-center">#</th>
                         </tr>
@@ -50,13 +52,15 @@
                             <td>{{ tax.title }}</td>
                             <td>{{ tax.type}}</td>
                             <td class="text-right">{{ tax.amount }}</td>
+                            <td>{{ tax.sell_coa ? tax.sell_coa.account_code : "-"}}</td>
+                            <td>{{ tax.buy_coa ? tax.buy_coa.account_code : "-"}}</td>
                             <td>{{ tax.created_at | formatDate }}</td>
                             <td v-if="$store.state.permissions.includes('tax_edit')" class="text-right">
                                 <button type="button" class="btn btn-warning" @click="showEditTax(tax)">
                                     <i class="fa fa-pencil"></i>
                                 </button>
                                 <button class="btn btn-danger" type="button" @click="handleDelete(tax.id)">
-                                    <i class="fa fa-minus"></i>
+                                    <i class="fa fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -77,7 +81,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form submit.prevent="submitTax">
+                    <form @submit.prevent="submitTax">
                         <div class="modal-body">
                             <div class="form-group">
                                 <label>Title<span style="
@@ -107,6 +111,34 @@
                                 ">*) required</span></label>
                                 <input type="text" class="form-control" v-model="formData.amount" placeholder="Example: 2.8" required>
                             </div>
+                            <div class="form-group">
+                                <label>Sell Tax Account</label>
+                                <v-select v-model="formData.sell_account_id" :options="sellCoas" :reduce="p => p.id" style="width: 100%" label="account_code">
+                                    <template #search="{attributes, events}">
+                                        <input
+                                                class="vs__search"
+                                                :required="!formData.sell_account_id"
+                                                v-bind="attributes"
+                                                v-on="events"
+                                        />
+                                    </template>
+                                    <span slot="no-options">Account not found</span>
+                                </v-select>
+                            </div>
+                            <div class="form-group">
+                                <label>Buy Tax Account</label>
+                                <v-select v-model="formData.buy_account_id" :options="buyCoas" :reduce="p => p.id" style="width: 100%" label="account_code">
+                                    <template #search="{attributes, events}">
+                                        <input
+                                                class="vs__search"
+                                                :required="!formData.buy_account_id"
+                                                v-bind="attributes"
+                                                v-on="events"
+                                        />
+                                    </template>
+                                    <span slot="no-options">Account not found</span>
+                                </v-select>
+                            </div>
                         </div>
                         <div class="modal-footer flex justify-content-between">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">
@@ -134,14 +166,25 @@
                     id: "",
                     title: "",
                     amount: "",
-                    type: ""
+                    type: "",
+                    sell_account_id: '',
+                    buy_account_id: ''
                 },
+                sellCoas: [],
+                buyCoas: []
             }
         },
         created() {
             this.getData()
         },
         methods: {
+            async handleGetAccount() {
+                this.$vs.loading()
+                this.sellCoas = await this.$axios.get(`api/coa?is_active=1&coa_name=HUTANG PAJAK`)
+                this.buyCoas = await this.$axios.get(`api/coa?is_active=1&coa_name=PAJAK DIBAYAR DIMUKA`)
+                this.$vs.loading.close()
+            },
+
             async getData() {
                 try {
                     this.$vs.loading()
@@ -159,14 +202,17 @@
                 }
             },
             showEditTax(tax) {
+                if (this.sellCoas.length === 0) {
+                    this.handleGetAccount()
+                }
                 this.labelModal = 'Edit'
-                this.formData.id = tax.id
-                this.formData.title = tax.title
-                this.formData.type = tax.type
-                this.formData.amount = tax.amount
+                this.formData = tax
                 $("#addTax").modal("show")
             },
             showAddTax() {
+                if (this.sellCoas.length === 0) {
+                    this.handleGetAccount()
+                }
                 this.labelModal = 'Add'
                 this.formData.id = ""
                 this.formData.title = ""

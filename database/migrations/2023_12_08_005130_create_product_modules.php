@@ -16,19 +16,13 @@ class CreateProductModules extends Migration
         Schema::create('product_units', function (Blueprint $table) {
             $table->id();
             $table->integer('company_id');
-            $table->string('title');
-        });
-        Schema::create('product_brands', function (Blueprint $table) {
-            $table->id();
-            $table->integer('company_id');
-            $table->string('image');
-            $table->string('title');
+            $table->string('name');
         });
         Schema::create('product_categories', function (Blueprint $table) {
             $table->id();
             $table->integer('company_id');
-            $table->string('image');
-            $table->string('title');
+            $table->string('image')->nullable();
+            $table->string('name');
         });
     }
 

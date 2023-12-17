@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Customers Form</h1>
-                <router-link to="/app/sales/customers" class="btn btn-success float-right mt-3 mr-3">
+                <router-link to="/app/sales/customer" class="btn btn-success float-right mt-3 mr-3">
                     <i class="fa fa-arrow-left"></i> Back
                 </router-link>
             </div>
@@ -28,22 +28,14 @@
                         </div>
                         <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
-                                <label>Phone<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.phone" required>
+                                <label>Phone</label>
+                                <input type="text" class="form-control" v-model="formData.phone">
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
-                                <label>Identity Number<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.identity_number" required>
+                                <label>Identity Number</label>
+                                <input type="text" class="form-control" v-model="formData.identity_number">
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">
@@ -120,7 +112,7 @@
                             showConfirmButton: false,
                             timer: 2500
                         })
-                        this.$router.push('/app/sales/customers')
+                        this.$router.push('/app/sales/customer')
                     }
                 } catch (e) {
                     this.$vs.loading.close()

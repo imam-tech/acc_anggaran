@@ -11,4 +11,9 @@ Route:: group(['prefix' => 'setting', 'middleware' => 'auth:sanctum'], function 
         Route::post('/', [SettingController::class, 'storeFlip']);
         Route::delete('/{id?}/delete', [SettingController::class, 'deleteFlip']);
     });
+    Route::group(['prefix' => 'payment-method'], function () {
+        Route::get('/', [SettingController::class, 'indexPM']);
+        Route::post('/', [SettingController::class, 'storePM']);
+        Route::delete('/{id?}/delete', [SettingController::class, 'deletePM']);
+    });
 });

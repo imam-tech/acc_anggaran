@@ -4,7 +4,7 @@ const manufactureRouter = [
     {
         path: 'product',
         name: 'manufacture-product-index',
-        component:  () => import('../pages/manufacture/IndexProduct'),
+        component:  () => import('../pages/manufacture/ProductIndex'),
         meta: {
             middleware: hasLoggedIn,
         },
@@ -12,7 +12,7 @@ const manufactureRouter = [
     {
         path: 'product/:type/form',
         name: 'manufacture-product-form',
-        component:  () => import('../pages/manufacture/FormProduct'),
+        component:  () => import('../pages/manufacture/ProductForm'),
         meta: {
             middleware: hasLoggedIn,
         },
@@ -20,7 +20,7 @@ const manufactureRouter = [
     {
         path: 'product/:type/detail',
         name: 'manufacture-product-detail',
-        component:  () => import('../pages/manufacture/DetailProduct'),
+        component:  () => import('../pages/manufacture/ProductDetail'),
         meta: {
             middleware: hasLoggedIn,
         },
@@ -28,7 +28,7 @@ const manufactureRouter = [
     {
         path: 'semi-finished-material',
         name: 'manufacture-semi-finished-material-index',
-        component:  () => import('../pages/manufacture/IndexSemiFinishedMaterial'),
+        component:  () => import('../pages/manufacture/SemiFinishedMaterialIndex'),
         meta: {
             middleware: hasLoggedIn,
         },
@@ -36,7 +36,7 @@ const manufactureRouter = [
     {
         path: 'material',
         name: 'manufacture-material-index',
-        component:  () => import('../pages/manufacture/IndexMaterial'),
+        component:  () => import('../pages/manufacture/MaterialIndex'),
         meta: {
             middleware: hasLoggedIn,
         },

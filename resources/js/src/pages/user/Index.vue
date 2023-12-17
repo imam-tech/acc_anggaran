@@ -103,7 +103,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form submit.prevent="submitUser">
+                    <form @submit.prevent="submitUser">
                         <div class="modal-body">
                             <div class="form-group">
                                 <label>Name<span style="
@@ -159,7 +159,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form submit.prevent="handleChangeRole">
+                    <form @submit.prevent="handleChangeRole">
                         <div class="modal-body">
                             <div class="form-group">
                                 <label>Role<span style="
@@ -193,7 +193,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form submit.prevent="submitChangePasswordUser">
+                    <form @submit.prevent="submitChangePasswordUser">
                         <div class="modal-body">
                             <div class="form-group">
                                 <label>Password<span style="

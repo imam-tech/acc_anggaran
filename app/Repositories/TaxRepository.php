@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Tax;
 
 class TaxRepository {
-    public function store($data) {
+    public function store($data, $companyId) {
         try {
             $validator = \Validator::make($data, [
                 "title" => "required",
@@ -20,10 +20,13 @@ class TaxRepository {
                 if (!$tax) return resultFunction("Err code TR-St: company not found for ID " . $data['id']);
             } else {
                 $tax = new Tax();
+                $tax->company_id = $companyId;
             }
             $tax->title = $data['title'];
             $tax->type = $data['type'];
             $tax->amount = $data['amount'];
+            $tax->sell_account_id = $data['sell_account_id'];
+            $tax->buy_account_id = $data['buy_account_id'];
             $tax->save();
 
             $message = $data['id'] ? "Updating Tax successfully" : "Creating Tax successfully";

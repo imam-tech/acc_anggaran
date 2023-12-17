@@ -555,10 +555,17 @@
                                     <div v-for="(coaItem, index) in formDataCoa.coa_items" :key="index" class="row mt-3 pr-3">
                                         <div class="col-3">
                                             <label for="">Account</label>
-                                            <select :disabled="formDataCoa.type !== 'edit'" class="form-control" v-model="formDataCoa.coa_items[index].coa" required>
-                                                <option value="">--Select Coa--</option>
-                                                <option v-for="(coa, index) in coas" :key="index" :value="coa.id">{{ coa.account_code }}</option>
-                                            </select>
+                                            <v-select :disabled="formDataCoa.type !== 'edit'" v-model="formDataCoa.coa_items[index].coa" :options="coas" :reduce="p => p.id" style="width: 100%" label="account_code">
+                                                <template #search="{attributes, events}">
+                                                    <input
+                                                            class="vs__search"
+                                                            :required="!formDataCoa.coa_items[index].coa"
+                                                            v-bind="attributes"
+                                                            v-on="events"
+                                                    />
+                                                </template>
+                                                <span slot="no-options">Account not found</span>
+                                            </v-select>
                                         </div>
                                         <div class="col-2">
                                             <label for="">Debit</label>
@@ -570,10 +577,9 @@
                                         </div>
                                         <div class="col-4">
                                             <label for="">Cashflow</label>
-                                            <select :disabled="formDataCoa.type !== 'edit'" class="form-control" v-model="formDataCoa.coa_items[index].cashflow">
-                                                <option value="">--Select Cashflow--</option>
-                                                <option v-for="(cashflow, index) in cashflows" :key="index" :value="cashflow.id">{{ cashflow.name }}</option>
-                                            </select>
+                                            <v-select :disabled="formDataCoa.type !== 'edit'" v-model="formDataCoa.coa_items[index].cashflow" :options="cashflows" :reduce="p => p.id" style="width: 100%" label="name">
+                                                <span slot="no-options">Account not found</span>
+                                            </v-select>
                                         </div>
                                         <div class="col-1 d-flex align-items-end">
                                             <div v-if="formDataCoa.type === 'edit'" class="col-1 align-content-center">
@@ -665,11 +671,14 @@
         },
 
         mounted() {
-            this.getData()
-            this.getTax()
+            this.handleInitiateData()
             this.getDataCoa()
         },
         methods: {
+            async handleInitiateData() {
+                await this.getData()
+                await this.getTax()
+            },
             handleShowMethod() {
                 $("#setMethodModal").modal("show")
             },
@@ -756,11 +765,11 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             },
@@ -772,11 +781,11 @@
 
                     if (!respDe.status) {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'top',
                             icon: 'error',
                             title: respDe.message,
                             showConfirmButton: false,
-                            timer: 1500
+                            timer: 2500
                         })
                     } else {
                         $("#setMethodModal").modal("hide")
@@ -877,11 +886,11 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             },
@@ -1016,11 +1025,11 @@
 
                     if (!respDe.status) {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'top',
                             icon: 'error',
                             title: respDe.message,
                             showConfirmButton: false,
-                            timer: 1500
+                            timer: 2500
                         })
                     } else {
                         await this.getData()
@@ -1028,11 +1037,11 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             },
@@ -1092,18 +1101,18 @@
             async getTax() {
                 try {
                     this.$vs.loading()
-                    const respDe = await this.$axios.get(`api/tax`)
+                    const respDe = await this.$axios.get(`api/tax?is_transaction=${this.transactionData.company_id}`)
                     this.$vs.loading.close()
                     this.pphs = respDe.filter(x => x.type === 'pph')
                     this.ppns = respDe.filter(x => x.type === 'ppn')
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             }

@@ -4,9 +4,14 @@ namespace App\Repositories;
 
 use App\Models\Material;
 use App\Models\MaterialHistory;
+use App\Models\Product;
 use App\Models\Purchase;
-use App\Models\PurchaseItem;
+use App\Models\PurchaseAttachment;
+use App\Models\PurchaseJournal;
+use App\Models\PurchaseProduct;
 use App\Models\Supplier;
+use App\Models\Tax;
+use App\Services\DigitalOceanService;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseRepository {
@@ -15,7 +20,6 @@ class PurchaseRepository {
         try {
             $validator = \Validator::make($data, [
                 "name" => 'required',
-                "phone" => 'required',
             ]);
 
             if ($validator->fails()) return resultFunction("Err code SR-SC: " . collect($validator->errors()->all())->implode(" , "));
@@ -30,11 +34,11 @@ class PurchaseRepository {
                 $productUnit->company_id = $companyId;
             }
             $productUnit->name = $data['name'];
-            $productUnit->email = $data['email'] ?? null;
+            $productUnit->email = $data['email'];
             $productUnit->phone = $data['phone'];
-            $productUnit->identity_number = $data['identity_number'] ?? "";
-            $productUnit->npwp_number = $data['npwp_number'] ?? null;
-            $productUnit->address = $data['address'] ?? null;
+            $productUnit->identity_number = $data['identity_number'];
+            $productUnit->npwp_number = $data['npwp_number'];
+            $productUnit->address = $data['address'];
             $productUnit->save();
 
             return resultFunction($message . " supplier is successfully", true);
@@ -54,64 +58,190 @@ class PurchaseRepository {
         }
     }
 
-    public function store($data, $companyId) {
+    public function store($request, $companyId) {
         try {
-            DB::beginTransaction();
-
+            $data = $request->all();
             $validator = \Validator::make($data, [
-                "supplier" => 'required',
-                "invoice_date" => 'required',
-                "due_date" => 'required',
+                "supplier_id" => 'required',
+                "transaction_date" => 'required',
+                'due_date' => 'required',
                 "products" => 'required',
             ]);
 
-            if ($validator->fails()) return resultFunction("Err code PR-S: " . collect($validator->errors()->all())->implode(" , "));
+            if ($validator->fails()) return resultFunction("Err code SR-S: " . collect($validator->errors()->all())->implode(" , "));
 
-            $supplier = Supplier::find($data['supplier']);
-            if (!$supplier) return resultFunction("Err code PR-S: supplier not found");
+            DB::beginTransaction();
 
-            /*$materials = Material::with([])
-                ->whereIn('id', array_column((collect($data['products'])->where('type', "Material"))->toArray(), 'id'))
-                ->get();*/
+            $supplier = Supplier::find($data['supplier_id']);
+            if (!$supplier) return resultFunction("Err code SR-S: supplier not found for ID " . $data['supplier_id']);
+
+            $message = "Creating";
+            if ($data['id']) {
+                $purchase = Purchase::find($data['id']);
+                if (!$purchase) return resultFunction("Err code SR-S: sales not found for ID " . $data['id']);
+                $message = 'Updating';
+
+                PurchaseProduct::where('purchase_id', $purchase->id)->delete();
+                PurchaseJournal::where('purchase_id', $purchase->id)->delete();
+            } else {
+                $purchase = new Purchase();
+                $purchase->company_id = $companyId;
+                $purchase->transaction_number = '';
+            }
+            $purchase->supplier_id = $supplier->id;
+            $purchase->supplier_email = $data['supplier_email'];
+            $purchase->billing_address = $data['billing_address'];
+            $purchase->transaction_date = $data['transaction_date'];
+            $purchase->due_date = $data['due_date'];
+            $purchase->message = $data['message'];
+            $purchase->sub_total = 0;
+            $purchase->grand_total = 0;
+            $purchase->save();
+            $purchase->transaction_number = 'Purchase Invoice #' . $purchase->id;
+            $data['products'] = json_decode($data['products'], true);
+
+            $products = Product::with([])
+                ->whereIn('id', array_column($data['products'], 'id'))
+                ->get();
+
+            $purchaseProductInput = [];
+            $purchaseJournalData = [];
+            $purchaseJournalData[] = [
+                'purchase_id' => $purchase->id,
+                'account_id' => 2388,  // sementara account payable
+                'debit' => 0,
+                'credit' => 0,
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => date("Y-m-d H:i:s")
+            ];
+            $purchaseJournalTaxData = [];
+            $subTotalFinal = 0;
+            $taxTotalFinal = 0;
+            foreach ($data['products'] as $productInput) {
+                $selectProduct = $products->where('id', $productInput['id'])->first();
+                if (!$selectProduct) return resultFunction("Err code SR-S: product db is not found");
+
+                $subTotal = $productInput['quantity'] * $productInput['unit_price'];
+                $taxTotal = 0;
+                if ($productInput['tax_id']) {
+                    $taxTotal = $productInput['tax_percentage'] * $subTotal / 100;
+                }
+                $grandTotal = $subTotal + $taxTotal;
+
+                $purchaseProductInput[] = [
+                    'purchase_id' => $purchase->id,
+                    'product_id' => $selectProduct->id,
+                    'description' => $productInput['description'],
+                    'quantity' => $productInput['quantity'],
+                    'unit' => $productInput['unit'],
+                    'unit_price' => $productInput['unit_price'],
+                    'sub_total' => $subTotal,
+                    'tax_id' => $productInput['tax_id'] ? $productInput['tax_id'] : null,
+                    'tax_percentage' => $productInput['tax_id'] ? $productInput['tax_percentage'] : null,
+                    'tax_amount' => $taxTotal,
+                    'grand_total' => $grandTotal,
+                    'created_at' => date("Y-m-d H:i:s"),
+                    'updated_at' => date("Y-m-d H:i:s")
+                ];
+                $subTotalFinal = $subTotalFinal + $subTotal;
+                $taxTotalFinal = $taxTotalFinal + $taxTotal;
+
+                $isSame = null;
+                foreach ($purchaseJournalData as $key => $sJ) {
+                    if ($sJ['account_id'] === $selectProduct->purchase_account_id) {
+                        $isSame = $key;
+                        break;
+                    }
+                }
+
+                if (!is_null($isSame)) {
+                    $purchaseJournalData[$isSame]['credit'] = $purchaseJournalData[$isSame]['credit'] + $subTotal;
+                } else {
+                    $purchaseJournalData[] = [
+                        'purchase_id' => $purchase->id,
+                        'account_id' => $selectProduct->purchase_account_id,
+                        'debit' => 0,
+                        'credit' => $subTotal,
+                        'created_at' => date("Y-m-d H:i:s"),
+                        'updated_at' => date("Y-m-d H:i:s")
+                    ];
+                }
+
+                if ($productInput['tax_id']) {
+                    $tax = Tax::find($productInput['tax_id']);
+                    $isSame = null;
+                    foreach ($purchaseJournalTaxData as $key => $sJ) {
+                        if ($sJ['account_id'] === $tax->buy_account_id) {
+                            $isSame = $key;
+                            break;
+                        }
+                    }
+                    if (!is_null($isSame)) {
+                        $purchaseJournalTaxData[$isSame]['credit'] = $purchaseJournalTaxData[$isSame]['credit'] + $taxTotal;
+                    } else {
+                        $purchaseJournalTaxData[] = [
+                            'purchase_id' => $purchase->id,
+                            'account_id' => $tax->buy_account_id,
+                            'debit' => 0,
+                            'credit' => $taxTotal,
+                            'created_at' => date("Y-m-d H:i:s"),
+                            'updated_at' => date("Y-m-d H:i:s")
+                        ];
+                    }
+                }
+            }
+            $purchase->sub_total = $subTotalFinal;
+            $purchase->tax_total_amount = $taxTotalFinal;
+            $purchase->grand_total = $purchase->sub_total + $purchase->tax_total_amount;
+            $purchase->save();
+
+            $purchaseJournalData[0]['debit'] = $purchase->grand_total;
+
+            $doService = new DigitalOceanService();
+            $purchaseAttachments = [];
+            for ($i = 0; $i < 5; $i++) {
+                if (isset($data['attachment' . $i])) {
+                    $image = $data['attachment' . $i];
+
+                    if (is_object($image)) {
+                        $resultImage = $doService->uploadImageToDO($image, 'sales');
+                        if (!$resultImage['status']) return $resultImage;
+                        $url = $resultImage['data'];
+                        $name = $image->getClientOriginalName();
+                        $size = filesize($image);
+                        $type = $image->getMimeType();
+                    } else {
+                        $purchaseAttachment = PurchaseAttachment::find($image);
+                        $url = $purchaseAttachment->url;
+                        $name = $purchaseAttachment->name;
+                        $size = $purchaseAttachment->size;
+                        $type = $purchaseAttachment->type;
+                    }
+
+                    $purchaseAttachments[] = [
+                        'purchase_id' => $purchase->id,
+                        'url' => $url,
+                        'name' => $name,
+                        'size' => $size,
+                        'type' => $type,
+                        'created_at' => date("Y-m-d H:i:s"),
+                        'updated_at' => date("Y-m-d H:i:s")
+                    ];
+                }
+            }
 
             if ($data['id']) {
-                $purchaseNew = Purchase::find($data['id']);
-                if (!$purchaseNew) return resultFunction("Err code PR-S: purchase not found");
-                PurchaseItem::where('purchase_id', $purchaseNew->id)->delete();
-            } else {
-                $purchaseNew = new Purchase();
-                $purchaseNew->bill_number = "DRAFT";
+                PurchaseAttachment::where('purchase_id', $purchase->id)->delete();
             }
-            $purchaseNew->company_id = $companyId;
-            $purchaseNew->supplier_id = $supplier->id;
-            $purchaseNew->invoice_date = $data['invoice_date'];
-            $purchaseNew->due_date = $data['due_date'];
-            $purchaseNew->amount_total = 0;
-            $purchaseNew->description = $data['description'];
-            $purchaseNew->save();
 
-            $items = [];
-            $amountTotal = 0;
-            foreach ($data['products'] as $prod) {
-                $items[] = [
-                    "purchase_id" => $purchaseNew->id,
-                    "product_id" => $prod['type'] == 'Product' ? $prod['id'] : null,
-                    "material_id" => $prod['type'] == 'Material' ? $prod['id'] : null,
-                    "quantity" => $prod['quantity'],
-                    'price_per_unit' => $prod['amount_per_unit'],
-                    "amount_total" => $prod['quantity'] * $prod['amount_per_unit'],
-                    "created_at" => date("Y-m-d H:i:s"),
-                    "updated_at" => date("Y-m-d H:i:s")
-                ];
-                $amountTotal = $amountTotal + ($prod['quantity'] * $prod['amount_per_unit']);
+            PurchaseProduct::insert($purchaseProductInput);
+            PurchaseJournal::insert(array_merge($purchaseJournalData, $purchaseJournalTaxData));
+            if (count($purchaseAttachments) > 0) {
+                PurchaseAttachment::insert($purchaseAttachments);
             }
-            $purchaseNew->amount_total = $amountTotal;
-            $purchaseNew->save();
-
-            PurchaseItem::insert($items);
 
             DB::commit();
-            return resultFunction("Creating purchase is successfully", true, $purchaseNew);
+            return resultFunction($message . " purchase is successfully", true, $purchase);
         } catch (\Exception $e) {
             return resultFunction("Err code PR-S: catch " . $e->getMessage());
         }
@@ -119,48 +249,13 @@ class PurchaseRepository {
 
     public function detail($id) {
         try {
-            $purchase = Purchase::with(['purchase_items.product', 'purchase_items.material', 'supplier'])->find($id);
+            $purchase = Purchase::with(['purchase_products.product', 'purchase_products.tax', 'purchase_attachments', 'supplier',
+                'purchase_journals.coa'])->find($id);
             if (!$purchase) return resultFunction("Err code SR-D: purchase not found");
 
             return resultFunction("", true, $purchase);
         } catch (\Exception $e) {
             return resultFunction("Err code SR-D: catch " . $e->getMessage());
-        }
-    }
-
-    public function approve($id) {
-        try {
-            DB::beginTransaction();
-
-            $purchase = Purchase::with(['purchase_items.product', 'purchase_items.material', 'supplier'])->find($id);
-            if (!$purchase) return resultFunction("Err code PR-A: purchase not found");
-
-            if ($purchase->bill_number !== 'DRAFT') return resultFunction("Err code PR-A: status is not draft");
-            $purchase->bill_number = "Purchase Invoice #" . $purchase->id;
-
-            foreach ($purchase->purchase_items as $item) {
-                if ($item->product_id) {
-
-                } else {
-                    $material = $item->material;
-                    $material->stock = $material->stock + $item->quantity;
-                    $material->last_price_per_unit = $item->price_per_unit;
-                    $material->save();
-
-                    $materialHistory = new MaterialHistory();
-                    $materialHistory->material_id = $material->id;
-                    $materialHistory->type_history = 'purchase';
-                    $materialHistory->stock = $item->quantity;
-                    $materialHistory->note = $purchase->bill_number;
-                    $materialHistory->price_per_unit = $item->price_per_unit;
-                    $materialHistory->save();
-                }
-            }
-            $purchase->save();
-            DB::commit();
-            return resultFunction("", true, $purchase);
-        } catch (\Exception $e) {
-            return resultFunction("Err code PR-A: catch " . $e->getMessage());
         }
     }
 }

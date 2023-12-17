@@ -12,7 +12,7 @@ const coaRouter = [
     {
         path: 'category',
         name: 'coa-category-index',
-        component:  () => import('../pages/coa/IndexCategory'),
+        component:  () => import('../pages/coa/CategoryIndex'),
         meta: {
             middleware: hasLoggedIn,
         },
@@ -21,6 +21,14 @@ const coaRouter = [
         path: ':id/detail',
         name: 'coa-detail',
         component:  () => import('../pages/coa/Detail'),
+        meta: {
+            middleware: hasLoggedIn,
+        },
+    },
+    {
+        path: 'category/:id/detail',
+        name: 'coa-category-detail',
+        component:  () => import('../pages/coa/CategoryDetail'),
         meta: {
             middleware: hasLoggedIn,
         },

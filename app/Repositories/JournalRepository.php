@@ -775,7 +775,11 @@ class JournalRepository {
             $dateNow = date("Y-m-d H:i:s");
 
             $voucherNo = $company->voucher_prefix . "-" . date("y").date('m').date('d') . "-" . ($transactionApproveds + 1);
-            $journal = new Journal();
+            if ($data['id']) {
+                $journal = Journal::find($data['id']);
+            } else {
+                $journal = new Journal();
+            }
             $journal->company_id = $company->id;
             $journal->project_id = $data['project_id'];
             $journal->transaction_uid = $data['transaction_no'];

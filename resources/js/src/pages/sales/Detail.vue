@@ -1,26 +1,33 @@
 <template>
-    <div v-if="purchaseData !== null" class="container-fluid">
+    <div v-if="salesData !== null" class="container-fluid">
         <div class="card">
             <div class="card-title">
                 <div class="row">
                     <div class="col-6">
                         <h1 class="mt-3 ml-3 text-primary">
                             <div class="d-flex flex-column">
-                                <h5>Purchase</h5>
+                                <h5>Sales</h5>
                                 <h3 class="text-gray-700">
-                                    {{ purchaseData.transaction_number }}
-                                    <span :class="handleStatus(purchaseData).class">{{ handleStatus(purchaseData).label }}</span>
+                                    {{ salesData.transaction_number }}
+                                    <span :class="handleStatus(salesData).class">{{ handleStatus(salesData).label }}</span>
                                 </h3>
                             </div>
                         </h1>
                     </div>
-                    <div class="col-6 text-right">
+                    <div class="col-6 text-right d-flex align-items-center justify-content-end">
                         <div class="d-flex flex-column">
-                            <router-link to="/app/purchase">
-                                <button type="button" class="mr-3 mt-3 btn btn-success">
-                                    <i class="fa fa-arrow-left"></i> Back
-                                </button>
-                            </router-link>
+                            <div>
+                                <router-link :to="'/app/sales/payment/'+salesData.id+'/form'">
+                                    <button type="button" class="mr-3 mt-3 btn btn-primary">
+                                        <i class="fa fa-dollar"></i> Receive Payment
+                                    </button>
+                                </router-link>
+                                <router-link to="/app/sales">
+                                    <button type="button" class="mr-3 mt-3 btn btn-success">
+                                        <i class="fa fa-arrow-left"></i> Back
+                                    </button>
+                                </router-link>
+                            </div>
                             <a href="@" @click.prevent="handleShowJournalEntry()" class="mr-3 mt-2">View Journal Entry</a>
                         </div>
                     </div>
@@ -33,7 +40,7 @@
                             <tbody>
                             <tr>
                                 <th>Customer Name</th>
-                                <td class="text-right">{{purchaseData.supplier.name}}</td>
+                                <td class="text-right">{{salesData.customer.name}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -43,7 +50,7 @@
                             <tbody>
                             <tr>
                                 <th>Customer Email</th>
-                                <td class="text-right">{{purchaseData.supplier_email}}</td>
+                                <td class="text-right">{{salesData.customer_email}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -55,7 +62,7 @@
                             <tbody>
                             <tr>
                                 <th>Billing Address</th>
-                                <td class="text-right">{{purchaseData.billing_address}}</td>
+                                <td class="text-right">{{salesData.billing_address}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -65,15 +72,15 @@
                             <tbody>
                             <tr>
                                 <th>Transaction Number</th>
-                                <td class="text-right">{{purchaseData.transaction_number}}</td>
+                                <td class="text-right">{{salesData.transaction_number}}</td>
                             </tr>
                             <tr>
                                 <th>Transaction Date</th>
-                                <td class="text-right">{{purchaseData.transaction_date}}</td>
+                                <td class="text-right">{{salesData.transaction_date}}</td>
                             </tr>
                             <tr>
                                 <th>Due Date</th>
-                                <td class="text-right">{{purchaseData.due_date}}</td>
+                                <td class="text-right">{{salesData.due_date}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -96,12 +103,12 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-show="purchaseData.purchase_products.length == 0">
+                        <tr v-show="salesData.sales_products.length == 0">
                             <td colspan="8" class="text-center">
                                 Items
                             </td>
                         </tr>
-                        <tr v-for="(item, key) in purchaseData.purchase_products" :key="key">
+                        <tr v-for="(item, key) in salesData.sales_products" :key="key">
                             <td>{{ item.product.name }}</td>
                             <td>{{ item.description }}</td>
                             <td>{{ item.quantity }}</td>
@@ -120,12 +127,12 @@
                         <div class="row">
                             <div class="col-12 d-flex justify-content-between">
                                 <label>Message</label>
-                                <label>{{ purchaseData.message ?? '-' }}</label>
+                                <label>{{ salesData.message ?? '-' }}</label>
                             </div>
                             <div class="col-12">
                                 <label>Attachment</label>
                                 <table class="table table-striped">
-                                    <tr v-for="(f, fI) in purchaseData.purchase_attachments" :key="fI">
+                                    <tr v-for="(f, fI) in salesData.sales_attachments" :key="fI">
                                         <td>
                                             <i :class="handleShowIconFile(f.type)"></i>
                                         </td>
@@ -150,19 +157,25 @@
                             <tr>
                                 <td>Sub Total</td>
                                 <td class="text-right">
-                                    {{ purchaseData.sub_total | formatPrice }}
+                                    {{ salesData.sub_total | formatPrice }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Discount ({{ salesData.discount_type }})</td>
+                                <td class="text-danger text-right">
+                                    ({{ salesData.discount_amount | formatPrice }})
                                 </td>
                             </tr>
                             <tr>
                                 <td>Tax Amount Total</td>
                                 <td class="text-right">
-                                    {{ purchaseData.tax_amount_total | formatPrice }}
+                                    {{ salesData.tax_amount_total | formatPrice }}
                                 </td>
                             </tr>
                             <tr>
                                 <td>Grand Total</td>
                                 <td class="text-right">
-                                    {{ purchaseData.grand_total | formatPrice }}
+                                    {{ salesData.grand_total | formatPrice }}
                                 </td>
                             </tr>
                         </table>
@@ -172,7 +185,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Journal Report {{ purchaseData.transaction_number }}</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">Journal Report {{ salesData.transaction_number }}</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -187,15 +200,15 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr v-for="(sj, sjI) in purchaseData.purchase_journals" :key="sjI">
+                                    <tr v-for="(sj, sjI) in salesData.sales_journals" :key="sjI">
                                         <td>{{ sj.coa.account_code }}</td>
                                         <td class="text-right">{{ sj.debit | formatPrice }}</td>
                                         <td class="text-right">{{ sj.credit | formatPrice }}</td>
                                     </tr>
                                     <tr>
                                         <td>Total</td>
-                                        <td class="text-right">{{ handleTotal(purchaseData.purchase_journals, 'debit')  | formatPrice}}</td>
-                                        <td class="text-right">{{ handleTotal(purchaseData.purchase_journals, 'credit') | formatPrice }}</td>
+                                        <td class="text-right">{{ handleTotal(salesData.sales_journals, 'debit')  | formatPrice}}</td>
+                                        <td class="text-right">{{ handleTotal(salesData.sales_journals, 'credit') | formatPrice }}</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -219,7 +232,7 @@
         name:'Detail',
         data() {
             return {
-                purchaseData: null,
+                salesData: null,
             }
         },
 
@@ -280,7 +293,7 @@
             async getData() {
                 try {
                     this.$vs.loading()
-                    const respDe = await this.$axios.get(`api/purchase/${this.$route.params.type}/detail`)
+                    const respDe = await this.$axios.get(`api/sales/${this.$route.params.type}/detail`)
                     this.$vs.loading.close()
 
                     if (!respDe.status) {
@@ -292,7 +305,7 @@
                             timer: 2500
                         })
                     } else {
-                        this.purchaseData = respDe.data
+                        this.salesData = respDe.data
                     }
                 } catch (e) {
                     this.$vs.loading.close()

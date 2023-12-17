@@ -64,9 +64,17 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select v-model="formData.bank" class="form-control" @change="getDataInquiry()" required>
-                                            <option v-for="(bank, index) in banks" :value="bank.bank_code" :key="index">{{ bank.name }}</option>
-                                        </select>
+                                        <v-select v-model="formData.bank" :options="banks" :reduce="p => p.bank_code" style="width: 100%" label="name" @input="getDataInquiry()">
+                                            <template #search="{attributes, events}">
+                                                <input
+                                                        class="vs__search"
+                                                        :required="!formData.bank"
+                                                        v-bind="attributes"
+                                                        v-on="events"
+                                                />
+                                            </template>
+                                            <span slot="no-options">Bank not found</span>
+                                        </v-select>
                                     </div>
                                 </div>
                                 <div class="col-6">
@@ -76,9 +84,17 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select v-model="formData.inquiry_id" class="form-control" required>
-                                            <option v-for="(inquiry, index) in inquiries" :value="inquiry.id" :key="index">{{ inquiry.name }}  {{ inquiry.account_number ?? "" }} </option>
-                                        </select>
+                                        <v-select v-model="formData.inquiry_id" :options="inquiries" :reduce="p => p.id" style="width: 100%" label="label">
+                                            <template #search="{attributes, events}">
+                                                <input
+                                                        class="vs__search"
+                                                        :required="!formData.inquiry_id"
+                                                        v-bind="attributes"
+                                                        v-on="events"
+                                                />
+                                            </template>
+                                            <span slot="no-options">Account not found</span>
+                                        </v-select>
                                     </div>
                                 </div>
                                 <div class="col-12 d-flex justify-content-center">
@@ -314,6 +330,7 @@
                 var form_data = new FormData()
 
                 form_data.append('files', this.file)
+                form_data.append('folder', 'transaction')
                 this.$vs.loading()
                 this.$axios.post('/api/transaction/upload-image',
                     form_data,
@@ -519,9 +536,13 @@
                 try {
                     this.$vs.loading()
                     this.inquiries = []
-                    this.inquiries.push({id: "", name: '--Choose Bank--'})
                     const inqLocals = await this.$axios.get(`api/inquiry?bank=${this.formData.bank}`)
-                    inqLocals.forEach((x) => this.inquiries.push(x))
+                    inqLocals.forEach((x) => {
+                        this.inquiries.push({
+                            id: x.id,
+                            label: x.name + ' ' + x.account_number
+                        })
+                    })
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
@@ -557,9 +578,7 @@
             async getDataBank() {
                 try {
                     this.$vs.loading()
-                    this.banks.push({bank_code: '', name: '--Choose Bank--'})
-                    const bankLocals = (await this.$axios.get(`https://old.importir.com/api/list-bank-inquiry?token=syigdfjhagsjdf766et4wff6`)).message.banks
-                    bankLocals.forEach((x) => this.banks.push(x))
+                    this.banks = (await this.$axios.get(`https://old.importir.com/api/list-bank-inquiry?token=syigdfjhagsjdf766et4wff6`)).message.banks
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()

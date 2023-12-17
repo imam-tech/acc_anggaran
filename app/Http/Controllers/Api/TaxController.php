@@ -16,11 +16,17 @@ class TaxController extends Controller {
     }
 
     public function index(Request $request) {
-        $filters = $request->only(['type']);
-        $taxes = Tax::with([]);
+        $filters = $request->only(['type', 'is_transaction']);
+        $taxes = Tax::with(['sell_coa', 'buy_coa']);
 
         if (!empty($filters['type'])) {
             $taxes = $taxes->where('type', $filters['type']);
+        }
+
+        if (!empty($filters['is_transaction'])) {
+            $taxes = $taxes->where('company_id', $filters['is_transaction']);
+        } else {
+            $taxes = $taxes->where('company_id', $request->header('company_id'));
         }
 
         $taxes = $taxes->orderBy('id', 'desc')->get();
@@ -28,7 +34,7 @@ class TaxController extends Controller {
     }
 
     public function store(Request $request) {
-        return response()->json($this->taxRepo->store($request->all()));
+        return response()->json($this->taxRepo->store($request->all(), $request->header('company_id')));
     }
 
     public function delete($id = null) {

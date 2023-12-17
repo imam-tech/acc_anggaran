@@ -26,17 +26,17 @@ const purchaseRouter = [
         },
     },
     {
-        path: 'suppliers',
-        name: 'purchase-customer-index',
-        component:  () => import('../pages/purchase/IndexSupplier'),
+        path: 'supplier',
+        name: 'purchase-supplier-index',
+        component:  () => import('../pages/purchase/SupplierIndex'),
         meta: {
             middleware: hasLoggedIn,
         },
     },
     {
-        path: 'suppliers/:type/form',
-        name: 'purchase-customer-form',
-        component:  () => import('../pages/purchase/FormSupplier'),
+        path: 'supplier/:type/form',
+        name: 'purchase-supplier-form',
+        component:  () => import('../pages/purchase/SupplierForm'),
         meta: {
             middleware: hasLoggedIn,
         },

@@ -7,12 +7,13 @@ use App\Models\ProductBrand;
 use App\Models\ProductCategory;
 use App\Models\ProductHistory;
 use App\Models\ProductUnit;
+use App\Services\DigitalOceanService;
 
 class ProductRepository {
     public function storeUnit($data, $companyId) {
         try {
             $validator = \Validator::make($data, [
-                "title" => "required",
+                "name" => "required",
             ]);
 
             if ($validator->fails()) return resultFunction("Err code PR-SU: " . collect($validator->errors()->all())->implode(" , "));
@@ -21,16 +22,16 @@ class ProductRepository {
             $message = "Creating";
             if ($data['id']) {
                 $productUnit = ProductUnit::find($data['id']);
-                if (!$productUnit) return resultFunction("Err code PR-SU: product unit not found for ID " . $data['id']);
+                if (!$productUnit) return resultFunction("Err code PR-SU: unit not found for ID " . $data['id']);
                 $message = 'Updating';
             } else {
                 $productUnit = new ProductUnit();
                 $productUnit->company_id = $companyId;
             }
-            $productUnit->title = $data['title'];
+            $productUnit->name = $data['name'];
             $productUnit->save();
 
-            return resultFunction($message . " product unit is successfully", true);
+            return resultFunction($message . " unit is successfully", true);
         } catch (\Exception $e) {
             return resultFunction("Err code PR-SU: catch " . $e->getMessage());
         }
@@ -39,84 +40,52 @@ class ProductRepository {
     public function deleteUnit($id) {
         try {
             $productUnit = ProductUnit::find($id);
-            if (!$productUnit) return resultFunction("Err code PR-DU: product unit not found");
+            if (!$productUnit) return resultFunction("Err code PR-DU: unit not found");
 
             $productUnit->delete();
 
-            return resultFunction("Deleting product unit successfully", true);
+            return resultFunction("Deleting unit successfully", true);
         } catch (\Exception $e) {
             return resultFunction("Err code PR-DU: catch " . $e->getMessage());
         }
     }
 
-    public function storeBrand($data, $companyId) {
+    public function storeCategory($request, $companyId) {
         try {
-            $validator = \Validator::make($data, [
-                "title" => "required",
-                "image" => "required",
+            $validator = \Validator::make($request->all(), [
+                "name" => "required",
             ]);
 
-            if ($validator->fails()) return resultFunction("Err code PR-SU: " . collect($validator->errors()->all())->implode(" , "));
+            if ($validator->fails()) return resultFunction("Err code PR-SC: " . collect($validator->errors()->all())->implode(" , "));
 
+            $data = $request->all();
 
-            $message = "Creating";
-            if ($data['id']) {
-                $productBrand = ProductBrand::find($data['id']);
-                if (!$productBrand) return resultFunction("Err code PR-SU: product unit not found for ID " . $data['id']);
-                $message = 'Updating';
-            } else {
-                $productBrand = new ProductBrand();
-                $productBrand->company_id = $companyId;
+            $isNewImage = "";
+            if ($data['image']) {
+                $resultImage = (new DigitalOceanService())->uploadImageToDO($data['image'], 'product-category');
+                if (!$resultImage['status']) return $resultImage;
+
+                $isNewImage = $resultImage['data'];
             }
-            $productBrand->image = $data['image'];
-            $productBrand->title = $data['title'];
-            $productBrand->save();
-
-            return resultFunction($message . " product brand is successfully", true);
-        } catch (\Exception $e) {
-            return resultFunction("Err code PR-SU: catch " . $e->getMessage());
-        }
-    }
-
-    public function deleteBrand($id) {
-        try {
-            $productBrand = ProductBrand::find($id);
-            if (!$productBrand) return resultFunction("Err code PR-DU: product brand not found");
-
-            $productBrand->delete();
-
-            return resultFunction("Deleting product brand successfully", true);
-        } catch (\Exception $e) {
-            return resultFunction("Err code PR-DU: catch " . $e->getMessage());
-        }
-    }
-
-    public function storeCategory($data, $companyId) {
-        try {
-            $validator = \Validator::make($data, [
-                "title" => "required",
-                "image" => "required",
-            ]);
-
-            if ($validator->fails()) return resultFunction("Err code PR-SU: " . collect($validator->errors()->all())->implode(" , "));
-
 
             $message = "Creating";
             if ($data['id']) {
                 $productCategory = ProductCategory::find($data['id']);
-                if (!$productCategory) return resultFunction("Err code PR-SU: product unit not found for ID " . $data['id']);
+                if (!$productCategory) return resultFunction("Err code PR-SC: category not found for ID " . $data['id']);
                 $message = 'Updating';
             } else {
                 $productCategory = new ProductCategory();
                 $productCategory->company_id = $companyId;
             }
-            $productCategory->image = $data['image'];
-            $productCategory->title = $data['title'];
+            if ($isNewImage) {
+                $productCategory->image = $isNewImage;
+            }
+            $productCategory->name = $data['name'];
             $productCategory->save();
 
-            return resultFunction($message . " product category is successfully", true);
+            return resultFunction($message . " category is successfully", true);
         } catch (\Exception $e) {
-            return resultFunction("Err code PR-SU: catch " . $e->getMessage());
+            return resultFunction("Err code PR-SC: catch " . $e->getMessage());
         }
     }
 
@@ -133,29 +102,35 @@ class ProductRepository {
         }
     }
 
-    public function store($data, $companyId) {
+    public function store($request, $companyId) {
         try {
-            $validator = \Validator::make($data, [
-                "product_name" => 'required',
-                "product_image" => 'required',
-                "category" => 'required',
-                "brand" => 'required',
-                "unit" => 'required',
-                "quantity_alert" => 'required',
-                "selling_price" => 'required',
-                "purchase_price" => 'required',
+            $validator = \Validator::make($request->all(), [
+                "name" => 'required',
             ]);
 
             if ($validator->fails()) return resultFunction("Err code PR-S: " . collect($validator->errors()->all())->implode(" , "));
 
-            $category = ProductCategory::find($data['category']);
-            if (!$category) return resultFunction("Err code PR-S: product category not found");
+            $data = $request->all();
 
-            $brand = ProductBrand::find($data['brand']);
-            if (!$brand) return resultFunction("Err code PR-S: product brand not found");
+            $isNewImage = "";
+            if ($data['image']) {
+                $resultImage = (new DigitalOceanService())->uploadImageToDO($data['image'], 'material');
+                if (!$resultImage['status']) return $resultImage;
 
-            $unit = ProductUnit::find($data['unit']);
-            if (!$unit) return resultFunction("Err code PR-S: product unit not found");
+                $isNewImage = $resultImage['data'];
+            }
+
+            $category = null;
+            if ($data['product_category_id']) {
+                $category = ProductCategory::find($data['product_category_id']);
+                if (!$category) return resultFunction("Err code PR-S: category not found");
+            }
+
+            $unit = null;
+            if ($data['product_unit_id']) {
+                $unit = ProductUnit::find($data['product_unit_id']);
+                if (!$unit) return resultFunction("Err code PR-S: unit not found");
+            }
 
             $message = "Creating";
             if ($data['id']) {
@@ -165,38 +140,40 @@ class ProductRepository {
             } else {
                 $product = new Product();
                 $product->company_id = $companyId;
-                $product->stock = $data['opening_stock'];
             }
-            $product->category = $category->title;
-            $product->brand = $brand->title;
-            $product->unit = $unit->title;
-            $product->product_name = $data['product_name'];
-            $product->product_image = $data['product_image'];
-            $product->selling_price = $data['selling_price'];
-            $product->purchase_price = $data['purchase_price'];
-            $product->quantity_alert = $data['quantity_alert'];
-            $product->description = $data['description'] ?? '';
+
+
+            if ($isNewImage) {
+                $product->image = $isNewImage;
+            }
+
+            if ($data['product_category_id']) $product->product_category_id = $category->id;
+            if ($data['product_unit_id']) $product->product_unit_id = $unit->id;
+            $product->name = $data['name'];
+            $product->sku_code = $data['sku_code'];
+            $product->description = $data['description'];
+            $product->is_sale = $data['is_sale'];
+            $product->unit_sale_price = $data['unit_sale_price'];
+            $product->sale_account_id = $data['sale_account_id'];
+            $product->sale_tax_id = $data['sale_tax_id'];
+            $product->is_purchase = $data['is_purchase'];
+            $product->unit_purchase_price = $data['unit_purchase_price'];
+            $product->purchase_account_id = $data['purchase_account_id'];
+            $product->purchase_tax_id = $data['purchase_tax_id'];
             $product->save();
 
-            if (!$data['id']) {
-                $productHistory = new ProductHistory();
-                $productHistory->product_id = $product->id;
-                $productHistory->type = 'add';
-                $productHistory->stock = $data['opening_stock'];
-                $productHistory->note = 'Auto create';
-                $productHistory->save();
-            }
-
-            return resultFunction($message . " product is successfully", true);
+            return resultFunction($message . " product is successfully", true, $product);
         } catch (\Exception $e) {
             return resultFunction("Err code PR-S: catch " . $e->getMessage());
         }
     }
 
-    public function detail($id) {
+    public function detail($id, $companyId) {
         try {
-            $product = Product::find($id);
+            $product = Product::with(['category', 'unit'])->find($id);
             if (!$product) return resultFunction("Err code PR-DU: product not found");
+
+            if ($product->company_id != $companyId) return resultFunction("Err code PR-DU: product not found");
 
             return resultFunction("", true, $product);
         } catch (\Exception $e) {

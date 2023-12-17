@@ -2,36 +2,33 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-title">
-                <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Purchase Bill Form</h1>
+                <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Purchase Form</h1>
                 <router-link to="/app/purchase" class="btn btn-success float-right mt-3 mr-3">
                     <i class="fa fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
-                <form @submit.prevent="handleSubmit()">
+                <form @submit.prevent="handleSubmit">
                     <div class="row">
                         <div class="col-lg-6 col-xl-3">
                             <div class="form-group">
-                                <label>#Bill Number<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                <input type="text" class="form-control" value="DRAFT" disabled>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-xl-3">
-                            <div class="form-group">
-                                <label>Supplier Name<span style="
+                                <label>Supplier<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
                                 <div class="d-flex justify-content-between">
-                                    <v-select v-model="formData.supplier" :options="suppliers" :reduce="supplier => supplier.id" label="name" style="width: 100%">
-                                        <span slot="no-options">Supplier not found, use + to add</span>
+                                    <v-select v-model="formData.supplier_id" :options="suppliers" :reduce="p => p.id" style="width: 100%" label="name" @input="handleChangeSupplier">
+                                        <template #search="{attributes, events}">
+                                            <input
+                                                    class="vs__search"
+                                                    :required="!formData.supplier_id"
+                                                    v-bind="attributes"
+                                                    v-on="events"
+                                            />
+                                        </template>
+                                        <span slot="no-options">Supplier not found</span>
                                     </v-select>
-
                                     <button class="btn btn-warning ml-2" type="button" @click="handleShowAddModalSupplier()">
                                         <i class="fas fa-plus-circle"></i>
                                     </button>
@@ -40,12 +37,26 @@
                         </div>
                         <div class="col-lg-6 col-xl-3">
                             <div class="form-group">
-                                <label>Invoice date<span style="
+                                <label>Email</label>
+                                <input type="email" class="form-control" v-model="formData.supplier_email">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 col-xl-3">
+                            <div class="form-group">
+                                <label>#Transaction Number</label>
+                                <input type="text" class="form-control" value="DRAFT" disabled>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-xl-3">
+                            <div class="form-group">
+                                <label>Transaction date<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="date" class="form-control" v-model="formData.invoice_date" required>
+                                <input type="date" class="form-control" v-model="formData.transaction_date" required>
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-3">
@@ -58,37 +69,32 @@
                                 <input type="date" class="form-control" v-model="formData.due_date" required>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-6 col-xl-4">
+                        <div class="col-lg-6 col-xl-3">
                             <div class="form-group">
-                                <label>Type<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                <select class="form-control" v-model="formData.type" @change="handleChangeType" required>
-                                    <option value="">--Choose Type--</option>
-                                    <option value="Material">Material</option>
-                                    <option value="Product">Product</option>
-                                </select>
+                                <label>Billing Address</label>
+                                <textarea class="form-control" v-model="formData.billing_address" cols="30" rows="5"></textarea>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-xl-8">
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
                             <div class="form-group">
-                                <label>{{ formData.type }} Name<span style="
+                                <label>Product<span v-if="formData.products.length === 0 ? !selectedProduct : false" style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <div class="d-flex justify-content-between">
-                                    <v-select v-model="selectedProduct" :options="products" :reduce="p => p" style="width: 100%" label="label" @input="handleChangeProduct">
-                                        <span slot="no-options">{{ formData.type === '' ? "Please Select Type First" : "Product not found, use + to add" }}</span>
-                                    </v-select>
-                                    <button v-if="formData.type !== ''" @click="handleShowAddNewMaterial()" class="btn btn-warning ml-2" type="button">
-                                        <i class="fas fa-plus-circle"></i>
-                                    </button>
-                                </div>
+                                <v-select v-model="selectedProduct" :options="products" :reduce="p => p.id" style="width: 100%" label="name" @input="handleChangeProduct">
+                                    <template #search="{attributes, events}">
+                                        <input
+                                                class="vs__search"
+                                                :required="formData.products.length === 0 ? !selectedProduct : false"
+                                                v-bind="attributes"
+                                                v-on="events"
+                                        />
+                                    </template>
+                                    <span slot="no-options">Product not found</span>
+                                </v-select>
                             </div>
                         </div>
                     </div>
@@ -97,25 +103,39 @@
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
-                                    <th>Product/Material</th>
+                                    <th>Product</th>
+                                    <th>Description</th>
                                     <th>Quantity</th>
-                                    <th>Unit</th>
-                                    <th>Price/Unit</th>
-                                    <th>Amount Total</th>
+                                    <th>Units</th>
+                                    <th>Unit Price</th>
+                                    <th>Sub Total</th>
+                                    <th>Tax</th>
+                                    <th>Tax Amount</th>
+                                    <th>Grand Total</th>
                                     <th>#</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr v-for="(fp, fpI) in formData.products" :key="fpI">
-                                    <td>{{ fp.name }}</td>
+                                    <td>{{ fp.product }}</td>
                                     <td>
-                                        <input type="number" class="form-control" v-model="formData.products[fpI].quantity" @keyup="handleChange()" required>
+                                        <input type="text" class="form-control" v-model="formData.products[fpI].description">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control" v-model="formData.products[fpI].quantity" @keyup="handleChange()">
                                     </td>
                                     <td>{{ fp.unit }}</td>
                                     <td>
-                                        <input type="number" class="form-control" v-model="formData.products[fpI].amount_per_unit" @keyup="handleChange()" required>
+                                        <input type="number" class="form-control" v-model="formData.products[fpI].unit_price" @keyup="handleChange()">
                                     </td>
-                                    <td>{{ fp.amount_total }}</td>
+                                    <td>{{ fp.sub_total | formatPrice }}</td>
+                                    <td>
+                                        <v-select v-model="formData.products[fpI].tax_id" :options="taxes" :reduce="p => p.id" style="width: 100%" label="title" @input="handleChangeTax(fpI)">
+                                            <span slot="no-options">Tax not found</span>
+                                        </v-select>
+                                    </td>
+                                    <td>{{ fp.tax_amount | formatPrice }}</td>
+                                    <td>{{ fp.grand_total | formatPrice }}</td>
                                     <td>
                                         <button class="btn btn-danger" @click="handleDeleteProduct(fpI)" type="button">
                                             <i class="fas fa-trash"></i>
@@ -128,17 +148,60 @@
                     </div>
                     <div class="row">
                         <div class="col-xl-6">
-                            <div class="form-group">
-                                <label>Description</label>
-                                <textarea v-model="formData.description" class="form-control" cols="30" rows="5"></textarea>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Message</label>
+                                        <textarea v-model="formData.message" class="form-control" cols="30" rows="5"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Attachment</label>
+                                        <table class="table table-striped">
+                                            <tr v-for="(f, fI) in fileImages" :key="fI">
+                                                <td>
+                                                    <i :class="handleShowIconFile(f.type)"></i>
+                                                </td>
+                                                <td>
+                                                    <span class="d-flex flex-column">
+                                                        <span class="text-primary">{{ f.name }}</span>
+                                                        <span>{{ handleSizeFile(f.size) }}</span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <button @click="handleDeleteAttachment(fI)" type="button" class="btn btn-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div v-if="fileImages.length < 5">
+                                            <input type="file" class="form-control" @change="handleChangeImage" />
+                                            <span>Files can be Excel, Word, PDF, JPG, or PNG (maximum 5 files and 5 MB per file).</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xl-6">
                             <table class="table">
                                 <tr>
+                                    <td>Sub Total</td>
+                                    <td class="text-right">
+                                        {{ subTotal | formatPrice }}
+                                    </td>
+                                </tr>
+                                <tr v-if="taxAmountTotal > 0">
+                                    <td>Tax Amount Total</td>
+                                    <td class="text-right">
+                                        {{ taxAmountTotal | formatPrice }}
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>Grand Total</td>
-                                    <td>
-                                        <input type="text" class="form-control" :value="grandTotal">
+                                    <td class="text-right">
+                                        {{ grandTotal | formatPrice }}
                                     </td>
                                 </tr>
                             </table>
@@ -153,86 +216,6 @@
                     </div>
                 </form>
             </div>
-            <div class="modal fade" id="addNewMaterial" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <form @submit.prevent="handleSubmitAddNew">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Add New a {{ formData.type }}</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label>{{ formData.type }} Name<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                    <input type="text" class="form-control" v-model="formAdd.name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Image<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                    <input type="file" class="form-control">
-                                </div>
-                                <img :src="formAdd.image" width="100" alt="" class="rounded">
-                                <div class="form-group">
-                                    <label>Unit<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                    <div class="d-flex justify-content-between">
-                                        <select v-model="formAdd.unit" class="form-control">
-                                            <option v-for="(u, uI) in units" :key="uI" :value="u.title">{{ u.title }}</option>
-                                        </select>
-                                        <button @click="handleShowAddNewUnit()" class="btn btn-warning ml-2" type="button">
-                                            <i class="fas fa-plus-circle"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="addNewUnit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <form @submit.prevent="handleSubmitAddNewUnit">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Add New Unit</h5>
-                                <button @click="handleCancelShowUnit()" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label>Unit Title<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                    <input type="text" class="form-control" v-model="titleUnit" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" @click="handleCancelShowUnit()">Close</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
             <div class="modal fade" id="addNewSupplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -244,28 +227,56 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <div class="form-group">
-                                    <label>Name<span style="
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Name<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                    <input type="text" class="form-control" v-model="formAddSupplier.name" required>
-                                </div>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label>Phone<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                    <input type="text" class="form-control" v-model="formAddSupplier.phone" required>
+                                            <input type="text" class="form-control" v-model="formAddSupplier.name" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Email</label>
+                                            <input type="text" class="form-control" v-model="formAddSupplier.email">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Phone</label>
+                                            <input type="text" class="form-control" v-model="formAddSupplier.phone">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Identity Number</label>
+                                            <input type="text" class="form-control" v-model="formAddSupplier.identity_number">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>NPWP Number</label>
+                                            <input type="text" class="form-control" v-model="formAddSupplier.npwp_number">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Address</label>
+                                            <input type="text" class="form-control" v-model="formAddSupplier.address">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                    <i class="fas fa-times"></i> Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -281,48 +292,56 @@
         name:'Detail',
         data() {
             return {
+                formData: {
+                    id: "",
+                    supplier_id: "",
+                    supplier_email: "",
+                    billing_address: "",
+                    transaction_date: (new Date()).toISOString().split('T')[0],
+                    due_date: "",
+                    products: [],
+                    message: ""
+                },
+                selectedProduct: "",
+                suppliers: [],
+                products: [],
+                subTotal: 0,
+                taxAmountTotal: 0,
+                grandTotal: 0,
                 formAddSupplier: {
                     id: "",
                     name: "",
-                    phone: ""
+                    email: "",
+                    phone: "",
+                    identity_number: "",
+                    npwp_number: "",
+                    address: ""
                 },
-                formData: {
-                    id: "",
-                    supplier: "",
-                    invoice_date: "",
-                    due_date: "",
-                    type: "",
-                    products: [],
-                    description: ""
-                },
-                selectedProduct: "",
-                products: [],
-                formAdd: {
-                    id: "",
-                    name: "",
-                    image: "https://stage-accounting.sgp1.cdn.digitaloceanspaces.com/fat/product/JnydOoMDv3Sql3DE2MKyWuugLvGqS2ZZBP7LXNUL.png",
-                    unit: "",
-                    stock: 0
-                },
-                units: [],
-                titleUnit: "",
-                grandTotal: 0,
-                suppliers: []
+                taxes: [],
+                fileImages: [],
             }
         },
 
         mounted() {
-            this.handleGetSupplier()
+            this.getDataOther()
             if (this.$route.params.type !== 'create') {
                 this.handleGet()
             }
         },
         methods: {
+            handleDeleteAttachment(index) {
+                this.fileImages = this.fileImages.filter((item, ind) => ind !== index)
+            },
+
+            handleChangeSupplier(e) {
+                const selectSupplier = this.suppliers.find((x) => x.id === e)
+                this.formData.supplier_email = selectSupplier.email
+            },
+
             async handleGet() {
                 try {
                     this.$vs.loading()
                     const purchaseLocal = await this.$axios.get(`api/purchase/${this.$route.params.type}/detail`)
-                    console.log("purchase loca", purchaseLocal)
                     this.$vs.loading.close()
                     if (!purchaseLocal.status) {
                         Swal.fire({
@@ -334,11 +353,11 @@
                         })
                         return
                     }
-                    if (purchaseLocal.data.bill_number !== 'DRAFT') {
+                    if (purchaseLocal.data.paid_date) {
                         Swal.fire({
                             position: 'top',
                             icon: 'warning',
-                            title: "Purchase can't be editable, the status  is not draft",
+                            title: "Purchase can't be editable, the status is already paid",
                             showConfirmButton: false,
                             timer: 2500
                         }).then(()=>{
@@ -347,22 +366,37 @@
                         return
                     }
                     this.formData.id = purchaseLocal.data.id
-                    this.formData.bill_number = purchaseLocal.data.bill_number
-                    this.formData.invoice_date = purchaseLocal.data.invoice_date
-                    this.formData.due_date = purchaseLocal.data.due_date
-                    purchaseLocal.data.purchase_items.forEach((x) => {
+                    this.formData.supplier_id = purchaseLocal.data.supplier_id
+                    this.formData.supplier_email = purchaseLocal.data.supplier_email ?? null
+                    this.formData.billing_address = purchaseLocal.data.billing_address ?? ''
+                    this.formData.transaction_date = purchaseLocal.data.transaction_date
+                    this.formData.due_date = purchaseLocal.data.due_date ?? ''
+                    this.formData.message = purchaseLocal.data.message ?? ''
+                    purchaseLocal.data.purchase_products.forEach((x) => {
                         this.formData.products.push({
-                            id: x.product_id !== null ? x.product_id : x.material_id,
-                            type: x.product_id !== null ? "Product" : "Material",
-                            name: x.product_id !== null ? x.product.product_name : x.material.name,
+                            id: x.product_id,
+                            product: x.product.name,
+                            description: x.description ?? '',
                             quantity: x.quantity,
-                            unit: x.product_id !== null ? x.product.unit : x.material.unit,
-                            amount_per_unit: x.price_per_unit,
-                            amount_total: x.amount_total
+                            unit: x.unit,
+                            unit_price: x.unit_price,
+                            sub_total: 0,
+                            tax_id: x.tax_id ?? '',
+                            tax_percentage: x.tax_percentage ?? '',
+                            tax_amount: 0,
+                            grand_total: 0
                         })
-                        this.formData.type = x.product_id !== null ? "Product" : "Material"
                     })
-                    this.formData.supplier = purchaseLocal.data.supplier_id
+                    purchaseLocal.data.purchase_attachments.forEach((x) => {
+                        this.fileImages.push({
+                            name: x.name,
+                            type: x.type,
+                            size: x.size,
+                            ori: x.id
+                        })
+                    })
+                    this.handleChange()
+
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
@@ -376,9 +410,28 @@
             },
 
             async handleSubmit() {
+                console.log("oke")
+                const formData = new FormData()
+                formData.append('id', this.formData.id)
+                formData.append('supplier_id', this.formData.supplier_id)
+                formData.append('supplier_email', this.formData.supplier_email ?? '')
+                formData.append('billing_address', this.formData.billing_address)
+                formData.append('products', JSON.stringify(this.formData.products))
+                formData.append('transaction_date', this.formData.transaction_date)
+                formData.append('due_date', this.formData.due_date)
+                formData.append('message', this.formData.message)
+                this.fileImages.forEach((x, i) => {
+                    formData.append(`attachment${i}`, x.ori)
+                })
+
                 try {
                     this.$vs.loading()
-                    const resp = await this.$axios.post(`api/purchase`, this.formData)
+                    const resp = await this.$axios.post(`api/purchase`,
+                        formData, {
+                            headers: {
+                                "Content-Type": "multipart/form-data"
+                            }
+                        })
                     this.$vs.loading.close()
                     if (!resp.status)  {
                         Swal.fire({
@@ -395,64 +448,79 @@
                             icon: 'success',
                             title: resp.message,
                             showConfirmButton: false,
-                            timer: 1500
-                        }).then(()=>{
-                            this.$router.push(`/app/purchase/${resp.data.id}/detail`);
+                            timer: 2500
                         })
+                        this.$router.push(`/app/purchase/${resp.data.id}/detail`)
                     }
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             },
 
-            async handleGetSupplier() {
-                try {
-                    if (this.units.length === 0) {
-                        this.$vs.loading()
-                        this.suppliers = await this.$axios.get(`api/purchase/supplier`)
-                        this.$vs.loading.close()
-                    }
-                } catch (e) {
-                    this.$vs.loading.close()
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'error',
-                        title: e.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
+            handleSizeFile(size) {
+                if (size < 1000000)  {
+                    return parseFloat(size/1000).toFixed(0) + ' Kb'
+                } else {
+                    return parseFloat(size / 1000000).toFixed(2) + ' Mb'
                 }
+            },
+
+            handleShowIconFile(type) {
+                if (type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'fas fa-file-word-o';
+                if (type === 'application/pdf') return 'fas fa-file-pdf-o';
+                if (type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') return 'fas fa-file-excel-o'
+                if (['image/jpg', 'image/jpeg'].includes(type)) return 'fas fa-file-image-o'
+                if (type === 'image/png') return 'fa-picture-o'
+            },
+
+            handleChangeImage(e) {
+                const fileSel = e.target.files[0]
+                if (fileSel.size > 5000000) {
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: "Maximum size of file is 5 Mb",
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                    return
+                }
+                const types = ['application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/pdf',
+                    'image/jpg', 'image/jpeg', 'image/png'];
+                if (!types.includes(fileSel.type)) {
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: "Please input the type of file from Excel, Word, PDF, JPG, or PNG",
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                    return
+                }
+                this.fileImages.push({
+                    name: fileSel.name,
+                    type: fileSel.type,
+                    size: fileSel.size,
+                    ori: fileSel
+                })
+            },
+
+            handleChangeTax(index) {
+                const selectTax = this.taxes.find((x) => x.id === this.formData.products[index].tax_id)
+                this.formData.products[index].tax_percentage = selectTax.amount
+                this.handleChange()
             },
 
             handleShowAddModalSupplier() {
                 $("#addNewSupplier").modal('show')
-            },
-
-            handleChange() {
-                let grandTotal = 0
-                const prods = this.formData.products
-                prods.forEach((x, i) => {
-                    this.formData.products[i].amount_total = x.quantity * x.amount_per_unit
-                    grandTotal = grandTotal + this.formData.products[i].amount_total
-                })
-                this.grandTotal = grandTotal
-            },
-
-            handleCancelShowUnit() {
-                $("#addNewMaterial").modal("show")
-                $("#addNewUnit").modal("hide")
-            },
-
-            handleShowAddNewUnit() {
-                $("#addNewMaterial").modal("hide")
-                $("#addNewUnit").modal("show")
             },
 
             async handleSubmitAddNewSupplier() {
@@ -470,151 +538,92 @@
                         })
                         return
                     } else {
-                        await this.handleGetSupplier()
-                        $("#addNewSupplier").modal("hide")
-                    }
-                } catch (e) {
-                    this.$vs.loading.close()
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'error',
-                        title: e.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                }
-            },
-
-            async handleSubmitAddNewUnit() {
-                try {
-                    this.$vs.loading()
-                    const resp = await this.$axios.post(`api/product/unit`, {
-                        id: "",
-                        title: this.titleUnit
-                    })
-                    this.$vs.loading.close()
-                    if (!resp.status)  {
                         Swal.fire({
                             position: 'top',
-                            icon: 'error',
+                            icon: 'success',
                             title: resp.message,
                             showConfirmButton: false,
                             timer: 2500
                         })
-                        return
-                    } else {
-                        this.units = []
-                        await this.handleGetUnit()
-                        $("#addNewMaterial").modal("show")
-                        $("#addNewUnit").modal("hide")
+                        $("#addNewSupplier").modal('hide')
+                        this.getDataOther()
                     }
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             },
 
-            async handleSubmitAddNew() {
-                try {
-                    this.$vs.loading()
-                    const resp = await this.$axios.post(`api/manufacture/material`, this.formAdd)
-                    this.$vs.loading.close()
-                    if (!resp.status)  {
-                        Swal.fire({
-                            position: 'top',
-                            icon: 'error',
-                            title: resp.message,
-                            showConfirmButton: false,
-                            timer: 2500
-                        })
-                        return
-                    } else {
-                        $("#addNewMaterial").modal('hide')
-                        this.handleChangeType()
+            handleChange() {
+                let grandTotal = 0
+                let taxAmountTotal = 0
+                let subTotal = 0
+                const prods = this.formData.products
+                prods.forEach((x, i) => {
+                    this.formData.products[i].sub_total = x.quantity * x.unit_price
+                    let taxAmount = 0;
+                    if (x.tax_id) {
+                        taxAmount = x.tax_percentage * this.formData.products[i].sub_total / 100;
                     }
-                } catch (e) {
-                    this.$vs.loading.close()
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'error',
-                        title: e.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                }
+                    this.formData.products[i].tax_amount = taxAmount;
+                    this.formData.products[i].grand_total = this.formData.products[i].sub_total + this.formData.products[i].tax_amount;
+                    subTotal = subTotal + this.formData.products[i].sub_total
+                    grandTotal = grandTotal + this.formData.products[i].grand_total
+                    taxAmountTotal = taxAmountTotal + this.formData.products[i].tax_amount
+                })
+                this.subTotal = subTotal
+                this.taxAmountTotal = taxAmountTotal
+                this.grandTotal = grandTotal
             },
 
             handleDeleteProduct(index) {
                 this.formData.products = this.formData.products.filter((item, ind) => ind !== index)
                 this.handleChange()
+                this.selectedProduct = '';
             },
 
-            async handleShowAddNewMaterial() {
-                await this.handleGetUnit()
-                $("#addNewMaterial").modal("show")
+            handleChangeProduct(e) {
+                const selectProdLocal = this.products.find((x) => x.id === e)
+                this.formData.products.push({
+                    id: selectProdLocal.id,
+                    product: selectProdLocal.name,
+                    description: selectProdLocal.description ?? '',
+                    quantity: 1,
+                    unit: selectProdLocal.unit ? selectProdLocal.unit.name :  'Unit',
+                    unit_price: selectProdLocal.unit_sale_price,
+                    sub_total: 0,
+                    tax_id: selectProdLocal.sale_tax_id,
+                    tax_percentage: selectProdLocal.sale_tax ? selectProdLocal.sale_tax.amount : 0,
+                    tax_amount: 0,
+                    grand_total: 0
+                })
+                this.handleChange()
             },
 
-            async handleChangeProduct(val) {
-                const selectProd = val.value
-                if (this.selectedProduct !== ''){
-                    this.formData.products.push({
-                        id: selectProd.id,
-                        type: this.formData.type,
-                        name: selectProd.name,
-                        quantity: 1,
-                        unit: selectProd.unit,
-                        amount_per_unit: 0,
-                        amount_total: 0
-                    })
-                }
-            },
-
-            async handleChangeType() {
+            async getDataOther() {
                 try {
                     this.$vs.loading()
-                    this.selectedProduct = ""
-                    this.products = [];
-                    const prodLocals = await this.$axios.get(`api/purchase/get-product-material/${this.formData.type}`)
-                    prodLocals.forEach((x) => {
-                        this.products.push({id: x.id, label: x.name + ' (' + x.unit + ')', value: x })
-                    })
+                    this.suppliers = await this.$axios.get(`api/purchase/supplier`)
+                    this.products = await this.$axios.get(`api/product?is_purchase=1`)
+                    this.taxes = await this.$axios.get(`api/tax`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2000
                     })
                 }
             },
-
-            async handleGetUnit() {
-                try {
-                    if (this.units.length === 0) {
-                        this.$vs.loading()
-                        this.units = await this.$axios.get(`api/product/unit`)
-                        this.$vs.loading.close()
-                    }
-                } catch (e) {
-                    this.$vs.loading.close()
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'error',
-                        title: e.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                }
-            }
-        },
+        }
     }
 </script>

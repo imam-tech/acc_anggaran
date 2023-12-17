@@ -51,10 +51,17 @@
                                     <div v-for="(items, index) in formData.items" :key="index" class="row mr-2 mt-2">
                                         <div class="col-md-4 col-xl-2">
                                             <label>Account</label>
-                                            <select class="form-control" v-model="formData.items[index].coa">
-                                                <option value="">--Select Coa--</option>
-                                                <option v-for="(coa, index) in coas" :key="index" :value="coa.id">{{ coa.account_code }}</option>
-                                            </select>
+                                            <v-select v-model="formData.items[index].coa" :options="coas" :reduce="p => p.id" style="width: 100%" label="account_code">
+                                                <template #search="{attributes, events}">
+                                                    <input
+                                                            class="vs__search"
+                                                            :required="!formData.items[index].coa"
+                                                            v-bind="attributes"
+                                                            v-on="events"
+                                                    />
+                                                </template>
+                                                <span slot="no-options">Account not found</span>
+                                            </v-select>
                                         </div>
                                         <div class="col-md-4 col-xl-3">
                                             <label>Description</label>
@@ -70,10 +77,9 @@
                                         </div>
                                         <div class="col-md-4 col-xl-2">
                                             <label>Cashflow</label>
-                                            <select class="form-control" v-model="formData.items[index].cashflow">
-                                                <option value="">--Select Cashflow--</option>
-                                                <option v-for="(cashflow, index) in cashflows" :key="index" :value="cashflow.id">{{ cashflow.name }}</option>
-                                            </select>
+                                            <v-select v-model="formData.items[index].cashflow" :options="cashflows" :reduce="p => p.id" style="width: 100%" label="name">
+                                                <span slot="no-options">Cashflow not found</span>
+                                            </v-select>
                                         </div>
                                         <div class="col-md-4 col-xl-1 d-flex align-items-end justify-content-end">
                                             <button @click="handleDeleteItem(index)" type="button" class="btn btn-danger"><i class="fas fa-trash"></i></button>
