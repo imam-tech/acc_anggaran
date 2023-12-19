@@ -16,11 +16,19 @@
                     </div>
                     <div class="col-6 text-right">
                         <div class="d-flex flex-column">
-                            <router-link to="/app/purchase">
-                                <button type="button" class="mr-3 mt-3 btn btn-success">
-                                    <i class="fa fa-arrow-left"></i> Back
-                                </button>
-                            </router-link>
+                            <div>
+                                <router-link v-if="handleStatus(salesData).label !== 'Paid'" :to="'/app/purchase/payment/'+purchaseData.id+'/create/form'">
+                                    <button type="button" class="mr-3 mt-3 btn btn-primary">
+                                        <i class="fa fa-dollar"></i> Receive Payment
+                                    </button>
+                                </router-link>
+                                <router-link to="/app/purchase">
+                                    <button type="button" class="mr-3 mt-3 btn btn-success">
+                                        <i class="fa fa-arrow-left"></i> Back
+                                    </button>
+                                </router-link>
+                            </div>
+                            <h4 class="mr-3 mt-2">Balance Due Rp. {{ handleShowBalanceDue(purchaseData) | formatPrice }}</h4>
                             <a href="@" @click.prevent="handleShowJournalEntry()" class="mr-3 mt-2">View Journal Entry</a>
                         </div>
                     </div>
@@ -32,7 +40,7 @@
                         <table class="table table-striped">
                             <tbody>
                             <tr>
-                                <th>Customer Name</th>
+                                <th>Supplier Name</th>
                                 <td class="text-right">{{purchaseData.supplier.name}}</td>
                             </tr>
                             </tbody>
@@ -42,7 +50,7 @@
                         <table class="table table-striped">
                             <tbody>
                             <tr>
-                                <th>Customer Email</th>
+                                <th>Supplier Email</th>
                                 <td class="text-right">{{purchaseData.supplier_email}}</td>
                             </tr>
                             </tbody>
@@ -165,6 +173,53 @@
                                     {{ purchaseData.grand_total | formatPrice }}
                                 </td>
                             </tr>
+                            <tr v-if="purchaseData.payment_amount_total > 0">
+                                <td>Payment Paid</td>
+                                <td class="text-right">
+                                    {{ purchaseData.payment_amount_total | formatPrice }}
+                                </td>
+                            </tr>
+                            <tr v-if="purchaseData.payment_amount_total > 0">
+                                <td>Balance Due</td>
+                                <td class="text-right">
+                                    {{ handleShowBalanceDue(purchaseData) | formatPrice }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div v-if="purchaseData.purchase_payments.length > 0" class="row">
+                    <div class="col-12">
+                        <h3>Payment</h3>
+                    </div>
+                    <div class="col-12 table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th class="text-center">Date</th>
+                                <th class="text-center">Number</th>
+                                <th class="text-center">Pay From</th>
+                                <th class="text-center">Payment Method</th>
+                                <th class="text-center">Payment Status</th>
+                                <th class="text-center">Amount</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(sp, spI) in purchaseData.purchase_payments" :key="spI">
+                                <td>{{ sp.payment_date }}</td>
+                                <td>
+                                    <router-link :to="'/app/purchase/payment/' + sp.id + '/detail'">Payment Receive #{{ sp.id }}</router-link></td>
+                                <td>{{ sp.coa.account_name }}</td>
+                                <td>{{ sp.payment_method ? sp.payment_method.name : '' }}</td>
+                                <td>Paid</td>
+                                <td class="text-right">{{ sp.payment_amount | formatPrice }}</td>
+                                <td class="text-right">
+                                    <button v-if="handleStatus(salesData).label !== 'Paid'" type="button" @click="handleDelete(sp.id)" class="btn btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -227,6 +282,13 @@
             this.getData()
         },
         methods: {
+            handleShowBalanceDue(s) {
+                if (parseFloat(s.payment_amount_total) >= parseFloat(s.grand_total)) {
+                    return 0
+                }
+                return parseFloat(s.grand_total) - parseFloat(s.payment_amount_total);
+            },
+
             handleTotal(journals, type) {
                 let total = 0;
                 journals.forEach((x) => {
@@ -240,22 +302,29 @@
             },
 
             handleStatus(s) {
-                if (!s.paid_date) {
+                if (parseFloat(s.payment_amount_total) < parseFloat(s.grand_total)) {
                     const dateNow = (new Date()).toISOString().split('T')[0]
                     if (s.due_date < dateNow) {
                         return {
-                            "class": 'badge badge-danger rounded-pill',
+                            "class": 'badge badge-danger',
                             "label": 'Overdue'
                         }
                     } else {
-                        return {
-                            "class": 'badge badge-warning rounded-pill',
-                            "label": 'Open'
+                        if (parseFloat(s.payment_amount_total) === 0) {
+                            return {
+                                "class": 'badge badge-warning',
+                                "label": 'Open'
+                            }
+                        } else {
+                            return {
+                                "class": 'badge badge-warning',
+                                "label": 'Partial'
+                            }
                         }
                     }
                 } else {
                     return {
-                        "class": 'badge badge-success rounded-pill',
+                        "class": 'badge badge-success',
                         "label": 'Paid'
                     }
                 }
@@ -305,6 +374,46 @@
                     })
                 }
             },
+
+            async handleDelete(id) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are You Sure Want To Delete This Payment?',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.delete(`api/purchase/payment/${id}/${this.salesData.id}/delete`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.getData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Delete payment : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            }
         }
     }
 </script>

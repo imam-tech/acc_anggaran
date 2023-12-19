@@ -6,7 +6,7 @@
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Role List</h1>
                 <router-link to="/app/setting">
                     <button type="button" class="btn btn-success float-right mr-3 mt-3">
-                        Back
+                        <i class="fa fa-arrow-left"></i> Back
                     </button>
                 </router-link>
             </div>

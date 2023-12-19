@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Material extends Model
+class PurchasePaymentJournal extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     
-    protected $table = 'materials';
+    protected $table = 'purchase_payment_journals';
     protected $guarded = [];
+
+    public function coa() {
+        return $this->hasOne(Coa::class, 'id', 'account_id');
+    }
 }

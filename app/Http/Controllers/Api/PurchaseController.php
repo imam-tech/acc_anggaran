@@ -45,12 +45,16 @@ class PurchaseController extends Controller {
 
         if (!empty($filters['status'])) {
             $dateNow = date("Y-m-d");
-            if ($filters['status'] === 'Paid') {
-                $purchases = $purchases->whereNotNull('paid_date');
-            } else if ($filters['status'] === 'Open') {
-                $purchases = $purchases->where('due_date', '>', $dateNow)->whereNull('paid_date');
-            } else if ($filters['status'] === 'Overdue') {
-                $purchases = $purchases->where('due_date', '<', $dateNow)->whereNull('paid_date');
+            if ($filters['status'] === 'Overdue') {
+                $purchases = $purchases->where('due_date', '<', $dateNow);
+            } else {
+                if ($filters['status'] === 'Open') {
+                    $purchases = $purchases->where('payment_amount_total', 0);
+                } else if ($filters['status'] === 'Paid') {
+                    $purchases = $purchases->whereRaw('payment_amount_total = grand_total');
+                } else {
+                    $purchases = $purchases->where('payment_amount_total', '>', 0)->whereRaw('payment_amount_total != grand_total');
+                }
             }
         }
 
@@ -61,5 +65,21 @@ class PurchaseController extends Controller {
 
     public function detail($id) {
         return response()->json($this->purchaseRepo->detail($id));
+    }
+
+    public function storePayment(Request $request) {
+        return response()->json($this->purchaseRepo->storePayment($request));
+    }
+
+    public function detailPayment($id) {
+        return response()->json($this->purchaseRepo->detailPayment($id));
+    }
+
+    public function deletePayment($id, $purchaseId) {
+        return response()->json($this->purchaseRepo->deletePayment($id, $purchaseId));
+    }
+
+    public function summarizeCount(Request $request) {
+        return response()->json($this->purchaseRepo->summarizeCount($request->header('company_id')));
     }
 }

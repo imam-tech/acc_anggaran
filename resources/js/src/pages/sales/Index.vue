@@ -13,6 +13,23 @@
                 </div>
             </div>
             <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-6 col-xl-4 mb-2" v-for="(rc, rcI) in resumeCharts" :key="rcI">
+                        <div class="card">
+                            <div class="card-body shadow-lg p-2">
+                                <div class="d-flex justify-content-between">
+                                    <span>{{ rc.label }}</span>
+                                    <span class="bg-info rounded p-1 text-white">{{ rc.count }}</span>
+                                </div>
+                                <span class="align-content-center">
+                                    Rp. {{ rc.sum | formatPrice }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
                 <div class="row mb-2">
                     <div class="col-lg-6 col-xl-3">
                         <div class="form-group">
@@ -24,6 +41,7 @@
                             <select class="form-control" v-model="formFilter.status">
                                 <option value="">All Status</option>
                                 <option value="Paid">Paid</option>
+                                <option value="Partial">Partial</option>
                                 <option value="Open">Open</option>
                                 <option value="Overdue">Overdue</option>
                             </select>
@@ -94,7 +112,7 @@
                             <td>{{ s.due_date }}</td>
                             <td><span :class="handleStatus(s).class">{{ handleStatus(s).label }}</span></td>
                             <td class="text-right">{{ handleShowBalanceDue(s) | formatPrice }}</td>
-                            <td class="text-right">{{ (parseFloat(s.grand_total) + parseFloat(s.discount_amount)) | formatPrice }}</td>
+                            <td class="text-right">{{ parseFloat(s.grand_total) | formatPrice }}</td>
                             <td class="text-right">
                                 <router-link v-if="!s.paid_date" :to="'sales/' + s.id + '/form'">
                                     <button type="button" class="btn btn-warning">
@@ -134,6 +152,19 @@
                 page: 1,
                 totalData: 0,
                 perPage: 0,
+                resumeCharts: [{
+                    label: 'Open Invoice',
+                    count: 0,
+                    sum: 0
+                },{
+                    label: 'Overdue Invoice',
+                    count: 0,
+                    sum: 0
+                },{
+                    label: 'Payment Received Last 30 Days',
+                    count: 0,
+                    sum: 0
+                }],
             }
         },
         created() {
@@ -141,14 +172,14 @@
         },
         methods: {
             handleShowBalanceDue(s) {
-                if (!s.paid_date) {
-                    return parseFloat(s.grand_total)
+                if (parseFloat(s.payment_amount_total) >= parseFloat(s.grand_total)) {
+                    return 0
                 }
-                return 0;
+                return parseFloat(s.grand_total) - parseFloat(s.payment_amount_total);
             },
 
             handleStatus(s) {
-                if (!s.paid_date) {
+                if (parseFloat(s.payment_amount_total) < parseFloat(s.grand_total)) {
                     const dateNow = (new Date()).toISOString().split('T')[0]
                     if (s.due_date < dateNow) {
                         return {
@@ -156,9 +187,16 @@
                             "label": 'Overdue'
                         }
                     } else {
-                        return {
-                            "class": 'badge badge-warning',
-                            "label": 'Open'
+                        if (parseFloat(s.payment_amount_total) === 0) {
+                            return {
+                                "class": 'badge badge-warning',
+                                "label": 'Open'
+                            }
+                        } else {
+                            return {
+                                "class": 'badge badge-warning',
+                                "label": 'Partial'
+                            }
                         }
                     }
                 } else {
@@ -173,6 +211,13 @@
                 try {
                     this.$vs.loading()
                     const salesLocal = await this.$axios.get(`api/sales?page=${this.page}&` + new URLSearchParams(this.formFilter).toString())
+                    const respSum = await this.$axios.get(`api/sales/summarize-count`)
+                    this.resumeCharts[0].count = respSum.data.open_invoice.total
+                    this.resumeCharts[0].sum = respSum.data.open_invoice.amount
+                    this.resumeCharts[1].count = respSum.data.overdue_invoice.total
+                    this.resumeCharts[1].sum = respSum.data.overdue_invoice.amount
+                    this.resumeCharts[2].count = respSum.data.payment_last_month.total
+                    this.resumeCharts[2].sum = respSum.data.payment_last_month.amount
                     this.sales = salesLocal.data
                     this.totalData = salesLocal.total
                     this.page = salesLocal.current_page

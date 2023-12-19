@@ -36,17 +36,27 @@
                         <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
                                 <label>Category</label>
-                                <v-select v-model="formData.product_category_id" :options="categories" :reduce="p => p.id" style="width: 100%" label="name">
-                                    <span slot="no-options">Category not found</span>
-                                </v-select>
+                                <div class="d-flex justify-content-between">
+                                    <v-select v-model="formData.product_category_id" :options="categories" :reduce="p => p.id" style="width: 100%" label="name">
+                                        <span slot="no-options">Category not found, click + icon to create</span>
+                                    </v-select>
+                                    <button class="btn btn-warning ml-2" type="button" @click="handleShowAddModalCategory()">
+                                        <i class="fas fa-plus-circle"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
                                 <label>Unit</label>
-                                <v-select v-model="formData.product_unit_id" :options="units" :reduce="p => p.id" style="width: 100%" label="name">
-                                    <span slot="no-options">Unit not found</span>
-                                </v-select>
+                                <div class="d-flex justify-content-between">
+                                    <v-select v-model="formData.product_unit_id" :options="units" :reduce="p => p.id" style="width: 100%" label="name">
+                                        <span slot="no-options">Unit not found, click + icon to create</span>
+                                    </v-select>
+                                    <button class="btn btn-warning ml-2" type="button" @click="handleShowAddModalUnit()">
+                                        <i class="fas fa-plus-circle"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">
@@ -126,14 +136,19 @@
                     </div>
                 </form>
             </div>
+            <UnitCrud :get-data="getDataOther" :form-data="formAddUnit" :label-modal="labelModal"></UnitCrud>
+            <CategoryCrud :get-data="getDataOther" :form-data="formAddCategory" :label-modal="labelModal"></CategoryCrud>
         </div>
     </div>
 </template>
 
 <script>
+    import UnitCrud from './components/UnitCrud'
+    import CategoryCrud from './components/CategoryCrud'
 
     export default {
         name:'Detail',
+        components: {UnitCrud, CategoryCrud},
         data() {
             return {
                 formData: {
@@ -156,7 +171,17 @@
                 categories: [],
                 fileImage: "",
                 accounts: [],
-                taxes: []
+                taxes: [],
+                formAddUnit: {
+                    id: "",
+                    name: ''
+                },
+                formAddCategory: {
+                    id: "",
+                    name: "",
+                    image: ""
+                },
+                labelModal: 'Add'
             }
         },
 
@@ -164,6 +189,24 @@
             this.initiateData()
         },
         methods: {
+
+            handleShowAddModalUnit() {
+                this.formAddUnit = {
+                    'id': "",
+                    'name': ""
+                }
+                $("#addProductUnit").modal('show')
+            },
+
+            handleShowAddModalCategory() {
+                this.formAddCategory = {
+                    id: "",
+                    name: "",
+                    image: ""
+                }
+                $("#addProductCategory").modal('show')
+            },
+
             async initiateData() {
                 if (this.$route.params.type !== 'create') {
                     await this.getData()
@@ -219,6 +262,7 @@
 
             async getDataOther() {
                 try {
+                    console.log("oke 2")
                     this.$vs.loading()
                     this.units = await this.$axios.get(`api/product/unit`)
                     this.categories = await this.$axios.get(`api/product/category`)

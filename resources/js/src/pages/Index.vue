@@ -11,7 +11,7 @@
             <div class="col-xl-2"></div>
             <div class="col-lg-12 col-xl-8">
                 <div class="row">
-                    <div class="col-xl-4 mb-2"  v-for="(f, i) in features" :key="i">
+                    <div class="col-lg-4 mb-2"  v-for="(f, i) in features" :key="i">
                         <router-link :to="f.link">
                             <div class="card">
                                 <div class="card-body shadow-lg">
@@ -35,15 +35,15 @@
             return {
                 companies: [],
                 features: [{
-                    link: '',
+                    link: 'app/sales/create/form',
                     label: 'Create Sales Invoices',
                     image: ''
                 },{
-                    link: '',
+                    link: 'app/purchase/create/form',
                     label: 'Create Purchase Invoice',
                     image: ''
                 },{
-                    link: '',
+                    link: 'app/product/create/form',
                     label: 'Add New Product',
                     image: ''
                 }]

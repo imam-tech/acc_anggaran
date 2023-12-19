@@ -7,6 +7,7 @@ Route:: group(['prefix' => 'product', 'middleware' => 'auth:sanctum'], function 
     Route::post('/', [ProductController::class, 'store']);
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/{id}/detail', [ProductController::class, 'detail']);
+    Route::delete('/{id}/delete', [ProductController::class, 'delete']);
 
     Route::group(['prefix' => 'unit'], function () {
         Route::post('/', [ProductController::class, 'storeUnit']);

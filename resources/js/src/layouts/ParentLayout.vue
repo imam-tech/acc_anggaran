@@ -37,7 +37,7 @@
 
             </nav>
             <!-- Main Content -->
-            <div class="">
+            <div class="mb-lg-5 pb-5">
 
                 <!-- Topbar -->
                 <!-- End of Topbar -->
@@ -48,6 +48,7 @@
                 </div>
                 <!-- /.container-fluid -->
             </div>
+            <div class="mt-5"></div>
             <!-- End of Main Content -->
 
             <!-- Footer -->

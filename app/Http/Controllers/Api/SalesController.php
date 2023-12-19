@@ -39,16 +39,20 @@ class SalesController extends Controller {
 
     public function index(Request $request) {
         $filters = $request->only(['status']);
-        $sales = Sales::with(['sales_products', 'sales_attachments', 'customer']);
+        $sales = Sales::with(['sales_products', 'sales_attachments', 'customer', 'sales_payments']);
 
         if (!empty($filters['status'])) {
             $dateNow = date("Y-m-d");
-            if ($filters['status'] === 'Paid') {
-                $sales = $sales->whereNotNull('paid_date');
-            } else if ($filters['status'] === 'Open') {
-                $sales = $sales->where('due_date', '>', $dateNow)->whereNull('paid_date');
-            } else if ($filters['status'] === 'Overdue') {
-                $sales = $sales->where('due_date', '<', $dateNow)->whereNull('paid_date');
+            if ($filters['status'] === 'Overdue') {
+                $sales = $sales->where('due_date', '<', $dateNow);
+            } else {
+                if ($filters['status'] === 'Open') {
+                    $sales = $sales->where('payment_amount_total', 0);
+                } else if ($filters['status'] === 'Paid') {
+                    $sales = $sales->whereRaw('payment_amount_total = grand_total');
+                } else {
+                    $sales = $sales->where('payment_amount_total', '>', 0)->whereRaw('payment_amount_total != grand_total');
+                }
             }
         }
 
@@ -63,5 +67,17 @@ class SalesController extends Controller {
 
     public function storePayment(Request $request) {
         return response()->json($this->salesRepo->storePayment($request));
+    }
+
+    public function detailPayment($id) {
+        return response()->json($this->salesRepo->detailPayment($id));
+    }
+
+    public function deletePayment($id, $salesId) {
+        return response()->json($this->salesRepo->deletePayment($id, $salesId));
+    }
+
+    public function summarizeCount(Request $request) {
+        return response()->json($this->salesRepo->summarizeCount($request->header('company_id')));
     }
 }

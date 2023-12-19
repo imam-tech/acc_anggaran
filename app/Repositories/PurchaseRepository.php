@@ -2,12 +2,16 @@
 
 namespace App\Repositories;
 
+use App\Models\Coa;
 use App\Models\Material;
 use App\Models\MaterialHistory;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\PurchaseAttachment;
 use App\Models\PurchaseJournal;
+use App\Models\PurchasePayment;
+use App\Models\PurchasePaymentAttachment;
+use App\Models\PurchasePaymentJournal;
 use App\Models\PurchaseProduct;
 use App\Models\Supplier;
 use App\Models\Tax;
@@ -87,6 +91,7 @@ class PurchaseRepository {
                 $purchase = new Purchase();
                 $purchase->company_id = $companyId;
                 $purchase->transaction_number = '';
+                $purchase->payment_amount_total = 0;
             }
             $purchase->supplier_id = $supplier->id;
             $purchase->supplier_email = $data['supplier_email'];
@@ -155,13 +160,13 @@ class PurchaseRepository {
                 }
 
                 if (!is_null($isSame)) {
-                    $purchaseJournalData[$isSame]['credit'] = $purchaseJournalData[$isSame]['credit'] + $subTotal;
+                    $purchaseJournalData[$isSame]['debit'] = $purchaseJournalData[$isSame]['credit'] + $subTotal;
                 } else {
                     $purchaseJournalData[] = [
                         'purchase_id' => $purchase->id,
                         'account_id' => $selectProduct->purchase_account_id,
-                        'debit' => 0,
-                        'credit' => $subTotal,
+                        'debit' => $subTotal,
+                        'credit' => 0,
                         'created_at' => date("Y-m-d H:i:s"),
                         'updated_at' => date("Y-m-d H:i:s")
                     ];
@@ -182,8 +187,8 @@ class PurchaseRepository {
                         $purchaseJournalTaxData[] = [
                             'purchase_id' => $purchase->id,
                             'account_id' => $tax->buy_account_id,
-                            'debit' => 0,
-                            'credit' => $taxTotal,
+                            'debit' => $taxTotal,
+                            'credit' => 0,
                             'created_at' => date("Y-m-d H:i:s"),
                             'updated_at' => date("Y-m-d H:i:s")
                         ];
@@ -195,7 +200,7 @@ class PurchaseRepository {
             $purchase->grand_total = $purchase->sub_total + $purchase->tax_total_amount;
             $purchase->save();
 
-            $purchaseJournalData[0]['debit'] = $purchase->grand_total;
+            $purchaseJournalData[0]['credit'] = $purchase->grand_total;
 
             $doService = new DigitalOceanService();
             $purchaseAttachments = [];
@@ -250,10 +255,197 @@ class PurchaseRepository {
     public function detail($id) {
         try {
             $purchase = Purchase::with(['purchase_products.product', 'purchase_products.tax', 'purchase_attachments', 'supplier',
-                'purchase_journals.coa'])->find($id);
+                'purchase_journals.coa', 'purchase_payments.coa'])->find($id);
             if (!$purchase) return resultFunction("Err code SR-D: purchase not found");
 
             return resultFunction("", true, $purchase);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function storePayment($request) {
+        try {
+            $data = $request->all();
+            $validator = \Validator::make($data, [
+                'purchase_id' => '',
+                "pay_from" => 'required',
+                "payment_amount" => 'required',
+            ]);
+
+            if ($validator->fails()) return resultFunction("Err code SR-SP: " . collect($validator->errors()->all())->implode(" , "));
+
+            DB::beginTransaction();
+
+            $coa = Coa::find($data['pay_from']);
+            if (!$coa) return resultFunction("Err code SR-SP: coa not found for ID " . $data['pay_from']);
+
+            $message = "Creating";
+            if ($data['id']) {
+                $purchasePayment = PurchasePayment::find($data['id']);
+                if (!$purchasePayment) return resultFunction("Err code SR-SP: purchase not found for ID " . $data['id']);
+                $message = 'Updating';
+
+                PurchasePaymentAttachment::where('purchase_payment_id', $purchasePayment->id)->delete();
+                PurchasePaymentJournal::where('purchase_payment_id', $purchasePayment->id)->delete();
+            } else {
+                $purchasePayment = new PurchasePayment();
+                $purchasePayment->purchase_id = $data['purchase_id'];
+            }
+            $purchasePayment->pay_from = $data['pay_from'];
+            $purchasePayment->payment_method = $data['payment_method'];
+            $purchasePayment->payment_date = $data['payment_date'];
+            $purchasePayment->due_date = $data['due_date'];
+            $purchasePayment->payment_amount = $data['payment_amount'];
+            $purchasePayment->memo = $data['memo'];
+            $purchasePayment->save();
+
+            $purchasePaymentJournals = [];
+            $purchasePaymentJournals[] = [
+                'purchase_payment_id' => $purchasePayment->id,
+                'account_id' => 2388,  // sementara account payable
+                'debit' => $data['payment_amount'],
+                'credit' => 0,
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => date("Y-m-d H:i:s")
+            ];
+            $purchasePaymentJournals[] = [
+                'purchase_payment_id' => $purchasePayment->id,
+                'account_id' => $data['pay_from'],
+                'debit' => 0,
+                'credit' => $data['payment_amount'],
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => date("Y-m-d H:i:s")
+            ];
+
+            $doService = new DigitalOceanService();
+            $purchaseAttachments = [];
+            for ($i = 0; $i < 5; $i++) {
+                if (isset($data['attachment' . $i])) {
+                    $image = $data['attachment' . $i];
+
+                    if (is_object($image)) {
+                        $resultImage = $doService->uploadImageToDO($image, 'purchase-payment');
+                        if (!$resultImage['status']) return $resultImage;
+                        $url = $resultImage['data'];
+                        $name = $image->getClientOriginalName();
+                        $size = filesize($image);
+                        $type = $image->getMimeType();
+                    } else {
+                        $purchaseAttachment = PurchaseAttachment::find($image);
+                        $url = $purchaseAttachment->url;
+                        $name = $purchaseAttachment->name;
+                        $size = $purchaseAttachment->size;
+                        $type = $purchaseAttachment->type;
+                    }
+
+                    $purchaseAttachments[] = [
+                        'purchase_payment_id' => $purchasePayment->id,
+                        'url' => $url,
+                        'name' => $name,
+                        'size' => $size,
+                        'type' => $type,
+                        'created_at' => date("Y-m-d H:i:s"),
+                        'updated_at' => date("Y-m-d H:i:s")
+                    ];
+                }
+            }
+
+            if ($data['id']) {
+                PurchasePaymentAttachment::where('purchase_payment_id', $purchasePayment->id)->delete();
+            }
+
+            PurchasePaymentJournal::insert($purchasePaymentJournals);
+            if (count($purchaseAttachments) > 0) {
+                PurchasePaymentAttachment::insert($purchaseAttachments);
+            }
+
+            $this->adjustPaymentAmount($purchasePayment->purchase_id);
+
+            DB::commit();
+            return resultFunction($message . " purchase payment is successfully", true, $purchasePayment);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-SP: catch " . $e->getMessage());
+        }
+    }
+
+    public function adjustPaymentAmount($purchaseId) {
+        $paymentAmount = PurchasePayment::with([])
+            ->where('purchase_id', $purchaseId)
+            ->sum('payment_amount');
+
+        $purchase = Purchase::find($purchaseId);
+        $purchase->payment_amount_total = $paymentAmount;
+        $purchase->save();
+
+    }
+
+    public function detailPayment($id) {
+        try {
+            $purchasePayment = PurchasePayment::with(['purchase.supplier', 'coa', 'payment_method', 'purchase_payment_attachments', 'purchase_payment_journals.coa'])->find($id);
+            if (!$purchasePayment) return resultFunction("Err code SR-D: purchase payment not found");
+
+            return resultFunction("", true, $purchasePayment);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function deletePayment($id, $purchaseId) {
+        try {
+            $purchasePayment = PurchasePayment::with(['purchase.supplier', 'coa', 'payment_method', 'purchase_payment_attachments', 'purchase_payment_journals.coa'])->find($id);
+            if (!$purchasePayment) return resultFunction("Err code SR-D: purchase payment not found");
+
+            $purchasePayment->delete();
+            PurchasePaymentJournal::where('purchase_payment_id', $id)->delete();
+            PurchasePaymentAttachment::where('purchase_payment_id', $id)->delete();
+
+            $this->adjustPaymentAmount($purchaseId);
+            return resultFunction("Delete payment is successfully", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function summarizeCount($companyId) {
+        try {
+            $result = [
+                'open_invoice' => [
+                    'amount' => 0,
+                    'total' => 0
+                ],
+                'overdue_invoice' => [
+                    'amount' => 0,
+                    'total' => 0
+                ],
+                'payment_last_month' => [
+                    'amount' => 0,
+                    'total' => 0
+                ]
+
+            ];
+
+            $dateNow = date("Y-m-d");
+            $purchaseOpenInvoice = Purchase::with([])->where('company_id', $companyId)->where('payment_amount_total', 0)->get();
+            foreach ($purchaseOpenInvoice as $item) {
+                $result['open_invoice']['amount'] = $result['open_invoice']['amount'] + $item->grand_total;
+            }
+            $result['open_invoice']['total'] = count($purchaseOpenInvoice);
+
+            $purchaseOverdueInvoice = Purchase::with([])->where('company_id', $companyId)->where('due_date', '<', $dateNow)->get();
+            foreach ($purchaseOverdueInvoice as $item) {
+                $result['overdue_invoice']['amount'] = $result['overdue_invoice']['amount'] + $item->grand_total;
+            }
+            $result['overdue_invoice']['total'] = count($purchaseOverdueInvoice);
+
+            $purchasePaymentLastMonth = Purchase::with([])->where('company_id', $companyId)
+                ->where('payment_amount_total', '>', 0)->get();
+            foreach ($purchasePaymentLastMonth as $item) {
+                $result['payment_last_month']['amount'] = $result['payment_last_month']['amount'] + $item->payment_amount_total;
+            }
+            $result['payment_last_month']['total'] = count($purchasePaymentLastMonth);
+
+            return resultFunction("", true, $result);
         } catch (\Exception $e) {
             return resultFunction("Err code SR-D: catch " . $e->getMessage());
         }

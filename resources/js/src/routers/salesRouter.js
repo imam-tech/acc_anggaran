@@ -18,9 +18,17 @@ const salesRouter = [
         },
     },
     {
-        path: 'payment/:type/form',
-        name: 'sales-payment/form',
+        path: 'payment/:id/:type/form',
+        name: 'sales-payment-form',
         component:  () => import('../pages/sales/PaymentForm'),
+        meta: {
+            middleware: hasLoggedIn,
+        },
+    },
+    {
+        path: 'payment/:type/detail',
+        name: 'sales-payment-detail',
+        component:  () => import('../pages/sales/PaymentDetail'),
         meta: {
             middleware: hasLoggedIn,
         },

@@ -3,7 +3,7 @@ import hasLoggedIn from "../middleware/hasLoggedIn";
 const coaRouter = [
     {
         path: '',
-        name: 'coa-index',
+        name: 'accounting-coa-index',
         component:  () => import('../pages/coa/Index'),
         meta: {
             middleware: hasLoggedIn,
@@ -11,7 +11,7 @@ const coaRouter = [
     },
     {
         path: 'category',
-        name: 'coa-category-index',
+        name: 'accounting-coa-category-index',
         component:  () => import('../pages/coa/CategoryIndex'),
         meta: {
             middleware: hasLoggedIn,
@@ -19,7 +19,7 @@ const coaRouter = [
     },
     {
         path: ':id/detail',
-        name: 'coa-detail',
+        name: 'accounting-coa-detail',
         component:  () => import('../pages/coa/Detail'),
         meta: {
             middleware: hasLoggedIn,
@@ -27,7 +27,7 @@ const coaRouter = [
     },
     {
         path: 'category/:id/detail',
-        name: 'coa-category-detail',
+        name: 'accounting-coa-category-detail',
         component:  () => import('../pages/coa/CategoryDetail'),
         meta: {
             middleware: hasLoggedIn,

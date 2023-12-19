@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Payment Form</h1>
-                <router-link :to="'/app/sales/'+$route.params.id+'/detail'" class="btn btn-success float-right mt-3 mr-3">
+                <router-link :to="'/app/purchase/'+$route.params.id+'/detail'" class="btn btn-success float-right mt-3 mr-3">
                     <i class="fa fa-arrow-left"></i> Back
                 </router-link>
             </div>
@@ -12,16 +12,16 @@
                     <div class="row">
                         <div class="col-lg-6 col-xl-3">
                             <div class="form-group">
-                                <label>Customer<span style="
+                                <label>Supplier<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <v-select :disabled="true" v-model="salesData.customer_id" :options="customers" :reduce="p => p.id" style="width: 100%" label="name">
+                                <v-select :disabled="true" v-model="purchaseData.supplier_id" :options="suppliers" :reduce="p => p.id" style="width: 100%" label="name">
                                     <template #search="{attributes, events}">
                                         <input
                                                 class="vs__search"
-                                                :required="!salesData.customer_id"
+                                                :required="!purchaseData.supplier_id"
                                                 v-bind="attributes"
                                                 v-on="events"
                                         />
@@ -32,16 +32,16 @@
                         </div>
                         <div class="col-lg-6 col-xl-3">
                             <div class="form-group">
-                                <label>Deposit To<span style="
+                                <label>Pay From<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <v-select v-model="formData.deposit_to" :options="depositTo" :reduce="p => p.id" style="width: 100%" label="account_code">
+                                <v-select v-model="formData.pay_from" :options="payFroms" :reduce="p => p.id" style="width: 100%" label="account_code">
                                     <template #search="{attributes, events}">
                                         <input
                                                 class="vs__search"
-                                                :required="!formData.deposit_to"
+                                                :required="!formData.pay_from"
                                                 v-bind="attributes"
                                                 v-on="events"
                                         />
@@ -97,11 +97,11 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td>{{ salesData.transaction_number }}</td>
-                                    <td>{{ salesData.description }}</td>
-                                    <td>{{ salesData.due_date }}</td>
-                                    <td>{{ salesData.total | formatPrice }}</td>
-                                    <td>{{ salesData.balance_due | formatPrice }}</td>
+                                    <td>{{ purchaseData.transaction_number }}</td>
+                                    <td>{{ purchaseData.description }}</td>
+                                    <td>{{ purchaseData.due_date }}</td>
+                                    <td>{{ purchaseData.total | formatPrice }}</td>
+                                    <td>{{ purchaseData.balance_due | formatPrice }}</td>
                                     <td><input type="number" class="form-control" v-model="formData.payment_amount" required></td>
                                 </tr>
                                 </tbody>
@@ -114,7 +114,7 @@
                                 <tr>
                                     <td>Grand Total</td>
                                     <td class="text-right">
-                                        {{ salesData.sub_total | formatPrice }}
+                                        {{ purchaseData.sub_total | formatPrice }}
                                     </td>
                                 </tr>
                             </table>
@@ -211,9 +211,9 @@
         name:'Detail',
         data() {
             return {
-                salesData: {
+                purchaseData: {
                     id: "",
-                    customer_id: "",
+                    supplier_id: "",
                     due_date: "",
                     transaction_number: '',
                     description: '',
@@ -222,15 +222,15 @@
                 },
                 formData: {
                     id: "",
-                    customer_id: "",
-                    deposit_to: "",
+                    supplier_id: "",
+                    pay_from: "",
                     payment_method: "",
                     payment_date: (new Date()).toISOString().split('T')[0],
                     due_date: "",
                     payment_amount: 0,
                     memo: ""
                 },
-                depositTo: [],
+                payFroms: [],
                 paymentMethods: [],
                 formAddPaymentMethod: {
                     id: "",
@@ -238,7 +238,7 @@
                 },
 
                 selectedProduct: "",
-                customers: [],
+                suppliers: [],
                 products: [],
                 subTotal: 0,
                 discountAmount: 0,
@@ -266,10 +266,10 @@
             async getDataOther() {
                 try {
                     this.$vs.loading()
-                    this.customers = await this.$axios.get(`api/sales/customer`)
-                    this.depositTo = await this.$axios.get(`api/coa?is_active=1&coa_name=KAS`)
+                    this.suppliers = await this.$axios.get(`api/purchase/supplier`)
+                    this.payFroms = await this.$axios.get(`api/coa?is_active=1&coa_name=KAS`)
                     const bankDeposits = await this.$axios.get(`api/coa?is_active=1&coa_name=BANK`)
-                    bankDeposits.forEach((x) => this.depositTo.push(x))
+                    bankDeposits.forEach((x) => this.payFroms.push(x))
                     this.paymentMethods = await this.$axios.get(`api/setting/payment-method`)
                     this.$vs.loading.close()
                 } catch (e) {
@@ -328,26 +328,26 @@
             async handleGet() {
                 try {
                     this.$vs.loading()
-                    const salesLocal = await this.$axios.get(`api/sales/${this.$route.params.id}/detail`)
+                    const purchaseLocal = await this.$axios.get(`api/purchase/${this.$route.params.id}/detail`)
                     this.$vs.loading.close()
-                    if (!salesLocal.status) {
+                    if (!purchaseLocal.status) {
                         Swal.fire({
                             position: 'top',
                             icon: 'error',
-                            title: salesLocal.message,
+                            title: purchaseLocal.message,
                             showConfirmButton: false,
                             timer: 2500
                         })
                         return
                     }
-                    this.salesData.id = salesLocal.data.id
-                    this.salesData.transaction_number = salesLocal.data.transaction_number
-                    this.salesData.description = salesLocal.data.description
-                    this.salesData.customer_id = salesLocal.data.customer_id
-                    this.salesData.due_date = salesLocal.data.due_date
-                    this.salesData.total = salesLocal.data.grand_total
-                    this.salesData.balance_due = this.handleShowBalanceDue(salesLocal.data)
-                    this.formData.payment_amount = this.handleShowBalanceDue(salesLocal.data)
+                    this.purchaseData.id = purchaseLocal.data.id
+                    this.purchaseData.transaction_number = purchaseLocal.data.transaction_number
+                    this.purchaseData.description = purchaseLocal.data.description
+                    this.purchaseData.supplier_id = purchaseLocal.data.supplier_id
+                    this.purchaseData.due_date = purchaseLocal.data.due_date
+                    this.purchaseData.total = purchaseLocal.data.grand_total
+                    this.purchaseData.balance_due = this.handleShowBalanceDue(purchaseLocal.data)
+                    this.formData.payment_amount = this.handleShowBalanceDue(purchaseLocal.data)
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
@@ -364,13 +364,13 @@
                 try {
                     this.$vs.loading()
 
-                    const paymentLocal = await this.$axios.get(`api/sales/payment/${this.$route.params.type}/detail`)
+                    const paymentLocal = await this.$axios.get(`api/purchase/payment/${this.$route.params.type}/detail`)
                     this.$vs.loading.close()
                     if (paymentLocal.status) {
                         this.formData.id = paymentLocal.data.id
-                        this.formData.deposit_to = paymentLocal.data.deposit_to
-                        this.formData.payment_method = paymentLocal.data.payment_method ??  ''
-                        this.formData.customer_id = paymentLocal.data.sales.customer_id
+                        this.formData.pay_from = paymentLocal.data.pay_from
+                        this.formData.payment_method = paymentLocal.data.payment_method ?? ''
+                        this.formData.supplier_id = paymentLocal.data.purchase.supplier_id
                         this.formData.payment_date = paymentLocal.data.payment_date
                         this.formData.due_date = paymentLocal.data.due_date ?? ''
                         this.formData.payment_amount = paymentLocal.data.payment_amount
@@ -397,8 +397,8 @@
             async handleSubmit() {
                 const formData = new FormData()
                 formData.append('id', this.formData.id)
-                formData.append('sales_id', this.salesData.id)
-                formData.append('deposit_to', this.formData.deposit_to)
+                formData.append('purchase_id', this.purchaseData.id)
+                formData.append('pay_from', this.formData.pay_from)
                 formData.append('payment_method', this.formData.payment_method)
                 formData.append('payment_date', this.formData.payment_date)
                 formData.append('due_date', this.formData.due_date)
@@ -410,7 +410,7 @@
 
                 try {
                     this.$vs.loading()
-                    const resp = await this.$axios.post(`api/sales/payment`,
+                    const resp = await this.$axios.post(`api/purchase/payment`,
                         formData, {
                             headers: {
                                 "Content-Type": "multipart/form-data"
@@ -434,7 +434,7 @@
                             showConfirmButton: false,
                             timer: 2500
                         })
-                        this.$router.push(`/app/sales/payment/${resp.data.id}/detail`)
+                        this.$router.push(`/app/purchase/payment/${resp.data.id}/detail`)
                     }
                 } catch (e) {
                     this.$vs.loading.close()

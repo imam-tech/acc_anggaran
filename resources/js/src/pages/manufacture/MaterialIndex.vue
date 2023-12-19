@@ -63,9 +63,8 @@
                         <tr>
                             <th class="text-center"><b>Name</b></th>
                             <th class="text-center"><b>Image</b></th>
-                            <th class="text-center"><b>Stock</b></th>
                             <th class="text-center"><b>Unit</b></th>
-                            <th class="text-center"><b>Last Price per Unit</b></th>
+                            <th class="text-center"><b>Price per Unit</b></th>
                             <th class="text-center">#</th>
                         </tr>
                         </thead>
@@ -80,15 +79,14 @@
                             <td>
                                 <img :src="p.image" width="100">
                             </td>
-                            <td class="text-right">{{ p.stock }}</td>
                             <td>{{ p.unit }}</td>
-                            <td class="text-right">Rp. {{ p.last_price_per_unit | formatPrice }}</td>
+                            <td class="text-right">Rp. {{ p.price_per_unit | formatPrice }}</td>
                             <td class="text-right">
                                 <button @click="handleShowAddNewMaterial(p)" type="button" class="btn btn-warning">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <button @click="handleShowHistory(p)" type="button" class="btn btn-primary">
-                                    <i class="fas fa-eye"></i>
+                                <button @click="handleDelete(p.id)" class="btn btn-danger" type="button">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -117,24 +115,20 @@
                                 <input type="text" class="form-control" v-model="formAdd.name" required>
                             </div>
                             <div class="form-group">
-                                <label>Image<span v-if="formAdd.id === ''" style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                <input type="file" class="form-control" @change="handleChangeImage" :required="formAdd.id === ''">
+                                <label>Price per Unit</label>
+                                <input type="text" class="form-control" v-model="formAdd.price_per_unit">
+                            </div>
+                            <div class="form-group">
+                                <label>Image</label>
+                                <input type="file" class="form-control" @change="handleChangeImage">
                             </div>
                             <img :src="formAdd.image" width="100" alt="" class="rounded">
 
                             <div class="form-group">
-                                <label>Unit<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
+                                <label>Unit</label>
 
-                                <select v-model="formAdd.unit" class="form-control" required>
-                                    <option v-for="(u, uI) in units" :key="uI" :value="u.title">{{ u.title }}</option>
+                                <select v-model="formAdd.unit" class="form-control">
+                                    <option v-for="(u, uI) in units" :key="uI" :value="u.name">{{ u.name }}</option>
                                 </select>
                             </div>
                         </div>
@@ -150,43 +144,6 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="showHistory" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">History of Material</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Type History</th>
-                                <th>Stock</th>
-                                <th>Note</th>
-                                <th>Price per Unit</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-if="selectedMaterial.material_histories !== undefined" v-for="(h, hI) in selectedMaterial.material_histories" :key="hI">
-                                <td>{{ h.type_history }}</td>
-                                <td>{{ h.stock }} {{ selectedMaterial.unit }}</td>
-                                <td>{{ h.note }}</td>
-                                <td class="text-right">{{ h.price_per_unit | formatPrice }}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">
-                            <i class="fas fa-times"></i> Close
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -195,22 +152,15 @@
         name: "Index.vue",
         data() {
             return {
-                formFilter: {
-                    from_date: "",
-                    to_date: "",
-                    bill_number: "",
-                    supplier: ""
-                },
                 formAdd: {
                     id: "",
                     name: "",
                     image: "",
                     unit: "",
-                    stock: 0
+                    price_per_unit: ""
                 },
                 materials: [],
                 units: [],
-                selectedMaterial: "",
                 fileImage: ""
             }
         },
@@ -218,16 +168,8 @@
             this.getData()
         },
         methods: {
-            handleShowEdit(p) {
-
-            },
             handleChangeImage(e) {
                 this.fileImage = e.target.files[0]
-            },
-
-            handleShowHistory(p) {
-                this.selectedMaterial = p
-                $("#showHistory").modal("show")
             },
 
             async handleSubmitAddNew() {
@@ -235,9 +177,9 @@
                     const formData =  new FormData()
                     formData.append('id', this.formAdd.id)
                     formData.append('name', this.formAdd.name)
-                    formData.append('unit', this.formAdd.unit)
+                    formData.append('unit', this.formAdd.unit ?? '')
                     formData.append('image', this.fileImage)
-                    formData.append('unit', this.formAdd.unit)
+                    formData.append('price_per_unit', this.formAdd.price_per_unit)
                     this.$vs.loading()
                     const resp = await this.$axios.post(`api/manufacture/material`,
                     formData, {
@@ -262,11 +204,11 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             },
@@ -281,11 +223,11 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             },
@@ -300,7 +242,7 @@
                         name: "",
                         image: "",
                         unit: "",
-                        stock: 0
+                        price_per_unit: ""
                     }
                 }
                 $("#addNewMaterial").modal("show")
@@ -314,14 +256,54 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2500
                     })
                 }
             },
+
+            async handleDelete(id) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are You Sure Want To Delete This Material?',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.delete(`api/manufacture/material/${id}/delete`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.getData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Delete Material : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            }
         }
     }
 </script>

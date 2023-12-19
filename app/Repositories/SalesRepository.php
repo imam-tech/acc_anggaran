@@ -90,6 +90,7 @@ class SalesRepository {
                 $sales = new Sales();
                 $sales->company_id = $companyId;
                 $sales->transaction_number = '';
+                $sales->payment_amount_total = 0;
             }
             $sales->customer_id = $customer->id;
             $sales->customer_email = $data['customer_email'];
@@ -263,7 +264,7 @@ class SalesRepository {
     public function detail($id) {
         try {
             $sales = Sales::with(['sales_products.product', 'sales_products.tax', 'sales_attachments', 'customer',
-            'sales_journals.coa'])->find($id);
+            'sales_journals.coa', 'sales_payments.coa'])->find($id);
             if (!$sales) return resultFunction("Err code SR-D: sales not found");
 
             return resultFunction("", true, $sales);
@@ -295,6 +296,7 @@ class SalesRepository {
                 $message = 'Updating';
 
                 SalesPaymentAttachment::where('sales_payment_id', $salesPayment->id)->delete();
+                SalesPaymentJournal::where('sales_payment_id', $salesPayment->id)->delete();
             } else {
                 $salesPayment = new SalesPayment();
                 $salesPayment->sales_id = $data['sales_id'];
@@ -367,10 +369,94 @@ class SalesRepository {
                 SalesPaymentAttachment::insert($salesAttachments);
             }
 
+            $this->adjustPaymentAmount($salesPayment->sales_id);
+
             DB::commit();
             return resultFunction($message . " sales payment is successfully", true, $salesPayment);
         } catch (\Exception $e) {
             return resultFunction("Err code SR-SP: catch " . $e->getMessage());
+        }
+    }
+
+    public function adjustPaymentAmount($salesId) {
+        $paymentAmount = SalesPayment::with([])
+            ->where('sales_id', $salesId)
+            ->sum('payment_amount');
+
+        $sales = Sales::find($salesId);
+        $sales->payment_amount_total = $paymentAmount;
+        $sales->save();
+
+    }
+
+    public function detailPayment($id) {
+        try {
+            $salesPayment = SalesPayment::with(['sales.customer', 'coa', 'payment_method', 'sales_payment_attachments', 'sales_payment_journals.coa'])->find($id);
+            if (!$salesPayment) return resultFunction("Err code SR-D: sales payment not found");
+
+            return resultFunction("", true, $salesPayment);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function deletePayment($id, $salesId) {
+        try {
+            $salesPayment = SalesPayment::with(['sales.customer', 'coa', 'payment_method', 'sales_payment_attachments', 'sales_payment_journals.coa'])->find($id);
+            if (!$salesPayment) return resultFunction("Err code SR-D: sales payment not found");
+
+            $salesPayment->delete();
+            SalesPaymentJournal::where('sales_payment_id', $id)->delete();
+            SalesPaymentAttachment::where('sales_payment_id', $id)->delete();
+
+            $this->adjustPaymentAmount($salesId);
+            return resultFunction("Delete payment is successfully", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function summarizeCount($companyId) {
+        try {
+            $result = [
+                'open_invoice' => [
+                    'amount' => 0,
+                    'total' => 0
+                ],
+                'overdue_invoice' => [
+                    'amount' => 0,
+                    'total' => 0
+                ],
+                'payment_last_month' => [
+                    'amount' => 0,
+                    'total' => 0
+                ]
+
+            ];
+
+            $dateNow = date("Y-m-d");
+            $salesOpenInvoice = Sales::with([])->where('company_id', $companyId)->where('payment_amount_total', 0)->get();
+            foreach ($salesOpenInvoice as $item) {
+                $result['open_invoice']['amount'] = $result['open_invoice']['amount'] + $item->grand_total;
+            }
+            $result['open_invoice']['total'] = count($salesOpenInvoice);
+
+            $salesOverdueInvoice = Sales::with([])->where('company_id', $companyId)->where('due_date', '<', $dateNow)->get();
+            foreach ($salesOverdueInvoice as $item) {
+                $result['overdue_invoice']['amount'] = $result['overdue_invoice']['amount'] + $item->grand_total;
+            }
+            $result['overdue_invoice']['total'] = count($salesOverdueInvoice);
+
+            $salesPaymentLastMonth = Sales::with([])->where('company_id', $companyId)
+                ->where('payment_amount_total', '>', 0)->get();
+            foreach ($salesPaymentLastMonth as $item) {
+                $result['payment_last_month']['amount'] = $result['payment_last_month']['amount'] + $item->payment_amount_total;
+            }
+            $result['payment_last_month']['total'] = count($salesPaymentLastMonth);
+
+            return resultFunction("", true, $result);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
         }
     }
 }

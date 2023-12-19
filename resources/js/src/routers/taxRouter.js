@@ -3,7 +3,7 @@ import hasLoggedIn from "../middleware/hasLoggedIn";
 const taxRouter = [
     {
         path: '',
-        name: 'tax-index',
+        name: 'accounting-tax-index',
         component:  () => import('../pages/tax/Index'),
         meta: {
             middleware: hasLoggedIn,

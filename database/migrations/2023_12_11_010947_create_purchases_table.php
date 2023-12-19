@@ -22,7 +22,7 @@ class CreatePurchasesTable extends Migration
             $table->date('transaction_date');
             $table->string('transaction_number');
             $table->date('due_date')->nullable();
-            $table->date('paid_date')->nullable();
+            $table->decimal('payment_amount_total', 20, 0)->default(0);
             $table->text('message')->nullable();
             $table->decimal('sub_total', 20, 0);
             $table->decimal('tax_total_amount', 20, 0)->default(0);

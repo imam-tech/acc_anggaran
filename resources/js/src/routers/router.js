@@ -42,6 +42,7 @@ const router = new Router({
                 {
                     path: '',
                     component:  () => import('../pages/Index'),
+                    name: 'dashboard',
                     meta: {
                         middleware: hasLoggedIn,
                         pageTitle: 'Dashboard',

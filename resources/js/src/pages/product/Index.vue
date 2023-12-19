@@ -40,14 +40,19 @@
                             <td class="text-right">{{ p.unit_sale_price | formatPrice}}</td>
                             <td class="text-right">{{ p.unit_purchase_price | formatPrice }}</td>
                             <td class="text-right">
+                                <router-link :to="'product/' + p.id + '/detail'">
+                                    <button class="btn btn-primary" type="button">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </router-link>
                                 <router-link :to="'product/' + p.id + '/form'">
                                     <button class="btn btn-warning" type="button">
                                         <i class="fas fa-pencil-alt"></i>
                                     </button>
                                 </router-link>
-                                <!--<button class="btn btn-danger" type="button">-->
-                                    <!--<i class="fas fa-trash"></i>-->
-                                <!--</button>-->
+                                <button @click="handleDelete(p.id)" class="btn btn-danger" type="button">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
                         </tbody>
@@ -86,6 +91,46 @@
                     })
                 }
             },
+
+            async handleDelete(id) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are You Sure Want To Delete This Product?',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.delete(`api/product/${id}/delete`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.handleGetData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Delete Product : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            }
         }
     }
 </script>

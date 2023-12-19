@@ -16,8 +16,7 @@ class ManufactureRepository {
     public function storeMaterial($request, $companyId) {
         try {
             $validator = \Validator::make($request->all(), [
-                "name" => 'required',
-                "unit" => 'required'
+                "name" => 'required'
             ]);
 
             if ($validator->fails()) return resultFunction("Err code MR-SM: " . collect($validator->errors()->all())->implode(" , "));
@@ -38,12 +37,11 @@ class ManufactureRepository {
             } else {
                 $material = new Material();
                 $material->company_id = $companyId;
-                $material->stock = 0;
-                $material->last_price_per_unit = 0;
             }
 
             $material->name = $data['name'];
             $material->unit = $data['unit'];
+            $material->price_per_unit = $data['price_per_unit'];
             if ($isNewImage) {
                 $material->image = $isNewImage;
             }
@@ -67,19 +65,27 @@ class ManufactureRepository {
             if ($data['id']) {
                 $semiFinishedMaterial = SemiFinishedMaterial::find($data['id']);
                 if (!$semiFinishedMaterial) return resultFunction("Err code MR-SMM: semi finished material not found");
+
+                SemiFinishedMaterialItem::where('semi_finished_material_id', $semiFinishedMaterial->id)->delete();
             } else {
                 $semiFinishedMaterial = new SemiFinishedMaterial();
             }
             $semiFinishedMaterial->name = $data['name'];
             $semiFinishedMaterial->save();
 
+            $totalPrice = 0;
             foreach ($data['items'] as $item) {
                 $semiFinishedMaterialItem = new SemiFinishedMaterialItem();
                 $semiFinishedMaterialItem->semi_finished_material_id = $semiFinishedMaterial->id;
                 $semiFinishedMaterialItem->material_id = $item['id'];
                 $semiFinishedMaterialItem->dose = $item['dose'];
+                $semiFinishedMaterialItem->price = $item['dose'] * $item['price_per_unit'];
                 $semiFinishedMaterialItem->save();
+
+                $totalPrice = $totalPrice + $semiFinishedMaterialItem->price;
             }
+            $semiFinishedMaterial->price_total = $totalPrice;
+            $semiFinishedMaterial->save();
 
             return resultFunction("Processing data is successfully", true);
         } catch (\Exception $e) {
@@ -102,10 +108,18 @@ class ManufactureRepository {
                 $manufactureProduct = ManufactureProduct::find($data['id']);
                 if (!$manufactureProduct) return resultFunction("Err code MR-SP: manufacture product not found");
 
-                if ($manufactureProduct->status !== null) return resultFunction("Err code MR-SP: manufacture is not available to edit");
+                if ($manufactureProduct->status !== 'DRAFT') return resultFunction("Err code MR-SP: manufacture is not available to edit");
 
-                ManufactureProductDetail::where('manufacture_product_id', $manufactureProduct->id)->delete();
-                ManufactureProductDetailItem::where('manufacture_product_id', $manufactureProduct->id)->delete();
+                $manufactureProductDetails = ManufactureProductDetail::with(['manufacture_product_detail_items'])->where('manufacture_product_id', $manufactureProduct->id)->get();
+                foreach ($manufactureProductDetails as $manufactureProductDetail) {
+                    foreach ($manufactureProductDetail->manufacture_product_detail_items as $detail_item) {
+                        $detail_item->delete();
+                    }
+                    $manufactureProductDetail->delete();
+                }
+
+//                ManufactureProductDetail::where('manufacture_product_id', $manufactureProduct->id)->delete();
+//                ManufactureProductDetailItem::where('manufacture_product_id', $manufactureProduct->id)->delete();
             } else {
                 $manufactureProduct = new ManufactureProduct();
                 $manufactureProduct->company_id = $companyId;
@@ -113,7 +127,7 @@ class ManufactureRepository {
             }
             $manufactureProduct->name = $data['name'];
             $manufactureProduct->description = $data['description'];
-            $manufactureProduct->amount_total = 0;
+            $manufactureProduct->grand_total = 0;
             $manufactureProduct->save();
 
             $amountFinal = 0;
@@ -121,28 +135,31 @@ class ManufactureRepository {
                 $manufactureProductDetail = new ManufactureProductDetail();
                 $manufactureProductDetail->manufacture_product_id = $manufactureProduct->id;
                 $manufactureProductDetail->semi_finished_material_id = $product['id'];
-                $manufactureProductDetail->semi_finished_material_name = $product['name'];
-                $manufactureProductDetail->amount_total = 0;
+                $manufactureProductDetail->name = $product['name'];
+                $manufactureProductDetail->price_total = 0;
                 $manufactureProductDetail->save();
 
                 $amounTotal = 0;
                 foreach ($product['items'] as $item) {
                     $manufactureProductDetailItem = new ManufactureProductDetailItem();
-                    $manufactureProductDetailItem->manufacture_product_id = $manufactureProduct->id;
                     $manufactureProductDetailItem->manufacture_product_detail_id = $manufactureProductDetail->id;
+                    $manufactureProductDetailItem->semi_finished_material_item_id = $item['id'];
+                    $manufactureProductDetailItem->material_id = $item['material_id'];
                     $manufactureProductDetailItem->name = $item['material']['name'];
                     $manufactureProductDetailItem->image = $item['material']['image'];
                     $manufactureProductDetailItem->unit = $item['material']['unit'];
+                    $manufactureProductDetailItem->price_per_unit = $item['material']['price_per_unit'];
                     $manufactureProductDetailItem->dose = $item['dose'];
-                    $manufactureProductDetailItem->amount_total = $item['dose'] * $item['material']['last_price_per_unit'];
+                    $manufactureProductDetailItem->price_dose = $item['dose'] * $item['material']['price_per_unit'];
                     $manufactureProductDetailItem->save();
-                    $amounTotal = $amounTotal + ($item['dose'] * $item['material']['last_price_per_unit']);
+                    $amounTotal = $amounTotal + $manufactureProductDetailItem->price_dose;
                 }
-                $manufactureProductDetail->amount_total = $amounTotal;
+                $manufactureProductDetail->price_total = $amounTotal;
                 $manufactureProductDetail->save();
-                $amountFinal = $amountFinal + $manufactureProductDetail->amount_total;
+
+                $amountFinal = $amountFinal + $manufactureProductDetail->price_total;
             }
-            $manufactureProduct->amount_total = $amountFinal;
+            $manufactureProduct->grand_total = $amountFinal;
             $manufactureProduct->save();
 
             DB::commit();
@@ -217,6 +234,52 @@ class ManufactureRepository {
             return resultFunction("Updating manufacture product is successfully", true, $manufactureProduct);
         } catch (\Exception $e) {
             return resultFunction("Err code MR-AP: catch " . $e->getMessage());
+        }
+    }
+
+    public function deleteMaterial($id) {
+        try {
+            $material = Material::with([])->find($id);
+            if (!$material) return resultFunction("Err code SR-D: material not found");
+
+            $material->delete();
+
+            return resultFunction("", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function deleteSemiFinishedMaterial($id) {
+        try {
+            $semiFinishedMaterial = SemiFinishedMaterial::with([])->find($id);
+            if (!$semiFinishedMaterial) return resultFunction("Err code SR-D: material not found");
+
+            SemiFinishedMaterialItem::where('semi_finished_material_id', $semiFinishedMaterial->id)->delete();
+            $semiFinishedMaterial->delete();
+
+            return resultFunction("Deleting is successfully", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function delete($id) {
+        try {
+            $manufactureProduct = ManufactureProduct::with(['manufacture_product_details.manufacture_product_detail_items'])->find($id);
+            if (!$manufactureProduct) return resultFunction("Err code SR-D: purchase not found");
+
+            foreach ($manufactureProduct->manufacture_product_details as $manufactureProductDetail) {
+                foreach ($manufactureProductDetail->manufacture_product_detail_items as $detail_item) {
+                    $detail_item->delete();
+                }
+                $manufactureProductDetail->delete();
+            }
+            $manufactureProduct->delete();
+
+            return resultFunction("", true, $manufactureProduct);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
         }
     }
 }

@@ -37,11 +37,11 @@ class ProductController extends Controller {
 
     public function indexCategory(Request $request) {
         $filters = $request->only([]);
-        $productCategorys = ProductCategory::with([]);
+        $productCategories = ProductCategory::with([]);
 
-        $productCategorys = $productCategorys->where('company_id', $request->header('company_id'));
-        $productCategorys = $productCategorys->get();
-        return response()->json($productCategorys);
+        $productCategories = $productCategories->where('company_id', $request->header('company_id'));
+        $productCategories = $productCategories->orderBy('id', 'desc')->get();
+        return response()->json($productCategories);
     }
 
     public function storeCategory(Request $request) {
@@ -70,5 +70,9 @@ class ProductController extends Controller {
 
     public function detail($id, Request $request) {
         return response()->json($this->productRepo->detail($id, $request->header('company_id')));
+    }
+
+    public function delete($id, Request $request) {
+        return response()->json($this->productRepo->delete($id, $request->header('company_id')));
     }
 }

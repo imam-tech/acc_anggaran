@@ -18,21 +18,10 @@ class CreateMaterialsTable extends Migration
             $table->integer('company_id');
             $table->string('name');
             $table->string('image')->nullable();
-            $table->decimal("stock", 10, 0);
-            $table->string('unit');
-            $table->decimal("last_price_per_unit", 20, 0)->default(0);
+            $table->string('unit')->nullable();
+            $table->decimal("price_per_unit", 20, 0)->nullable();
             $table->timestamps();
             $table->softDeletes();
-        });
-
-        Schema::create('material_histories', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('material_id');
-            $table->string('type_history');
-            $table->decimal("stock", 10, 0);
-            $table->string('note')->nullable();
-            $table->decimal("price_per_unit", 20, 0)->default(0);
-            $table->timestamps();
         });
     }
 

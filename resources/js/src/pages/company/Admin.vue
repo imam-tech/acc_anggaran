@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Company Admin Page</h1>
-                <router-link to="/app/company" class="btn btn-success float-right mt-3 mr-3">
+                <router-link :to="'/app/company/'+$route.params.id+'/detail'" class="btn btn-success float-right mt-3 mr-3">
                     <i class="fa fa-arrow-left"></i> Back
                 </router-link>
             </div>
@@ -18,7 +18,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="row">
-                            <div class="col-4">
+                            <div class="col-xl-4">
                                 <div class="card">
                                     <div class="card-body shadow-lg">
                                         <h5 class="card-title">Total Manual Transfer</h5>
@@ -33,7 +33,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-4">
+                            <div class="col-xl-4 mt-2 mt-xl-0">
                                 <div class="card">
                                     <div class="card-body shadow-lg">
                                         <h5 class="card-title">Total By Plugin Flip</h5>
@@ -48,7 +48,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-4">
+                            <div class="col-xl-4 mt-2 mt-xl-0">
                                 <div class="card">
                                     <div class="card-body shadow-lg">
                                         <h5 class="card-title">Flip Balance</h5>

@@ -14,31 +14,31 @@
 
         <!-- Nav Item - Dashboard -->
         <li class="nav-item">
-            <router-link class="nav-link" to="/app">
+            <router-link class="nav-link" :class="handleBgMenu('dashboard')" to="/app">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Dashboard</span>
             </router-link>
         </li>
         <li class="nav-item">
-            <router-link class="nav-link" to="/app/transaction">
+            <router-link class="nav-link" :class="handleBgMenu('transaction')" to="/app/transaction">
                 <i class="fas fa-exchange-alt"></i>
                 <span>Transaction</span>
             </router-link>
         </li>
         <li class="nav-item">
-            <router-link class="nav-link" to="/app/company">
+            <router-link class="nav-link" :class="handleBgMenu('company')" to="/app/company">
                 <i class="fas fa-building"></i>
                 <span>Company</span>
             </router-link>
         </li>
         <li class="nav-item">
-            <router-link class="nav-link" to="/app/user">
+            <router-link class="nav-link" :class="handleBgMenu('user')" to="/app/user">
                 <i class="fas fa-user"></i>
                 <span>User</span>
             </router-link>
         </li>
         <li v-if="$store.state.permissions.includes('transaction_push_plugin')" class="nav-item">
-            <router-link class="nav-link" to="/app/setting">
+            <router-link class="nav-link" :class="handleBgMenu('setting')" to="/app/setting">
                 <i class="fas fa-gear"></i>
                 <span>Setting</span>
             </router-link>
@@ -49,21 +49,24 @@
             </select>
         </li>
         <li class="nav-item">
-            <router-link class="nav-link" to="/app/cash-and-bank">
+            <router-link class="nav-link" :class="handleBgMenu('cash-and-bank')" to="/app/cash-and-bank">
                 <i class="fas fa-university"></i>
                 <span>Cash & Bank</span>
             </router-link>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+            <a class="nav-link" :class="handleShowMenu('sales').col" href="#" data-toggle="collapse" data-target="#collapseTwo"
                aria-expanded="true" aria-controls="collapseTwo">
                 <i class="fas fa-cart-plus"></i>
                 <span>Sales</span>
             </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseTwo" class="collapse" :class="handleShowMenu('sales').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <router-link class="collapse-item" to="/app/sales">
                         <span>Sales Invoice</span>
+                    </router-link>
+                    <router-link class="collapse-item" to="/app/sales/create/form">
+                        <span>Create Sales Invoice</span>
                     </router-link>
                     <router-link class="collapse-item" to="/app/sales/customer">
                         <span>Customer</span>
@@ -72,15 +75,18 @@
             </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePurchase"
+            <a class="nav-link" :class="handleShowMenu('purchase').col" href="#" data-toggle="collapse" data-target="#collapsePurchase"
                aria-expanded="true" aria-controls="collapsePurchase">
                 <i class="fas fa-clipboard-list"></i>
                 <span>Purchase</span>
             </a>
-            <div id="collapsePurchase" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapsePurchase" class="collapse" :class="handleShowMenu('purchase').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <router-link class="collapse-item" to="/app/purchase">
                         <span>Purchase Bill</span>
+                    </router-link>
+                    <router-link class="collapse-item" to="/app/purchase/create/form">
+                        <span>Create Purchase Bill</span>
                     </router-link>
                     <router-link class="collapse-item" to="/app/purchase/supplier">
                         <span>Supplier</span>
@@ -89,15 +95,18 @@
             </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInventory"
+            <a class="nav-link" :class="handleShowMenu('product').col" href="#" data-toggle="collapse" data-target="#collapseInventory"
                aria-expanded="true" aria-controls="collapseInventory">
                 <i class="fas fa-box"></i>
                 <span>Product</span>
             </a>
-            <div id="collapseInventory" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseInventory" class="collapse" :class="handleShowMenu('product').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <router-link class="collapse-item" to="/app/product">
-                        <span>List</span>
+                        <span>List Product</span>
+                    </router-link>
+                    <router-link class="collapse-item" to="/app/product/create/form">
+                        <span>Create Product</span>
                     </router-link>
                     <router-link class="collapse-item" to="/app/product/category">
                         <span>Category</span>
@@ -109,12 +118,12 @@
             </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseManufacture"
+            <a class="nav-link" :class="handleShowMenu('manufacture').col" href="#" data-toggle="collapse" data-target="#collapseManufacture"
                aria-expanded="true" aria-controls="collapseManufacture">
                 <i class="fas fa-tractor"></i>
                 <span>Manufacture</span>
             </a>
-            <div id="collapseManufacture" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseManufacture" class="collapse" :class="handleShowMenu('manufacture').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <router-link class="collapse-item" to="/app/manufacture/product">
                         <span>Products</span>
@@ -129,18 +138,18 @@
             </div>
         </li>
         <li class="nav-item">
-            <router-link class="nav-link" to="/app/budget">
+            <router-link class="nav-link" :class="handleBgMenu('budget')" to="/app/budget">
                 <i class="fas fa-money-bill"></i>
                 <span>Budget</span>
             </router-link>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAccounting"
+            <a class="nav-link" :class="handleShowMenu('accounting').col" href="#" data-toggle="collapse" data-target="#collapseAccounting"
                aria-expanded="true" aria-controls="collapseAccounting">
                 <i class="fas fa-dollar-sign"></i>
                 <span>Accounting</span>
             </a>
-            <div id="collapseAccounting" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseAccounting" class="collapse" :class="handleShowMenu('accounting').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <router-link class="collapse-item" to="/app/journal">
                         <span>Journal</span>
@@ -155,7 +164,7 @@
             </div>
         </li>
         <li class="nav-item">
-            <router-link class="nav-link" to="/app/report">
+            <router-link class="nav-link" :class="handleBgMenu('report')" to="/app/report">
                 <i class="fas fa-newspaper"></i>
                 <span>Report</span>
             </router-link>
@@ -186,6 +195,14 @@
             this.getData()
         },
         methods: {
+            handleBgMenu(menu) {
+                return this.$route.name.includes(menu) ? 'bg-success rounded text-dark' : '';
+            },
+
+            handleShowMenu(menu) {
+                return this.$route.name.includes(menu) ? {'bg': 'show', 'col': ''} : {'bg': '', 'col': 'collapsed'};
+            },
+
             changeCompany(e) {
                 const comp = this.companies.find((x) => x.id == e.target.value)
                 Cookies.set('current_company', comp.id, { expires: 1 })

@@ -29,4 +29,8 @@ class Sales extends Model
     public function customer() {
         return $this->hasOne(Customer::class, 'id', 'customer_id');
     }
+
+    public function sales_payments() {
+        return $this->hasMany(SalesPayment::class, 'sales_id', 'id');
+    }
 }

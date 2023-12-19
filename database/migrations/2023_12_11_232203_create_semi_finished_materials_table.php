@@ -16,6 +16,8 @@ class CreateSemiFinishedMaterialsTable extends Migration
         Schema::create('semi_finished_materials', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->decimal('', 20, 0);
+            $table->decimal('price_total', 20, 0)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -25,6 +27,7 @@ class CreateSemiFinishedMaterialsTable extends Migration
             $table->integer('semi_finished_material_id');
             $table->integer('material_id');
             $table->decimal('dose', 10, 2);
+            $table->decimal('price', 20, 0)->nullable();
             $table->timestamps();
         });
     }

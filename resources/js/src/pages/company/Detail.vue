@@ -118,7 +118,7 @@
                             <td>{{ project.description }}</td>
                             <td>{{ project.created_at | formatDate }}</td>
                             <td class="text-right">
-                                <router-link :to="'/app/project/'+project.id+'/detail'" class="btn btn-info">
+                                <router-link :to="'/app/project/'+project.id+'/'+companyData.id+'/detail'" class="btn btn-info">
                                     <i class="fa fa-eye"></i>
                                 </router-link>
                                 <button v-if="$store.state.permissions.includes('project_edit')" class="btn btn-warning" type="button" @click="showEditModal(project)">
@@ -342,9 +342,11 @@
                     })
                 }
             },
+
             handleChangeSettingFlip() {
                 $("#changeSettingFlip").modal("show")
             },
+
             changeAdminApproval() {
                 this.formAdmin.finance_manager = this.companyData.company_admins.find(x => x.name === 'finance_manager') ? (this.companyData.company_admins.find(x => x.name === 'finance_manager')).user_id : ""
                 this.formAdmin.finance_staf = this.companyData.company_admins.find(x => x.name === 'finance_staf') ? (this.companyData.company_admins.find(x => x.name === 'finance_staf')).user_id : ""

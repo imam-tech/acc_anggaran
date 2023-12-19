@@ -170,7 +170,8 @@ class ProductRepository {
 
     public function detail($id, $companyId) {
         try {
-            $product = Product::with(['category', 'unit'])->find($id);
+            $product = Product::with(['category', 'unit', 'sale_coa', 'purchase_coa', 'sale_tax', 'purchase_tax',
+                'sale_products.sales', 'purchase_products.purchase'])->find($id);
             if (!$product) return resultFunction("Err code PR-DU: product not found");
 
             if ($product->company_id != $companyId) return resultFunction("Err code PR-DU: product not found");
@@ -178,6 +179,20 @@ class ProductRepository {
             return resultFunction("", true, $product);
         } catch (\Exception $e) {
             return resultFunction("Err code PR-DU: catch " . $e->getMessage());
+        }
+    }
+
+    public function delete($id, $companyId) {
+        try {
+            $product = Product::with([])->find($id);
+            if (!$product) return resultFunction("Err code PR-D: product not found");
+
+            if ($product->company_id != $companyId) return resultFunction("Err code PR-D: product not found");
+
+            $product->delete();
+            return resultFunction("Deleting product is successfully", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code PR-D: catch " . $e->getMessage());
         }
     }
 }

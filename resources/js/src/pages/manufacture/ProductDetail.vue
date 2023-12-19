@@ -33,7 +33,7 @@
                             </tr>
                             <tr>
                                 <th>Amount Total</th>
-                                <td class="text-right">{{manufactureProduct.amount_total | formatPrice}}</td>
+                                <td class="text-right">{{manufactureProduct.grand_total | formatPrice}}</td>
                             </tr>
                             <tr>
                                 <th>Status</th>
@@ -50,7 +50,7 @@
                         <thead>
                         <tr>
                             <td class="text-center"><b>Semi Finished Material Name</b></td>
-                            <td class="text-center"><b>Semi Finished Material Amount Total</b></td>
+                            <td class="text-center"><b>Semi Finished Material Price Total</b></td>
                             <td class="text-center"><b>Material Name</b></td>
                             <td class="text-center"><b>Material Dose</b></td>
                             <td></td>
@@ -59,12 +59,12 @@
                         </thead>
                         <tbody v-for="(p, pI) in manufactureProduct.manufacture_product_details">
                         <tr v-for="(sf, sfI) in p.manufacture_product_detail_items">
-                            <td :rowspan="p.manufacture_product_detail_items.length" v-if="sfI === 0">{{ p.semi_finished_material_name }}</td>
-                            <td :rowspan="p.manufacture_product_detail_items.length" v-if="sfI === 0" class="text-right">{{ p.amount_total | formatPrice}}</td>
+                            <td :rowspan="p.manufacture_product_detail_items.length" v-if="sfI === 0">{{ p.name }}</td>
+                            <td :rowspan="p.manufacture_product_detail_items.length" v-if="sfI === 0" class="text-right">{{ p.price_total | formatPrice}}</td>
                             <td>{{ sf.name }}</td>
                             <td class="text-right">{{ sf.dose }}</td>
-                            <td>{{ sf.unit }}</td>
-                            <td class="text-right">{{ sf.amount_total |formatPrice }}</td>
+                            <td>/{{ sf.unit }}</td>
+                            <td class="text-right">{{ sf.price_dose |formatPrice }}</td>
                         </tr>
                         </tbody>
                     </table>

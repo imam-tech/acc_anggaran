@@ -3,7 +3,7 @@ import hasLoggedIn from "../middleware/hasLoggedIn";
 const manufactureRouter = [
     {
         path: 'product',
-        name: 'manufacture-product-index',
+        name: 'manufacture-index',
         component:  () => import('../pages/manufacture/ProductIndex'),
         meta: {
             middleware: hasLoggedIn,
@@ -11,7 +11,7 @@ const manufactureRouter = [
     },
     {
         path: 'product/:type/form',
-        name: 'manufacture-product-form',
+        name: 'manufacture-form',
         component:  () => import('../pages/manufacture/ProductForm'),
         meta: {
             middleware: hasLoggedIn,
@@ -19,7 +19,7 @@ const manufactureRouter = [
     },
     {
         path: 'product/:type/detail',
-        name: 'manufacture-product-detail',
+        name: 'manufacture-detail',
         component:  () => import('../pages/manufacture/ProductDetail'),
         meta: {
             middleware: hasLoggedIn,

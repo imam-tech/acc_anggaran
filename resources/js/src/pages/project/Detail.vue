@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Project Detail</h1>
-                <router-link to="/app/project" class="btn btn-success float-right mt-3 mr-3">
+                <router-link :to="'/app/company/'+$route.params.companyId+'/detail'" class="btn btn-success float-right mt-3 mr-3">
                     <i class="fa fa-arrow-left"></i> Back
                 </router-link>
             </div>

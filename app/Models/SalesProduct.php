@@ -21,4 +21,8 @@ class SalesProduct extends Model
     public function tax() {
         return $this->hasOne(Tax::class, 'id', 'tax_id');
     }
+
+    public function sales() {
+        return $this->hasOne(Sales::class, 'id', 'sales_id');
+    }
 }

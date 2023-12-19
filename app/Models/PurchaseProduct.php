@@ -20,4 +20,8 @@ class PurchaseProduct extends Model
     public function tax() {
         return $this->hasOne(Tax::class, 'id', 'tax_id');
     }
+
+    public function purchase() {
+        return $this->hasOne(Purchase::class, 'id', 'purchase_id');
+    }
 }

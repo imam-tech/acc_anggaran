@@ -18,6 +18,22 @@ const purchaseRouter = [
         },
     },
     {
+        path: 'payment/:id/:type/form',
+        name: 'purchase-payment-form',
+        component:  () => import('../pages/purchase/PaymentForm'),
+        meta: {
+            middleware: hasLoggedIn,
+        },
+    },
+    {
+        path: 'payment/:type/detail',
+        name: 'purchase-payment-detail',
+        component:  () => import('../pages/purchase/PaymentDetail'),
+        meta: {
+            middleware: hasLoggedIn,
+        },
+    },
+    {
         path: ':type/detail',
         name: 'purchase-detail',
         component:  () => import('../pages/purchase/Detail'),

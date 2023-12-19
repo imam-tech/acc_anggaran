@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class MaterialHistory extends Model
+class PurchasePaymentAttachment extends Model
 {
     use HasFactory;
     
-    protected $table = 'material_histories';
+    protected $table = 'purchase_payment_attachments';
     protected $guarded = [];
 }

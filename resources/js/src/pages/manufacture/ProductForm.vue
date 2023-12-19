@@ -32,23 +32,9 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xl-4">
+                        <div class="col-12">
                             <div class="form-group">
-                                <label>Type<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                <select class="form-control" v-model="formData.type" @change="handleChangeType" required>
-                                    <option value="">--Choose Type--</option>
-                                    <option value="Semi Finished Material">Semi Finished Material</option>
-                                    <!--<option value="Product">Product</option>-->
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-xl-8">
-                            <div class="form-group">
-                                <label>{{ formData.type }} Name<span style="
+                                <label>Semi Finished Material Name<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
@@ -57,7 +43,7 @@
                                     <v-select v-model="selectedProduct" :options="products" :reduce="p => p" style="width: 100%" label="label" @input="handleChangeProduct">
                                         <span slot="no-options">{{ formData.type === '' ? "Please Select Type First" : "Product not found, use + to add" }}</span>
                                     </v-select>
-                                    <button v-if="formData.type !== ''" @click="handleShowAddNewMaterial()" class="btn btn-warning ml-2" type="button">
+                                    <button @click="handleShowAddNewMaterial()" class="btn btn-warning ml-2" type="button">
                                         <i class="fas fa-plus-circle"></i>
                                     </button>
                                 </div>
@@ -69,7 +55,7 @@
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
-                                    <th>Product/Material</th>
+                                    <th>Semi Finished Material Name</th>
                                     <th>Items</th>
                                     <th></th>
                                 </tr>
@@ -78,29 +64,23 @@
                                 <tr v-for="(fp, fpI) in formData.products" :key="fpI">
                                     <td>{{ fp.name }}</td>
                                     <td>
-                                        <table class="table table-bordered">
+                                        <table class="table">
                                             <thead>
                                             <tr>
-                                                <th class="text-center"><b>Name</b></th>
+                                                <th class="text-center"><b>MaterialName</b></th>
+                                                <th class="text-center"><b>Price per Unit</b></th>
+                                                <th></th>
                                                 <th class="text-center"><b>Dose</b></th>
-                                                <th></th>
-                                                <th class="text-center"><b>Stock</b></th>
-                                                <th></th>
-                                                <th class="text-center"><b>Last Price per Unit</b></th>
-                                                <th></th>
-                                                <th class="text-center"><b>Dose Price per Unit</b></th>
+                                                <th class="text-center"><b>Dose Price</b></th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             <tr v-for="(item, itemI) in fp.items" :key="itemI">
                                                 <td>{{ item.material.name }}</td>
-                                                <td class="text-right">{{ item.dose }}</td>
-                                                <td>{{ item.material.unit }}</td>
-                                                <td class="text-right">{{ item.material.stock }}</td>
-                                                <td>{{ item.material.unit }}</td>
-                                                <td class="text-right">{{ item.material.last_price_per_unit | formatPrice }} </td>
+                                                <td class="text-right">{{ item.material.price_per_unit | formatPrice }} </td>
                                                 <td>/ {{ item.material.unit }}</td>
-                                                <td class="text-right">{{ (item.dose * item.material.last_price_per_unit) | formatPrice}}</td>
+                                                <td class="text-right">{{ item.dose }}</td>
+                                                <td class="text-right">{{ (item.dose * item.material.price_per_unit) | formatPrice}}</td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -198,14 +178,17 @@
                     </div>
                 </div>
             </div>
+            <SemiFinishedMaterialCrud :get-data="getData" :materials="materials" :form-data="formAdd" :label-modal="labelModal"></SemiFinishedMaterialCrud>
         </div>
     </div>
 </template>
 
 <script>
+    import SemiFinishedMaterialCrud from './components/SemiFinishedMaterialCrud'
 
     export default {
         name:'Detail',
+        components: {SemiFinishedMaterialCrud},
         data() {
             return {
                 materials: [],
@@ -240,6 +223,7 @@
             if (this.$route.params.type !== 'create') {
                 this.handleGet()
             }
+            this.handleChangeType()
         },
         methods: {
             async handleChangeProduct(val) {
@@ -259,7 +243,7 @@
                     this.$vs.loading()
                     this.selectedProduct = ""
                     this.products = [];
-                    const prodLocals = await this.$axios.get(`api/manufacture/get-semi-finished-material/${this.formData.type}`)
+                    const prodLocals = await this.$axios.get(`api/manufacture/get-semi-finished-material`)
                     prodLocals.forEach((x) => {
                         this.products.push({id: x.id, label: x.name, value: x })
                     })
@@ -353,13 +337,13 @@
             },
 
             handleChange() {
-                console.log("hanlde")
+                console.log("oke")
                 let grandTotal = 0
                 const prods = this.formData.products
                 prods.forEach((x, i) => {
                     let amountTotal = 0;
                     x.items.forEach((it) => {
-                        amountTotal = amountTotal + (it.dose * it.material.last_price_per_unit)
+                        amountTotal = amountTotal + (it.dose * it.material.price_per_unit)
                     })
                     this.formData.products[i].amount_total = amountTotal
                     grandTotal = grandTotal + this.formData.products[i].amount_total
@@ -400,11 +384,11 @@
                     manufactureProductLocal.data.manufacture_product_details.forEach((x) => {
                         this.formData.products.push({
                             id: x.semi_finished_material_id,
-                            name: x.semi_finished_material_name,
+                            name: x.name,
                             items: x.semi_finished_material.semi_finished_material_items
                         })
-                        this.formData.type = 'Semi Finished Material'
                     })
+                    this.handleChange()
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({

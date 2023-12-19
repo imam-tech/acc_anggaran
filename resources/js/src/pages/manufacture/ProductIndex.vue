@@ -66,7 +66,7 @@
                             <th class="text-center"><b>ID</b></th>
                             <th class="text-center"><b>Status</b></th>
                             <th class="text-center"><b>Name</b></th>
-                            <th class="text-center"><b>Amount Total</b></th>
+                            <th class="text-center"><b>Grand Total</b></th>
                             <th class="text-center"><b>Description</b></th>
                             <th class="text-center"><b>Semi Finished Material</b></th>
                             <th class="text-center">#</th>
@@ -82,7 +82,7 @@
                             <td>{{ pI + 1 }}</td>
                             <td>{{ p.status }}</td>
                             <td>{{ p.name }}</td>
-                            <td class="text-right">{{ p.amount_total |formatPrice }}</td>
+                            <td class="text-right">{{ p.grand_total |formatPrice }}</td>
                             <td>{{ p.description }}</td>
                             <td>
                                 <table class="table table-striped">
@@ -92,16 +92,18 @@
                                         <th class="text-center"><b>Amount Total</b></th>
                                         <th class="text-center"><b>Material Name</b></th>
                                         <th class="text-center"><b>Material Dose</b></th>
-                                        <th></th>
+                                        <th class="text-center"><b></b></th>
+                                        <th class="text-center"><b>Material Amount Total</b></th>
                                     </tr>
                                     </thead>
                                     <tbody v-for="(d, dI) in p.manufacture_product_details" :key="dI">
                                     <tr v-for="(di, diI) in d.manufacture_product_detail_items" :key="diI">
-                                        <td :rowspan="d.manufacture_product_detail_items.length" v-if="diI === 0">{{ d.semi_finished_material_name }}</td>
-                                        <td :rowspan="d.manufacture_product_detail_items.length" v-if="diI === 0" class="text-right">{{ d.amount_total | formatPrice }}</td>
+                                        <td :rowspan="d.manufacture_product_detail_items.length" v-if="diI === 0">{{ d.name }}</td>
+                                        <td :rowspan="d.manufacture_product_detail_items.length" v-if="diI === 0" class="text-right">{{ d.price_total | formatPrice }}</td>
                                         <td>{{ di.name }}</td>
                                         <td class="text-right">{{ di.dose }}</td>
-                                        <td> {{ di.unit }}</td>
+                                        <td>/{{ di.unit }}</td>
+                                        <td class="text-right">{{ di.price_dose |formatPrice }}</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -117,6 +119,9 @@
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </router-link>
+                                <button @click="handleDelete(p.id)" class="btn btn-danger" type="button">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
                         </tbody>
@@ -161,6 +166,46 @@
                     })
                 }
             },
+
+            async handleDelete(id) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are You Sure Want To Delete This Product?',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.delete(`api/manufacture/product/${id}/delete`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.getData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Delete Product : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            }
         }
     }
 </script>

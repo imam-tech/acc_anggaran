@@ -17,9 +17,9 @@ class ManufactureController extends Controller {
         $this->manufactureRepo = new ManufactureRepository();
     }
 
-    public function indexMaterial() {
-        $materials = Material::with(['material_histories']);
-        $materials = $materials->orderByDesc('id')->get();
+    public function indexMaterial(Request $request) {
+        $materials = Material::with([]);
+        $materials = $materials->where('company_id', $request->header('company_id'))->orderByDesc('id')->get();
         return response()->json($materials);
     }
 
@@ -27,17 +27,15 @@ class ManufactureController extends Controller {
         return response()->json($this->manufactureRepo->storeMaterial($request, $request->header('company_id')));
     }
 
-    public function getSemiFinishedMaterial($type) {
+    public function getSemiFinishedMaterial() {
         $responses = [];
-        if ($type == 'Semi Finished Material') {
-            $products = SemiFinishedMaterial::with(['semi_finished_material_items.material'])->get();
-            foreach ($products as $product) {
-                $responses[] = [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'items' => $product->semi_finished_material_items,
-                ];
-            }
+        $products = SemiFinishedMaterial::with(['semi_finished_material_items.material'])->get();
+        foreach ($products as $product) {
+            $responses[] = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'items' => $product->semi_finished_material_items,
+            ];
         }
 
         return response()->json($responses);
@@ -73,5 +71,17 @@ class ManufactureController extends Controller {
 
     public function approveProduct($id) {
         return response()->json($this->manufactureRepo->approveProduct($id));
+    }
+
+    public function deleteMaterial($id) {
+        return response()->json($this->manufactureRepo->deleteMaterial($id));
+    }
+
+    public function deleteSemiFinishedMaterial($id) {
+        return response()->json($this->manufactureRepo->deleteSemiFinishedMaterial($id));
+    }
+
+    public function deleteProduct($id) {
+        return response()->json($this->manufactureRepo->deleteProduct($id));
     }
 }

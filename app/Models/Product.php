@@ -29,4 +29,20 @@ class Product extends Model
     public function purchase_tax() {
         return $this->hasOne(Tax::class, 'id', 'purchase_tax_id');
     }
+
+    public function sale_coa() {
+        return $this->hasOne(Coa::class, 'id', 'sale_account_id');
+    }
+
+    public function purchase_coa() {
+        return $this->hasOne(Coa::class, 'id', 'purchase_account_id');
+    }
+
+    public function sale_products() {
+        return $this->hasMany(SalesProduct::class, 'product_id', 'id');
+    }
+
+    public function purchase_products() {
+        return $this->hasMany(PurchaseProduct::class, 'product_id', 'id');
+    }
 }

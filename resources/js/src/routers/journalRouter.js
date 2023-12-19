@@ -3,7 +3,7 @@ import hasLoggedIn from "../middleware/hasLoggedIn";
 const journalRouter = [
     {
         path: '',
-        name: 'journal-index',
+        name: 'accounting-journal-index',
         component:  () => import('../pages/journal/Index'),
         meta: {
             middleware: hasLoggedIn,
@@ -11,7 +11,7 @@ const journalRouter = [
     },
     {
         path: ':id/detail',
-        name: 'journal-detail',
+        name: 'accounting-journal-detail',
         component:  () => import('../pages/journal/Detail'),
         meta: {
             middleware: hasLoggedIn,
@@ -19,7 +19,7 @@ const journalRouter = [
     },
     {
         path: ':id/detail',
-        name: 'journal-detail',
+        name: 'accounting-journal-detail',
         component:  () => import('../pages/journal/Detail'),
         meta: {
             middleware: hasLoggedIn,
@@ -27,7 +27,7 @@ const journalRouter = [
     },
     {
         path: 'form/:id',
-        name: 'journal-form',
+        name: 'accounting-journal-form',
         component:  () => import('../pages/journal/Form'),
         meta: {
             middleware: hasLoggedIn,

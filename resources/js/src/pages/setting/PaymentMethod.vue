@@ -4,9 +4,16 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Payment Methods List</h1>
-                <button  type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddSetting()">
-                    <i class="fa fa-plus-circle"></i> Create New Payment Methods
-                </button>
+                <div>
+                    <router-link to="/app/setting">
+                        <button type="button" class="btn btn-success float-right mr-3 mt-3">
+                            <i class="fa fa-arrow-left"></i> Back
+                        </button>
+                    </router-link>
+                    <button  type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddSetting()">
+                        <i class="fa fa-plus-circle"></i> Create New Payment Methods
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -27,7 +34,7 @@
                                     <i class="fa fa-pencil"></i>
                                 </button>
                                 <button class="btn btn-danger" type="button" @click="handleDelete(pM.id)">
-                                    <i class="fa fa-minus"></i>
+                                    <i class="fa fa-trash"></i>
                                 </button>
                             </td>
                         </tr>

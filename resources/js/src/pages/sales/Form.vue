@@ -644,7 +644,12 @@
                 try {
                     this.$vs.loading()
                     this.customers = await this.$axios.get(`api/sales/customer`)
-                    this.products = await this.$axios.get(`api/product?is_sale=1`)
+                    const prodLocals = await this.$axios.get(`api/product?is_sale=1`)
+                    prodLocals.forEach((x) => {
+                        x.disabled = true
+                        console.log("prd", x)
+                        this.products.push(x)
+                    })
                     this.taxes = await this.$axios.get(`api/tax`)
                     this.$vs.loading.close()
                 } catch (e) {

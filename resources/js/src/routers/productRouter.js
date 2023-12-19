@@ -18,6 +18,14 @@ const productRouter = [
         },
     },
     {
+        path: ':id/detail',
+        name: 'product-detail',
+        component:  () => import('../pages/product/Detail'),
+        meta: {
+            middleware: hasLoggedIn,
+        },
+    },
+    {
         path: 'category',
         name: 'product-category-index',
         component: () => import('../pages/product/CategoryIndex'),
