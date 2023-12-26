@@ -3,9 +3,9 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <div class="mt-3 d-flex justify-content-between">
-                    <h1 class="h3 ml-3 text-gray-800 float-left">Semi Finished Material</h1>
+                    <h1 class="h3 ml-3 text-gray-800 float-left">Semi Finished Goods</h1>
                     <button @click="handleShowAddNewMaterial()" type="button" class="btn btn-primary float-right mr-3">
-                        <i class="fa fa-plus-circle"></i> Create New Semi Finished Material
+                        <i class="fa fa-plus-circle"></i> Create New Semi Finished Goods
                     </button>
                 </div>
             </div>
@@ -63,6 +63,7 @@
                         <tr>
                             <td class="text-center"><b>ID</b></td>
                             <td class="text-center"><b>Name</b></td>
+                            <td class="text-center"><b>Is Archive</b></td>
                             <td class="text-center"><b>Price Total</b></td>
                             <td class="text-center"><b>Material Name</b></td>
                             <td class="text-center"><b>Material Image</b></td>
@@ -78,6 +79,10 @@
                         <tr v-for="(sf, sfI) in p.semi_finished_material_items">
                             <td :rowspan="p.semi_finished_material_items.length" v-if="sfI === 0">{{ (pI+1) }}</td>
                             <td :rowspan="p.semi_finished_material_items.length" v-if="sfI === 0">{{ p.name }}</td>
+                            <td class="text-center">
+                                <span v-if="p.is_archive" class="badge badge-danger p-2">Yes</span>
+                                <span v-else class="badge badge-primary p-2 rounded-pill">No</span>
+                            </td>
                             <td :rowspan="p.semi_finished_material_items.length" v-if="sfI === 0" class="text-right">{{ p.price_total | formatPrice }}</td>
                             <td>{{ sf.material ? sf.material.name : '-' }}</td>
                             <td>
@@ -92,8 +97,11 @@
                                 <button class="btn btn-warning" type="button" @click="handleShowAddNewMaterial(p)">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <button @click="handleDelete(p.id)" class="btn btn-danger" type="button">
+                                <button v-if="p.manufacture_product_details.length == 0" @click="handleDelete(p.id)" class="btn btn-danger" type="button">
                                     <i class="fas fa-trash"></i>
+                                </button>
+                                <button v-else @click="handleArchive(p)" class="btn btn-secondary" type="button">
+                                    <i class="fas fa-archive"></i>
                                 </button>
                             </td>
                         </tr>
@@ -182,7 +190,7 @@
                 try {
                     if (this.materials.length === 0) {
                         this.$vs.loading()
-                        this.materials = await this.$axios.get(`api/manufacture/material`)
+                        this.materials = await this.$axios.get(`api/manufacture/material?is_archive=no`)
                         this.$vs.loading.close()
                     }
                 } catch (e) {
@@ -217,7 +225,7 @@
             async handleDelete(id) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Are You Sure Want To Delete This Semi Finished Material?',
+                    title: 'Are You Sure Want To Delete This Semi Finished Goods?',
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     allowEnterKey: false,
@@ -243,7 +251,47 @@
                                 Swal.fire({
                                     icon: "error",
                                     title: "Opps...",
-                                    text: "Failed To Delete Semi Finished Material : " + response.message ,
+                                    text: "Failed To Delete Semi Finished Goods : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            },
+
+            async handleArchive(p) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: `Are You Sure Want To ${p.is_archive ? 'Un Archive' : 'Archive'} This Semi Finished Goods?`,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.get(`api/manufacture/semi-finished-material/${p.id}/archive`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.getData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Archive Semi Finished Goods : " + response.message ,
                                     allowOutsideClick: false,
                                     allowEscapeKey: false,
                                     allowEnterKey: false,

@@ -41,7 +41,19 @@ class TransactionRepository {
             $inquiry = Inquiry::find($data['inquiry_id']);
             if (!$inquiry) return resultFunction("Err code TR-St: Inquiry not found for ID " . $data['inquiry_id']);
 
-            $transaction = new Transaction();
+            if ($data['id']) {
+                $transaction = Transaction::find($data['id']);
+                if (!$inquiry) return resultFunction("Err code TR-St: Transaction not found for ID " . $data['id']);
+
+                if ($transaction->current_status !== 'requested')  return resultFunction("Err code TR-St: Transaction status not requested for ID " . $data['id']);
+
+                TransactionItem::where('transaction_id', $transaction->id)->delete();
+                TransactionApproval::where('transaction_id', $transaction->id)->delete();
+                TransactionStatus::where('transaction_id', $transaction->id)->delete();
+            } else {
+                $transaction = new Transaction();
+            }
+
             $transaction->company_id = $project->company_id;
             $transaction->project_id = $project->id;
             $transaction->created_by = auth()->user()->id;
@@ -93,7 +105,8 @@ class TransactionRepository {
             ]);
 
             DB::commit();
-            return resultFunction("Creating transaction successfully", true, $transaction);
+            $message = $data['id'] ? 'Updating' : 'Creating';
+            return resultFunction($message . " transaction successfully", true, $transaction);
         } catch (\Exception $e) {
             return resultFunction("Err code TR-St: catch " . $e->getMessage());
         }
@@ -105,6 +118,25 @@ class TransactionRepository {
                 'transactionApprovals.user', 'transactionFlip'])
                 ->find($id);
             if (!$transaction) return resultFunction("Err code CR-Dl: transaction not found for ID " .$id);
+            return resultFunction("", true, $transaction);
+        } catch (\Exception $e) {
+            return resultFunction("Err code CR-Dl: catch " . $e->getMessage());
+        }
+    }
+
+    public function delete($id) {
+        try {
+            DB::beginTransaction();
+            $transaction = Transaction::with([])
+                ->find($id);
+            if (!$transaction) return resultFunction("Err code CR-Dl: transaction not found for ID " .$id);
+
+            $transaction->delete();
+            TransactionItem::where('transaction_id', $transaction->id)->delete();
+            TransactionApproval::where('transaction_id', $transaction->id)->delete();
+            TransactionStatus::where('transaction_id', $transaction->id)->delete();
+
+            DB::commit();
             return resultFunction("", true, $transaction);
         } catch (\Exception $e) {
             return resultFunction("Err code CR-Dl: catch " . $e->getMessage());

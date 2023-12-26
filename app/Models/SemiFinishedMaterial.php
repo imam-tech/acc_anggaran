@@ -17,4 +17,8 @@ class SemiFinishedMaterial extends Model
     public function semi_finished_material_items() {
         return $this->hasMany(SemiFinishedMaterialItem::class, 'semi_finished_material_id', 'id');
     }
+
+    public function manufacture_product_details() {
+        return $this->hasMany(ManufactureProductDetail::class, 'semi_finished_material_id', 'id');
+    }
 }

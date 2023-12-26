@@ -18,7 +18,11 @@ class ManufactureController extends Controller {
     }
 
     public function indexMaterial(Request $request) {
-        $materials = Material::with([]);
+        $filters = $request->only(['is_archive']);
+        $materials = Material::with(['semi_finished_material_items']);
+        if (!empty($filters['is_archive'])) {
+            $materials = $materials->where('is_archive', $filters['is_archive'] === 'yes' ? 1 : 0);
+        }
         $materials = $materials->where('company_id', $request->header('company_id'))->orderByDesc('id')->get();
         return response()->json($materials);
     }
@@ -29,7 +33,7 @@ class ManufactureController extends Controller {
 
     public function getSemiFinishedMaterial() {
         $responses = [];
-        $products = SemiFinishedMaterial::with(['semi_finished_material_items.material'])->get();
+        $products = SemiFinishedMaterial::with(['semi_finished_material_items.material'])->where('is_archive', 0)->orderBy('id', 'desc')->get();
         foreach ($products as $product) {
             $responses[] = [
                 'id' => $product->id,
@@ -64,7 +68,7 @@ class ManufactureController extends Controller {
     }
 
     public function indexSemiFinishedMaterial() {
-        $semiFinishedMaterials = SemiFinishedMaterial::with(['semi_finished_material_items.material']);
+        $semiFinishedMaterials = SemiFinishedMaterial::with(['semi_finished_material_items.material', 'manufacture_product_details']);
         $semiFinishedMaterials = $semiFinishedMaterials->orderByDesc('id')->get();
         return response()->json($semiFinishedMaterials);
     }
@@ -83,5 +87,13 @@ class ManufactureController extends Controller {
 
     public function deleteProduct($id) {
         return response()->json($this->manufactureRepo->deleteProduct($id));
+    }
+
+    public function archiveMaterial($id) {
+        return response()->json($this->manufactureRepo->archiveMaterial($id));
+    }
+
+    public function archiveSemiFinishedMaterial($id) {
+        return response()->json($this->manufactureRepo->archiveSemiFinishedMaterial($id));
     }
 }

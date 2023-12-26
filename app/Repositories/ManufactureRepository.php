@@ -60,11 +60,12 @@ class ManufactureRepository {
                 "items" => 'required'
             ]);
 
+            DB::beginTransaction();
             if ($validator->fails()) return resultFunction("Err code MR-SMM: " . collect($validator->errors()->all())->implode(" , "));
 
             if ($data['id']) {
                 $semiFinishedMaterial = SemiFinishedMaterial::find($data['id']);
-                if (!$semiFinishedMaterial) return resultFunction("Err code MR-SMM: semi finished material not found");
+                if (!$semiFinishedMaterial) return resultFunction("Err code MR-SMM: semi finished goods not found");
 
                 SemiFinishedMaterialItem::where('semi_finished_material_id', $semiFinishedMaterial->id)->delete();
             } else {
@@ -75,6 +76,11 @@ class ManufactureRepository {
 
             $totalPrice = 0;
             foreach ($data['items'] as $item) {
+                $material = Material::find($item['id']);
+                if (!$material) return resultFunction("Err code MR-SSF: material data not found");
+
+                if ($material->is_archive) return resultFunction("Err code MR-SSF: material data is archive, please change to other material");
+
                 $semiFinishedMaterialItem = new SemiFinishedMaterialItem();
                 $semiFinishedMaterialItem->semi_finished_material_id = $semiFinishedMaterial->id;
                 $semiFinishedMaterialItem->material_id = $item['id'];
@@ -87,6 +93,7 @@ class ManufactureRepository {
             $semiFinishedMaterial->price_total = $totalPrice;
             $semiFinishedMaterial->save();
 
+            DB::commit();
             return resultFunction("Processing data is successfully", true);
         } catch (\Exception $e) {
             return resultFunction("Err code MR-SMM: catch " . $e->getMessage());
@@ -117,9 +124,6 @@ class ManufactureRepository {
                     }
                     $manufactureProductDetail->delete();
                 }
-
-//                ManufactureProductDetail::where('manufacture_product_id', $manufactureProduct->id)->delete();
-//                ManufactureProductDetailItem::where('manufacture_product_id', $manufactureProduct->id)->delete();
             } else {
                 $manufactureProduct = new ManufactureProduct();
                 $manufactureProduct->company_id = $companyId;
@@ -264,7 +268,7 @@ class ManufactureRepository {
         }
     }
 
-    public function delete($id) {
+    public function deleteProduct($id) {
         try {
             $manufactureProduct = ManufactureProduct::with(['manufacture_product_details.manufacture_product_detail_items'])->find($id);
             if (!$manufactureProduct) return resultFunction("Err code SR-D: purchase not found");
@@ -278,6 +282,31 @@ class ManufactureRepository {
             $manufactureProduct->delete();
 
             return resultFunction("", true, $manufactureProduct);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function archiveMaterial($id) {
+        try {
+            $material = Material::with([])->find($id);
+            if (!$material) return resultFunction("Err code SR-D: material not found");
+            $material->is_archive = !$material->archive;
+            $material->save();
+
+            return resultFunction("", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function archiveSemiFinishedMaterial($id) {
+        try {
+            $semiFinishedMaterial = SemiFinishedMaterial::with([])->find($id);
+            $semiFinishedMaterial->is_archive = !$semiFinishedMaterial->archive;
+            $semiFinishedMaterial->save();
+
+            return resultFunction("", true);
         } catch (\Exception $e) {
             return resultFunction("Err code SR-D: catch " . $e->getMessage());
         }

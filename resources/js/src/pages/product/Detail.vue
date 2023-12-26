@@ -93,7 +93,9 @@
                             <tbody>
                             <tr v-for="(sp, spI)  in productData.sale_products" :key="spI">
                                 <td>{{ sp.sales.transaction_date }}</td>
-                                <td>{{ sp.sales.transaction_number }}</td>
+                                <td>
+                                    <router-link :to="`/app/sales/${sp.sales.id}/detail`">{{ sp.sales.transaction_number }}</router-link>
+                                </td>
                                 <td>{{ sp.quantity }} {{ sp.unit }}</td>
                             </tr>
                             </tbody>
@@ -109,7 +111,9 @@
                             <tbody>
                             <tr v-for="(sp, spI)  in productData.purchase_products" :key="spI">
                                 <td>{{ sp.purchase.transaction_date }}</td>
-                                <td>{{ sp.purchase.transaction_number }}</td>
+                                <td>
+                                    <router-link :to="`/app/purchase/${sp.purchase.id}/detail`">{{ sp.purchase.transaction_number }}</router-link>
+                                </td>
                                 <td>{{ sp.quantity }} {{ sp.unit }}</td>
                             </tr>
                             </tbody>

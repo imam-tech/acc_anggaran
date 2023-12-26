@@ -18,30 +18,13 @@ class PurchaseController extends Controller {
         $this->purchaseRepo = new PurchaseRepository();
     }
 
-    public function storeSupplier(Request $request) {
-        return response()->json($this->purchaseRepo->storeSupplier($request->all(), $request->header('company_id')));
-    }
-
-    public function indexSupplier(Request $request) {
-        $filters = $request->only([]);
-        $customers = Supplier::with([]);
-
-        $customers = $customers->where('company_id', $request->header('company_id'));
-        $customers = $customers->orderBy('id', 'desc')->get();
-        return response()->json($customers);
-    }
-
-    public function detailSupplier($id) {
-        return response()->json($this->purchaseRepo->detailSupplier($id));
-    }
-
     public function store(Request $request) {
         return response()->json($this->purchaseRepo->store($request, $request->header('company_id')));
     }
 
     public function index(Request $request) {
         $filters = $request->only(['status']);
-        $purchases = Purchase::with(['purchase_products', 'purchase_attachments', 'supplier']);
+        $purchases = Purchase::with(['purchase_products', 'purchase_attachments', 'contact']);
 
         if (!empty($filters['status'])) {
             $dateNow = date("Y-m-d");
@@ -81,5 +64,9 @@ class PurchaseController extends Controller {
 
     public function summarizeCount(Request $request) {
         return response()->json($this->purchaseRepo->summarizeCount($request->header('company_id')));
+    }
+
+    public function approvePayment($id) {
+        return response()->json($this->purchaseRepo->approvePayment($id));
     }
 }

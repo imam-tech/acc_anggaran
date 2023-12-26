@@ -3,7 +3,7 @@ import hasLoggedIn from "../middleware/hasLoggedIn";
 const reportRouter = [
     {
         path: '',
-        name: 'report-index',
+        name: 'accounting-report-index',
         component:  () => import('../pages/report/Index'),
         meta: {
             middleware: hasLoggedIn,
@@ -11,7 +11,7 @@ const reportRouter = [
     },
     {
         path: 'balance-sheet',
-        name: 'report-balance-sheet',
+        name: 'accounting-report-balance-sheet',
         component:  () => import('../pages/report/BalanceSheet'),
         meta: {
             middleware: hasLoggedIn,
@@ -19,7 +19,7 @@ const reportRouter = [
     },
     {
         path: 'profit-lose',
-        name: 'report-profit-lose',
+        name: 'accounting-report-profit-lose',
         component:  () => import('../pages/report/ProfitLose'),
         meta: {
             middleware: hasLoggedIn,
@@ -27,7 +27,7 @@ const reportRouter = [
     },
     {
         path: 'cashflow',
-        name: 'report-cashflow',
+        name: 'accounting-report-cashflow',
         component:  () => import('../pages/report/Cashflow'),
         meta: {
             middleware: hasLoggedIn,

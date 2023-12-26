@@ -22,6 +22,7 @@ class CreateSalesPaymentsTable extends Migration
             $table->date('due_date')->nullable();
             $table->decimal('payment_amount', 20, 0);
             $table->text('memo')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

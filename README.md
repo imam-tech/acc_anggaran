@@ -65,5 +65,17 @@ Team Leader
 - TC, TA
 - transaction_approval
 
-Staf
+Staff
 - TC
+
+
+DB Seeder
+- cashflows
+- coa_categories
+- coa_postings
+- coas ()
+
+
+Note:
+- cash & bank diambil dari nama ketagori coa Kas, Bank dan Hutang Bank & Lembaga Keuangan
+-  

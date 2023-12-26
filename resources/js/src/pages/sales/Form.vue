@@ -18,11 +18,11 @@
                                     font-style: italic;
                                 ">*) required</span></label>
                                 <div class="d-flex justify-content-between">
-                                    <v-select v-model="formData.customer_id" :options="customers" :reduce="p => p.id" style="width: 100%" label="name" @input="handleChangeCustomer">
+                                    <v-select v-model="formData.contact_id" :options="customers" :reduce="p => p.id" style="width: 100%" label="name" @input="handleChangeCustomer">
                                         <template #search="{attributes, events}">
                                             <input
                                                 class="vs__search"
-                                                :required="!formData.customer_id"
+                                                :required="!formData.contact_id"
                                                 v-bind="attributes"
                                                 v-on="events"
                                             />
@@ -38,7 +38,7 @@
                         <div class="col-lg-6 col-xl-3">
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="email" class="form-control" v-model="formData.customer_email">
+                                <input type="email" class="form-control" v-model="formData.contact_email">
                             </div>
                         </div>
                     </div>
@@ -313,8 +313,8 @@
             return {
                 formData: {
                     id: "",
-                    customer_id: "",
-                    customer_email: "",
+                    contact_id: "",
+                    contact_email: "",
                     billing_address: "",
                     transaction_date: (new Date()).toISOString().split('T')[0],
                     due_date: "",
@@ -357,7 +357,7 @@
 
             handleChangeCustomer(e) {
                 const selectCustomer = this.customers.find((x) => x.id === e)
-                this.formData.customer_email = selectCustomer.email
+                this.formData.contact_email = selectCustomer.email
             },
 
             async handleGet() {
@@ -388,8 +388,8 @@
                         return
                     }
                     this.formData.id = salesLocal.data.id
-                    this.formData.customer_id = salesLocal.data.customer_id
-                    this.formData.customer_email = salesLocal.data.customer_email ?? null
+                    this.formData.contact_id = salesLocal.data.contact_id
+                    this.formData.contact_email = salesLocal.data.contact_email ?? null
                     this.formData.billing_address = salesLocal.data.billing_address ?? ''
                     this.formData.transaction_date = salesLocal.data.transaction_date
                     this.formData.due_date = salesLocal.data.due_date ?? ''
@@ -436,8 +436,8 @@
             async handleSubmit() {
                 const formData = new FormData()
                 formData.append('id', this.formData.id)
-                formData.append('customer_id', this.formData.customer_id)
-                formData.append('customer_email', this.formData.customer_email ?? '')
+                formData.append('contact_id', this.formData.contact_id)
+                formData.append('contact_email', this.formData.contact_email ?? '')
                 formData.append('billing_address', this.formData.billing_address)
                 formData.append('products', JSON.stringify(this.formData.products))
                 formData.append('transaction_date', this.formData.transaction_date)
@@ -643,7 +643,7 @@
             async getDataOther() {
                 try {
                     this.$vs.loading()
-                    this.customers = await this.$axios.get(`api/sales/customer`)
+                    this.customers = await this.$axios.get(`api/contact?type=customer`)
                     const prodLocals = await this.$axios.get(`api/product?is_sale=1`)
                     prodLocals.forEach((x) => {
                         x.disabled = true

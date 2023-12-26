@@ -3,7 +3,7 @@ import hasLoggedIn from "../middleware/hasLoggedIn";
 const budgetRouter = [
     {
         path: '',
-        name: 'budget-index',
+        name: 'accounting-budget-index',
         component:  () => import('../pages/budget/Index'),
         meta: {
             middleware: hasLoggedIn,
@@ -11,7 +11,7 @@ const budgetRouter = [
     },
     {
         path: ':type/form',
-        name: 'budget-index',
+        name: 'accounting-budget-index',
         component:  () => import('../pages/budget/Form'),
         meta: {
             middleware: hasLoggedIn,

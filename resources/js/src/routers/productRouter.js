@@ -3,7 +3,7 @@ import hasLoggedIn from "../middleware/hasLoggedIn";
 const productRouter = [
     {
         path: '',
-        name: 'product-index',
+        name: 'sales-and-purchase-product-index',
         component: () => import('../pages/product/Index'),
         meta: {
             middleware: hasLoggedIn,
@@ -11,7 +11,7 @@ const productRouter = [
     },
     {
         path: ':type/form',
-        name: 'product-form',
+        name: 'sales-and-purchase-product-form',
         component:  () => import('../pages/product/Form'),
         meta: {
             middleware: hasLoggedIn,
@@ -19,7 +19,7 @@ const productRouter = [
     },
     {
         path: ':id/detail',
-        name: 'product-detail',
+        name: 'sales-and-purchase-product-detail',
         component:  () => import('../pages/product/Detail'),
         meta: {
             middleware: hasLoggedIn,
@@ -27,7 +27,7 @@ const productRouter = [
     },
     {
         path: 'category',
-        name: 'product-category-index',
+        name: 'other-list-product-category-index',
         component: () => import('../pages/product/CategoryIndex'),
         meta: {
             middleware: hasLoggedIn,
@@ -35,7 +35,7 @@ const productRouter = [
     },
     {
         path: 'unit',
-        name: 'product-unit-index',
+        name: 'other-list-product-unit-index',
         component: () => import('../pages/product/UnitIndex'),
         meta: {
             middleware: hasLoggedIn,

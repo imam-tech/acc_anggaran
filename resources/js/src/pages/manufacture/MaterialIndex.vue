@@ -65,6 +65,7 @@
                             <th class="text-center"><b>Image</b></th>
                             <th class="text-center"><b>Unit</b></th>
                             <th class="text-center"><b>Price per Unit</b></th>
+                            <th class="text-center"><b>Is Archived?</b></th>
                             <th class="text-center">#</th>
                         </tr>
                         </thead>
@@ -81,12 +82,19 @@
                             </td>
                             <td>{{ p.unit }}</td>
                             <td class="text-right">Rp. {{ p.price_per_unit | formatPrice }}</td>
+                            <td class="text-center">
+                                <span v-if="p.is_archive" class="badge badge-danger p-3">Yes</span>
+                                <span v-else class="badge badge-primary p-3">No</span>
+                            </td>
                             <td class="text-right">
                                 <button @click="handleShowAddNewMaterial(p)" type="button" class="btn btn-warning">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <button @click="handleDelete(p.id)" class="btn btn-danger" type="button">
+                                <button v-if="p.semi_finished_material_items.length == 0" @click="handleDelete(p.id)" class="btn btn-danger" type="button">
                                     <i class="fas fa-trash"></i>
+                                </button>
+                                <button v-else @click="handleArchive(p)" class="btn btn-secondary" type="button">
+                                    <i class="fas fa-archive"></i>
                                 </button>
                             </td>
                         </tr>
@@ -126,10 +134,14 @@
 
                             <div class="form-group">
                                 <label>Unit</label>
-
-                                <select v-model="formAdd.unit" class="form-control">
-                                    <option v-for="(u, uI) in units" :key="uI" :value="u.name">{{ u.name }}</option>
-                                </select>
+                                <div class="d-flex justify-content-between">
+                                    <select v-model="formAdd.unit" class="form-control">
+                                        <option v-for="(u, uI) in units" :key="uI" :value="u.name">{{ u.name }}</option>
+                                    </select>
+                                    <button @click="handleShowAddNewUnit()" class="btn btn-warning ml-2" type="button">
+                                        <i class="fas fa-plus-circle"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="modal-footer flex justify-content-between">
@@ -144,14 +156,18 @@
                 </div>
             </div>
         </div>
+        <UnitCrud :get-data="handleCallbackUnit" :form-data="formData" :label-modal="labelModal"></UnitCrud>
     </div>
 </template>
 
 <script>
+    import UnitCrud from '../product/components/UnitCrud'
     export default {
         name: "Index.vue",
+        components: {UnitCrud},
         data() {
             return {
+                labelModal: "Add",
                 formAdd: {
                     id: "",
                     name: "",
@@ -161,13 +177,32 @@
                 },
                 materials: [],
                 units: [],
-                fileImage: ""
+                fileImage: "",
+                formData: {
+                    'id': "",
+                    'name': ""
+                }
             }
         },
         created() {
             this.getData()
         },
         methods: {
+            handleCallbackUnit() {
+                $("#addNewMaterial").modal("show")
+                $("#addProductUnit").modal("hide")
+                this.handleGetUnit(true)
+            },
+
+            async handleShowAddNewUnit() {
+                this.formData = {
+                    'id': "",
+                    'name': ""
+                }
+                $("#addNewMaterial").modal("hide")
+                $("#addProductUnit").modal("show")
+            },
+
             handleChangeImage(e) {
                 this.fileImage = e.target.files[0]
             },
@@ -213,8 +248,11 @@
                 }
             },
 
-            async handleGetUnit() {
+            async handleGetUnit(isNew = false) {
                 try {
+                    if (isNew) {
+                        this.units = []
+                    }
                     if (this.units.length === 0) {
                         this.$vs.loading()
                         this.units = await this.$axios.get(`api/product/unit`)
@@ -295,6 +333,46 @@
                                     icon: "error",
                                     title: "Opps...",
                                     text: "Failed To Delete Material : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            },
+
+            async handleArchive(p) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: `Are You Sure Want To ${p.is_archive ? 'Un Archive' : 'Archive'} This Material?`,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.get(`api/manufacture/material/${p.id}/archive`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.getData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Archive Material : " + response.message ,
                                     allowOutsideClick: false,
                                     allowEscapeKey: false,
                                     allowEnterKey: false,

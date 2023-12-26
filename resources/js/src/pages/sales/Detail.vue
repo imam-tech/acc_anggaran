@@ -41,7 +41,7 @@
                             <tbody>
                             <tr>
                                 <th>Customer Name</th>
-                                <td class="text-right">{{salesData.customer.name}}</td>
+                                <td class="text-right">{{salesData.contact.name}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -51,7 +51,7 @@
                             <tbody>
                             <tr>
                                 <th>Customer Email</th>
-                                <td class="text-right">{{salesData.customer_email}}</td>
+                                <td class="text-right">{{salesData.contact_email}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -218,10 +218,21 @@
                                     <router-link :to="'/app/sales/payment/' + sp.id + '/detail'">Payment Receive #{{ sp.id }}</router-link></td>
                                 <td>{{ sp.coa.account_name }}</td>
                                 <td>{{ sp.payment_method ? sp.payment_method.name : '' }}</td>
-                                <td>Paid</td>
+                                <td>{{ sp.status ? 'Paid' : '-' }}</td>
                                 <td class="text-right">{{ sp.payment_amount | formatPrice }}</td>
                                 <td class="text-right">
-                                    <button v-if="handleStatus(salesData).label !== 'Paid'" type="button" @click="handleDelete(sp.id)" class="btn btn-danger">
+
+                                    <router-link :to="'/app/sales/payment/' + sp.id + '/detail'">
+                                        <button type="button" class="btn btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </router-link>
+                                    <router-link  v-if="!sp.status" :to="'/app/sales/payment/'+sp.sales_id+'/'+sp.id+'/form'">
+                                        <button type="button" class="btn btn-warning">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                    </router-link>
+                                    <button v-if="!sp.status" type="button" @click="handleDelete(sp.id)" class="btn btn-danger">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>

@@ -4,7 +4,7 @@
             <div class="modal-content">
                 <form @submit.prevent="handleSubmit">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">{{ formData === '' ? 'Add New' : "Update" }} a Semi Finished Material</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">{{ formData === '' ? 'Add New' : "Update" }} a Semi Finished Good</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>

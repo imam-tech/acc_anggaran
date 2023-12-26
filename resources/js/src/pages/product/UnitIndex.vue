@@ -82,11 +82,6 @@
                 }
             },
 
-            async handleSubmit() {
-                const unitCrudRef = this.$refs.unitCrud
-                unitCrudRef.handleSubmit()
-            },
-
             handleShowCrudModal(p = null) {
                 if (p === null) {
                     this.labelModal = 'Add'

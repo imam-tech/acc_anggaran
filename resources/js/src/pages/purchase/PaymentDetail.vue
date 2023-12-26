@@ -9,7 +9,8 @@
                                 <h5>Sales</h5>
                                 <h3 class="text-gray-700">
                                     Receive Payment #{{ purchasePaymentData.id }}
-                                    <span class="badge badge-success rounded-pill">Paid</span>
+                                    <span v-if="purchasePaymentData.status" class="badge badge-success rounded-pill">Paid</span>
+                                    <span v-else class="badge badge-warning rounded-pill">DRAFT</span>
                                 </h3>
                             </div>
                         </h1>
@@ -17,11 +18,17 @@
                     <div class="col-6 text-right d-flex align-items-center justify-content-end">
                         <div class="d-flex flex-column">
                             <div>
-                                <router-link :to="'/app/purchase/payment/'+purchasePaymentData.purchase_id+'/'+purchasePaymentData.id+'/form'">
-                                    <button type="button" class="mr-3 mt-3 btn btn-warning">
+                                <button v-if="!purchasePaymentData.status" type="button" @click="handleApprove(purchasePaymentData.id)" class="btn btn-primary mt-3 ">
+                                    <i class="fas fa-check-circle"></i> Approve
+                                </button>
+                                <router-link v-if="!purchasePaymentData.status" :to="'/app/purchase/payment/'+purchasePaymentData.purchase_id+'/'+purchasePaymentData.id+'/form'">
+                                    <button type="button" class="mt-3 btn btn-warning">
                                         <i class="fa fa-pencil"></i> Edit
                                     </button>
                                 </router-link>
+                                <button v-if="!purchasePaymentData.status" type="button" @click="handleDelete(purchasePaymentData.id)" class="btn btn-danger mt-3 ">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
                                 <router-link :to="'/app/purchase/'+purchasePaymentData.purchase_id+'/detail'">
                                     <button type="button" class="mr-3 mt-3 btn btn-success">
                                         <i class="fa fa-arrow-left"></i> Back
@@ -40,7 +47,7 @@
                             <tbody>
                             <tr>
                                 <th>Supplier Name</th>
-                                <td class="text-right">{{purchasePaymentData.purchase.supplier.name}}</td>
+                                <td class="text-right">{{purchasePaymentData.purchase.contact.name}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -251,6 +258,86 @@
                     })
                 }
             },
+
+            async handleDelete(id) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are You Sure Want To Delete This Payment?',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.delete(`api/purchase/payment/${id}/${this.purchasePaymentData.purchase_id}/delete`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.getData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Delete payment : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            },
+
+            async handleApprove(id) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are You Sure Want To Approve This Payment? this action can\'t be undo',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.get(`api/purchase/payment/${id}/approve`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.getData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To approve payment : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            }
         }
     }
 </script>

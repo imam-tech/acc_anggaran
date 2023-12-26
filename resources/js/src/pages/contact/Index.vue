@@ -4,10 +4,10 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <div class="mt-3 d-flex justify-content-between">
-                    <h1 class="h3 ml-3 text-gray-800 float-left">Supplier</h1>
-                    <router-link to="/app/purchase/suppliers/create/form">
+                    <h1 class="h3 ml-3 text-gray-800 float-left">Contact</h1>
+                    <router-link to="/app/contact/create/form">
                         <button type="button" class="btn btn-primary float-right mr-3">
-                            <i class="fa fa-plus-circle"></i> Create New Supplier
+                            <i class="fa fa-plus-circle"></i> Create New Contact
                         </button>
                     </router-link>
                 </div>
@@ -17,6 +17,7 @@
                     <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
+                            <th class="text-center"><b>Type</b></th>
                             <th class="text-center"><b>Name</b></th>
                             <th class="text-center"><b>Email</b></th>
                             <th class="text-center"><b>Phone</b></th>
@@ -27,12 +28,16 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-if="suppliers.length == 0">
+                        <tr v-if="contacts.length == 0">
                             <td colspan="7" class="text-center">
-                                Supplier Not Found
+                                Contact Not Found
                             </td>
                         </tr>
-                        <tr v-else v-for="(c, cI) in suppliers" :key="cI">
+                        <tr v-else v-for="(c, cI) in contacts" :key="cI">
+                            <td>
+                                <p v-if="c.sale_account_id">Customer</p>
+                                <p v-if="c.purchase_account_id">Vendor</p>
+                            </td>
                             <td>{{ c.name }}</td>
                             <td>{{ c.email }}</td>
                             <td>{{ c.phone }}</td>
@@ -40,7 +45,8 @@
                             <td>{{ c.npwp_number }}</td>
                             <td>{{ c.address }}</td>
                             <td class="text-right">
-                                <router-link :to="'suppliers/' + c.id + '/form'">
+
+                                <router-link :to="'contact/' + c.id + '/form'">
                                     <button class="btn btn-warning" type="button">
                                         <i class="fas fa-pencil-alt"></i>
                                     </button>
@@ -63,7 +69,7 @@
         name: "Index.vue",
         data() {
             return {
-                suppliers: []
+                contacts: []
             }
         },
         created() {
@@ -73,7 +79,7 @@
             async getData() {
                 try {
                     this.$vs.loading()
-                    this.suppliers = await this.$axios.get(`api/purchase/supplier`)
+                    this.contacts = await this.$axios.get(`api/contact`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()

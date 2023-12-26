@@ -17,11 +17,11 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <v-select :disabled="true" v-model="salesData.customer_id" :options="customers" :reduce="p => p.id" style="width: 100%" label="name">
+                                <v-select :disabled="true" v-model="salesData.contact_id" :options="customers" :reduce="p => p.id" style="width: 100%" label="name">
                                     <template #search="{attributes, events}">
                                         <input
                                                 class="vs__search"
-                                                :required="!salesData.customer_id"
+                                                :required="!salesData.contact_id"
                                                 v-bind="attributes"
                                                 v-on="events"
                                         />
@@ -213,7 +213,7 @@
             return {
                 salesData: {
                     id: "",
-                    customer_id: "",
+                    contact_id: "",
                     due_date: "",
                     transaction_number: '',
                     description: '',
@@ -222,7 +222,7 @@
                 },
                 formData: {
                     id: "",
-                    customer_id: "",
+                    contact_id: "",
                     deposit_to: "",
                     payment_method: "",
                     payment_date: (new Date()).toISOString().split('T')[0],
@@ -266,7 +266,7 @@
             async getDataOther() {
                 try {
                     this.$vs.loading()
-                    this.customers = await this.$axios.get(`api/sales/customer`)
+                    this.customers = await this.$axios.get(`api/contact?type=sale`)
                     this.depositTo = await this.$axios.get(`api/coa?is_active=1&coa_name=KAS`)
                     const bankDeposits = await this.$axios.get(`api/coa?is_active=1&coa_name=BANK`)
                     bankDeposits.forEach((x) => this.depositTo.push(x))
@@ -343,7 +343,7 @@
                     this.salesData.id = salesLocal.data.id
                     this.salesData.transaction_number = salesLocal.data.transaction_number
                     this.salesData.description = salesLocal.data.description
-                    this.salesData.customer_id = salesLocal.data.customer_id
+                    this.salesData.contact_id = salesLocal.data.contact_id
                     this.salesData.due_date = salesLocal.data.due_date
                     this.salesData.total = salesLocal.data.grand_total
                     this.salesData.balance_due = this.handleShowBalanceDue(salesLocal.data)
@@ -367,10 +367,22 @@
                     const paymentLocal = await this.$axios.get(`api/sales/payment/${this.$route.params.type}/detail`)
                     this.$vs.loading.close()
                     if (paymentLocal.status) {
+                        if (paymentLocal.data.status) {
+                            Swal.fire({
+                                position: 'top',
+                                icon: 'error',
+                                title: 'The payment is not editable because the status is approved',
+                                showConfirmButton: false,
+                                timer: 3000
+                            }).then(async ()=>{
+                                this.$router.push('/app/sales/'+this.$route.params.id+'/detail')
+                            })
+                            return
+                        }
                         this.formData.id = paymentLocal.data.id
                         this.formData.deposit_to = paymentLocal.data.deposit_to
-                        this.formData.payment_method = paymentLocal.data.payment_method ??  ''
-                        this.formData.customer_id = paymentLocal.data.sales.customer_id
+                        this.formData.payment_method = paymentLocal.data.payment_method ? paymentLocal.data.payment_method.id : ''
+                        this.formData.contact_id = paymentLocal.data.sales.contact_id
                         this.formData.payment_date = paymentLocal.data.payment_date
                         this.formData.due_date = paymentLocal.data.due_date ?? ''
                         this.formData.payment_amount = paymentLocal.data.payment_amount

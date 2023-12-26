@@ -9,14 +9,10 @@ Route:: group(['prefix' => 'purchase', 'middleware' => 'auth:sanctum'], function
     Route::get('/{id}/detail', [PurchaseController::class, 'detail']);
     Route::get('/summarize-count', [PurchaseController::class, 'summarizeCount']);
 
-    Route::group(['prefix' => 'supplier'], function () {
-        Route::post('/', [PurchaseController::class, 'storeSupplier']);
-        Route::get('/', [PurchaseController::class, 'indexSupplier']);
-        Route::get('/{id}/detail', [PurchaseController::class, 'detailSupplier']);
-    });
     Route::group(['prefix' => 'payment'], function () {
         Route::post('/', [PurchaseController::class, 'storePayment']);
         Route::get('/{id}/detail', [PurchaseController::class, 'detailPayment']);
         Route::delete('/{id}/{purchaseId}/delete', [PurchaseController::class, 'deletePayment']);
+        Route::get('/{id}/approve', [PurchaseController::class, 'approvePayment']);
     });
 });

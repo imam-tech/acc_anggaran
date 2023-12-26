@@ -18,6 +18,7 @@ class CreateSemiFinishedMaterialsTable extends Migration
             $table->string('name');
             $table->decimal('', 20, 0);
             $table->decimal('price_total', 20, 0)->nullable();
+            $table->tinyInteger('is_archive')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -26,8 +26,8 @@ class Sales extends Model
         return $this->hasMany(SalesJournal::class, 'sales_id', 'id');
     }
 
-    public function customer() {
-        return $this->hasOne(Customer::class, 'id', 'customer_id');
+    public function contact() {
+        return $this->hasOne(Contact::class, 'id', 'contact_id');
     }
 
     public function sales_payments() {

@@ -26,8 +26,8 @@ class Purchase extends Model
         return $this->hasMany(PurchaseJournal::class, 'purchase_id', 'id');
     }
 
-    public function supplier() {
-        return $this->hasOne(Supplier::class, 'id', 'supplier_id');
+    public function contact() {
+        return $this->hasOne(Contact::class, 'id', 'contact_id');
     }
 
     public function purchase_payments() {

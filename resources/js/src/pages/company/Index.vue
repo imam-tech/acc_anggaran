@@ -10,7 +10,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-4" v-for="(company, index) in companies" :key="index">
+                    <div class="col-4 mb-3" v-for="(company, index) in companies" :key="index">
                         <router-link :to="'/app/company/'+company.id+'/detail'">
                             <div class="card">
                                 <div class="card-body shadow-lg">
@@ -40,16 +40,15 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-
-                        <form>
+                    <form @submit.prevent="submitCompany">
+                        <div class="modal-body">
                             <div class="form-group">
                                 <label>Title<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.title" placeholder="Title of Company">
+                                <input type="text" class="form-control" v-model="formData.title" placeholder="Title of Company" required>
                             </div>
                             <div class="form-group">
                                 <label>Type<span style="
@@ -57,7 +56,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select v-model="formData.type" class="form-control">
+                                <select v-model="formData.type" class="form-control" required>
                                     <option value="" selected>--Select type of company--</option>
                                     <option value="pt">PT</option>
                                     <option value="yayasan">Yayasan</option>
@@ -69,14 +68,18 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.voucherPrefix" placeholder="Example: PTA">
+                                <input type="text" class="form-control" v-model="formData.voucherPrefix" placeholder="Example: PTA" required>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="submitCompany()">Save changes</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -106,6 +109,11 @@
                 try {
                     this.$vs.loading()
                     this.companies = await this.$axios.get('api/company')
+                    if (this.companies.length === 0) {
+                        if (this.$route.query.show_create !==  undefined && this.$store.state.roles === 'administrator') {
+                            $("#addCompany").modal("show")
+                        }
+                    }
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()

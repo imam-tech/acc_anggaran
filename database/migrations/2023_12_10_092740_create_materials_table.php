@@ -20,6 +20,7 @@ class CreateMaterialsTable extends Migration
             $table->string('image')->nullable();
             $table->string('unit')->nullable();
             $table->decimal("price_per_unit", 20, 0)->nullable();
+            $table->tinyInteger('is_archive')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

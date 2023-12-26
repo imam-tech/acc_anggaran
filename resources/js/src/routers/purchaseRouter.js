@@ -3,7 +3,7 @@ import hasLoggedIn from "../middleware/hasLoggedIn";
 const purchaseRouter = [
     {
         path: '',
-        name: 'purchase-index',
+        name: 'sales-and-purchase-index',
         component:  () => import('../pages/purchase/Index'),
         meta: {
             middleware: hasLoggedIn,
@@ -11,7 +11,7 @@ const purchaseRouter = [
     },
     {
         path: ':type/form',
-        name: 'purchase-form',
+        name: 'sales-and-purchase-form',
         component:  () => import('../pages/purchase/Form'),
         meta: {
             middleware: hasLoggedIn,
@@ -19,7 +19,7 @@ const purchaseRouter = [
     },
     {
         path: 'payment/:id/:type/form',
-        name: 'purchase-payment-form',
+        name: 'sales-and-purchase-payment-form',
         component:  () => import('../pages/purchase/PaymentForm'),
         meta: {
             middleware: hasLoggedIn,
@@ -27,7 +27,7 @@ const purchaseRouter = [
     },
     {
         path: 'payment/:type/detail',
-        name: 'purchase-payment-detail',
+        name: 'sales-and-purchase-payment-detail',
         component:  () => import('../pages/purchase/PaymentDetail'),
         meta: {
             middleware: hasLoggedIn,
@@ -35,24 +35,8 @@ const purchaseRouter = [
     },
     {
         path: ':type/detail',
-        name: 'purchase-detail',
+        name: 'sales-and-purchase-detail',
         component:  () => import('../pages/purchase/Detail'),
-        meta: {
-            middleware: hasLoggedIn,
-        },
-    },
-    {
-        path: 'supplier',
-        name: 'purchase-supplier-index',
-        component:  () => import('../pages/purchase/SupplierIndex'),
-        meta: {
-            middleware: hasLoggedIn,
-        },
-    },
-    {
-        path: 'supplier/:type/form',
-        name: 'purchase-supplier-form',
-        component:  () => import('../pages/purchase/SupplierForm'),
         meta: {
             middleware: hasLoggedIn,
         },

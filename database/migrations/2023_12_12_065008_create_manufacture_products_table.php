@@ -40,9 +40,9 @@ class CreateManufactureProductsTable extends Migration
             $table->integer('semi_finished_material_item_id');
             $table->integer('material_id');
             $table->string('name');
-            $table->string('image');
-            $table->string('unit');
-            $table->decimal('price_per_unit', 20, 2);
+            $table->string('image')->nullable();
+            $table->string('unit')->nullable();
+            $table->decimal('price_per_unit', 20, 2)->nullable();
             $table->decimal('dose', 10, 2);
             $table->decimal('price_dose', 20, 2);
             $table->timestamps();

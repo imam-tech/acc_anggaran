@@ -11,7 +11,7 @@
                 <div class="row">
                     <div class="col-xl-8">
                         <form @submit.prevent="submitProcess">
-                            <div v-if="$route.params.id === 'create'" class="row">
+                            <div class="row">
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="">Company<span style="
@@ -19,9 +19,17 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select class="form-control" v-model="selectedCompany" @change="handleChangeCompany" required>
-                                            <option v-for="(c, cI) in companies" :value="c.id" :key="cI">{{ c.title }}</option>
-                                        </select>
+                                        <v-select v-model="selectedCompany" :options="companies" :reduce="p => p.id" style="width: 100%" label="title" @input="handleChangeCompany">
+                                            <template #search="{attributes, events}">
+                                                <input
+                                                        class="vs__search"
+                                                        :required="!selectedCompany"
+                                                        v-bind="attributes"
+                                                        v-on="events"
+                                                />
+                                            </template>
+                                            <span slot="no-options">Company not found</span>
+                                        </v-select>
                                     </div>
                                 </div>
                             </div>
@@ -43,9 +51,17 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select v-model="formData.project_id" class="form-control" required>
-                                            <option v-for="(project, index) in projects" :value="project.id" :key="index">{{ project.title }}</option>
-                                        </select>
+                                        <v-select v-model="formData.project_id" :options="projects" :reduce="p => p.id" style="width: 100%" label="title">
+                                            <template #search="{attributes, events}">
+                                                <input
+                                                        class="vs__search"
+                                                        :required="!formData.project_id"
+                                                        v-bind="attributes"
+                                                        v-on="events"
+                                                />
+                                            </template>
+                                            <span slot="no-options">Project not found</span>
+                                        </v-select>
                                     </div>
                                 </div>
                             </div>
@@ -156,7 +172,7 @@
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <tbody>
                             <tr v-for="(admin, index) in company.company_admins" :key="index">
-                                <td>
+                                <td v-if="admin.user">
                                     <div class="row">
                                         <div class="col-2">
                                             <span class="avatar">{{ admin.user.name | getShortName }}</span>
@@ -255,7 +271,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="file" class="form-control" @change="handleUploadImage" required>
+                                <input type="file" class="form-control" @change="handleUploadImage">
                                 <label class="text-danger"><i><b>The size maximize of image is 800 pixel</b></i></label>
                             </div>
                         </div>
@@ -281,6 +297,7 @@
         data() {
             return {
                 formData: {
+                    id: "",
                     title: "",
                     project_id: "",
                     description: "",
@@ -305,23 +322,24 @@
                     attachment: "https://firebasestorage.googleapis.com/v0/b/anggaran-v2.appspot.com/o/anggaran-new%2F1688468222456.png?alt=media&token=b398d9bc-38b1-4af5-a948-d2c4b3c8940b"
                 },
                 companies: [],
-                selectedCompany: "",
-                paramCompany: this.$route.params.id
+                selectedCompany: ""
             }
         },
 
         mounted() {
-            if (this.$route.params.id === 'create') {
-                this.getListCompany()
-            } else {
+            this.getListCompany()
+            this.getDataBank()
+            if (this.$route.query.companyId !== undefined) {
+                this.selectedCompany = parseInt(this.$route.query.companyId)
                 this.getDataProject()
                 this.getDataCompany()
             }
-            this.getDataBank()
+            if (this.$route.params.id !== 'create') {
+                this.getDataTransaction()
+            }
         },
         methods: {
             handleChangeCompany() {
-                this.paramCompany = this.selectedCompany
                 this.getDataProject()
                 this.getDataCompany()
             },
@@ -343,11 +361,11 @@
                     this.$vs.loading.close()
                     if (res.status == false) {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'top',
                             icon: 'error',
                             title: res.message,
                             showConfirmButton: false,
-                            timer: 1500
+                            timer: 2000
                         })
                     } else {
                         this.formItem.attachment = res.data
@@ -356,11 +374,11 @@
 
                 }).catch((e) => {
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2000
                     })
                 })
             },
@@ -371,11 +389,11 @@
                     this.$vs.loading.close()
                     if (!respSave.status) {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'top',
                             icon: 'error',
                             title: respSave.message,
                             showConfirmButton: false,
-                            timer: 1500
+                            timer: 2000
                         })
                     } else {
                         Swal.fire({
@@ -391,11 +409,11 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2000
                     })
                 }
             },
@@ -415,11 +433,11 @@
             handleAddItem() {
                 if (this.formItem.title === "" || this.formItem.amount === "") {
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: "Please fill title and amount",
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2000
                     })
                     return
                 }
@@ -445,17 +463,17 @@
             },
             async handleAddInquiry() {
                 try {
-                    this.formInquiry.company_id = this.$route.params.id
+                    this.formInquiry.company_id = this.$route.params.companyId
                     this.$vs.loading()
                     const respSave = await this.$axios.post('api/inquiry', this.formInquiry)
                     this.$vs.loading.close()
                     if (!respSave.status) {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'top',
                             icon: 'error',
                             title: respSave.message,
                             showConfirmButton: false,
-                            timer: 1500
+                            timer: 2000
                         })
                         this.formData.bank = this.formInquiry.bank
                         this.getDataInquiry()
@@ -474,21 +492,17 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2000
                     })
                 }
             },
             async getListCompany() {
                 try {
                     this.$vs.loading()
-                    this.companies.push({
-                        id: "",
-                        title: "--Choose Company--"
-                    })
                     const compLocals = await this.$axios.get(`api/company`)
                     compLocals.forEach((x) => {
                         this.companies.push(x)
@@ -497,38 +511,47 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2000
                     })
                 }
             },
             async getDataCompany() {
                 try {
                     this.$vs.loading()
-                    const respCompany = await this.$axios.get(`api/company/${this.paramCompany}/detail`)
+                    const respCompany = await this.$axios.get(`api/company/${this.selectedCompany}/detail`)
                     this.$vs.loading.close()
                     if (!respCompany.status) {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'top',
                             icon: 'error',
                             title: respCompany.message,
                             showConfirmButton: false,
-                            timer: 1500
+                            timer: 2000
                         })
                         return
                     }
                     this.company = respCompany.data
+                    if (this.company.company_admins[0].user === null) {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'error',
+                            title: "The finance approval is  not available, please contact your administrator.",
+                            showConfirmButton: false,
+                            timer: 2000
+                        })
+                    }
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2000
                     })
                 }
             },
@@ -542,36 +565,81 @@
                             id: x.id,
                             label: x.name + ' ' + x.account_number
                         })
+                        if (x.account_number === this.formData.inquiry_id) {
+                            this.formData.inquiry_id = x.id
+                        }
                     })
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2000
+                    })
+                }
+            },
+            async getDataTransaction() {
+                try {
+                    this.$vs.loading()
+                    const resp = await this.$axios.get(`api/transaction/${this.$route.params.id}/detail`)
+                    this.$vs.loading.close()
+                    if (!resp.status) {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'error',
+                            title: resp.message,
+                            showConfirmButton: false,
+                            timer: 2000
+                        })
+                        return
+                    }
+                    this.selectedCompany = resp.data.company_id
+                    this.handleChangeCompany()
+                    this.formData.id = resp.data.id
+                    this.formData.title = resp.data.title
+                    this.formData.project_id = resp.data.project_id
+                    this.formData.description = resp.data.description
+                    this.formData.bank = resp.data.bank
+                    this.formData.inquiry_id = resp.data.account_number
+                    await this.getDataInquiry()
+                    resp.data.transaction_items.forEach((x) => {
+                        this.formData.items.push({
+                            type: "",
+                            title: x.title,
+                            amount: x.input_amount,
+                            note: x.note,
+                            attachment: x.attachment
+                        })
+                    })
+
+                } catch (e) {
+                    console.log("oke", e.message)
+                    this.$vs.loading.close()
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: e.message,
+                        showConfirmButton: false,
+                        timer: 2000
                     })
                 }
             },
             async getDataProject() {
                 try {
                     this.$vs.loading()
-                    this.projects.push({id: "", title: '--Choose Project--'})
-                    const projLocals = await this.$axios.get(`api/project?company_id=${this.paramCompany}`)
-                    projLocals.forEach((x) => {
-                        this.projects.push(x)
-                    })
+                    this.projects = await this.$axios.get(`api/project?company_id=${this.selectedCompany}`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2000
                     })
                 }
             },
@@ -583,11 +651,11 @@
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
-                        position: 'top-end',
+                        position: 'top',
                         icon: 'error',
                         title: e.message,
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 2000
                     })
                 }
             },

@@ -24,10 +24,10 @@
                             Login
                         </button>
                     </form>
-                    <hr>
-                    <div class="text-center">
-                        <a class="small" href="#">Forgot Password?</a>
-                    </div>
+                    <!--<hr>-->
+                    <!--<div class="text-center">-->
+                        <!--<a class="small" href="#">Forgot Password?</a>-->
+                    <!--</div>-->
                 </div>
             </div>
         </div>

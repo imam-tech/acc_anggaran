@@ -12,24 +12,24 @@
                     <div class="row">
                         <div class="col-lg-6 col-xl-3">
                             <div class="form-group">
-                                <label>Supplier<span style="
+                                <label>Vendor<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
                                 <div class="d-flex justify-content-between">
-                                    <v-select v-model="formData.supplier_id" :options="suppliers" :reduce="p => p.id" style="width: 100%" label="name" @input="handleChangeSupplier">
+                                    <v-select v-model="formData.contact_id" :options="suppliers" :reduce="p => p.id" style="width: 100%" label="name" @input="handleChangeVendor">
                                         <template #search="{attributes, events}">
                                             <input
                                                     class="vs__search"
-                                                    :required="!formData.supplier_id"
+                                                    :required="!formData.contact_id"
                                                     v-bind="attributes"
                                                     v-on="events"
                                             />
                                         </template>
-                                        <span slot="no-options">Supplier not found</span>
+                                        <span slot="no-options">Vendor not found</span>
                                     </v-select>
-                                    <button class="btn btn-warning ml-2" type="button" @click="handleShowAddModalSupplier()">
+                                    <button class="btn btn-warning ml-2" type="button" @click="handleShowAddModalVendor()">
                                         <i class="fas fa-plus-circle"></i>
                                     </button>
                                 </div>
@@ -38,7 +38,7 @@
                         <div class="col-lg-6 col-xl-3">
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="email" class="form-control" v-model="formData.supplier_email">
+                                <input type="email" class="form-control" v-model="formData.contact_email">
                             </div>
                         </div>
                     </div>
@@ -216,12 +216,12 @@
                     </div>
                 </form>
             </div>
-            <div class="modal fade" id="addNewSupplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal fade" id="addNewVendor" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
-                        <form @submit.prevent="handleSubmitAddNewSupplier">
+                        <form @submit.prevent="handleSubmitAddNewVendor">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Add New Supplier</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">Add New Vendor</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -235,37 +235,37 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                            <input type="text" class="form-control" v-model="formAddSupplier.name" required>
+                                            <input type="text" class="form-control" v-model="formAddVendor.name" required>
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label>Email</label>
-                                            <input type="text" class="form-control" v-model="formAddSupplier.email">
+                                            <input type="text" class="form-control" v-model="formAddVendor.email">
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label>Phone</label>
-                                            <input type="text" class="form-control" v-model="formAddSupplier.phone">
+                                            <input type="text" class="form-control" v-model="formAddVendor.phone">
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label>Identity Number</label>
-                                            <input type="text" class="form-control" v-model="formAddSupplier.identity_number">
+                                            <input type="text" class="form-control" v-model="formAddVendor.identity_number">
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label>NPWP Number</label>
-                                            <input type="text" class="form-control" v-model="formAddSupplier.npwp_number">
+                                            <input type="text" class="form-control" v-model="formAddVendor.npwp_number">
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label>Address</label>
-                                            <input type="text" class="form-control" v-model="formAddSupplier.address">
+                                            <input type="text" class="form-control" v-model="formAddVendor.address">
                                         </div>
                                     </div>
                                 </div>
@@ -294,8 +294,8 @@
             return {
                 formData: {
                     id: "",
-                    supplier_id: "",
-                    supplier_email: "",
+                    contact_id: "",
+                    contact_email: "",
                     billing_address: "",
                     transaction_date: (new Date()).toISOString().split('T')[0],
                     due_date: "",
@@ -308,7 +308,7 @@
                 subTotal: 0,
                 taxAmountTotal: 0,
                 grandTotal: 0,
-                formAddSupplier: {
+                formAddVendor: {
                     id: "",
                     name: "",
                     email: "",
@@ -333,9 +333,9 @@
                 this.fileImages = this.fileImages.filter((item, ind) => ind !== index)
             },
 
-            handleChangeSupplier(e) {
-                const selectSupplier = this.suppliers.find((x) => x.id === e)
-                this.formData.supplier_email = selectSupplier.email
+            handleChangeVendor(e) {
+                const selectVendor = this.suppliers.find((x) => x.id === e)
+                this.formData.contact_email = selectVendor.email
             },
 
             async handleGet() {
@@ -366,8 +366,8 @@
                         return
                     }
                     this.formData.id = purchaseLocal.data.id
-                    this.formData.supplier_id = purchaseLocal.data.supplier_id
-                    this.formData.supplier_email = purchaseLocal.data.supplier_email ?? null
+                    this.formData.contact_id = purchaseLocal.data.contact_id
+                    this.formData.contact_email = purchaseLocal.data.contact_email ?? null
                     this.formData.billing_address = purchaseLocal.data.billing_address ?? ''
                     this.formData.transaction_date = purchaseLocal.data.transaction_date
                     this.formData.due_date = purchaseLocal.data.due_date ?? ''
@@ -413,8 +413,8 @@
                 console.log("oke")
                 const formData = new FormData()
                 formData.append('id', this.formData.id)
-                formData.append('supplier_id', this.formData.supplier_id)
-                formData.append('supplier_email', this.formData.supplier_email ?? '')
+                formData.append('contact_id', this.formData.contact_id)
+                formData.append('contact_email', this.formData.contact_email ?? '')
                 formData.append('billing_address', this.formData.billing_address)
                 formData.append('products', JSON.stringify(this.formData.products))
                 formData.append('transaction_date', this.formData.transaction_date)
@@ -519,14 +519,14 @@
                 this.handleChange()
             },
 
-            handleShowAddModalSupplier() {
-                $("#addNewSupplier").modal('show')
+            handleShowAddModalVendor() {
+                $("#addNewVendor").modal('show')
             },
 
-            async handleSubmitAddNewSupplier() {
+            async handleSubmitAddNewVendor() {
                 try {
                     this.$vs.loading()
-                    const resp = await this.$axios.post(`api/purchase/supplier`, this.formAddSupplier)
+                    const resp = await this.$axios.post(`api/purchase/supplier`, this.formAddVendor)
                     this.$vs.loading.close()
                     if (!resp.status)  {
                         Swal.fire({
@@ -545,7 +545,7 @@
                             showConfirmButton: false,
                             timer: 2500
                         })
-                        $("#addNewSupplier").modal('hide')
+                        $("#addNewVendor").modal('hide')
                         this.getDataOther()
                     }
                 } catch (e) {
@@ -609,7 +609,7 @@
             async getDataOther() {
                 try {
                     this.$vs.loading()
-                    this.suppliers = await this.$axios.get(`api/purchase/supplier`)
+                    this.suppliers = await this.$axios.get(`api/contact?type=vendor`)
                     this.products = await this.$axios.get(`api/product?is_purchase=1`)
                     this.taxes = await this.$axios.get(`api/tax`)
                     this.$vs.loading.close()

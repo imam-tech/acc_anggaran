@@ -17,7 +17,7 @@
                     <div class="col-6 text-right">
                         <div class="d-flex flex-column">
                             <div>
-                                <router-link v-if="handleStatus(salesData).label !== 'Paid'" :to="'/app/purchase/payment/'+purchaseData.id+'/create/form'">
+                                <router-link v-if="handleStatus(purchaseData).label !== 'Paid'" :to="'/app/purchase/payment/'+purchaseData.id+'/create/form'">
                                     <button type="button" class="mr-3 mt-3 btn btn-primary">
                                         <i class="fa fa-dollar"></i> Receive Payment
                                     </button>
@@ -40,8 +40,8 @@
                         <table class="table table-striped">
                             <tbody>
                             <tr>
-                                <th>Supplier Name</th>
-                                <td class="text-right">{{purchaseData.supplier.name}}</td>
+                                <th>Vendor Name</th>
+                                <td class="text-right">{{purchaseData.contact.name}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -50,8 +50,8 @@
                         <table class="table table-striped">
                             <tbody>
                             <tr>
-                                <th>Supplier Email</th>
-                                <td class="text-right">{{purchaseData.supplier_email}}</td>
+                                <th>vendor Email</th>
+                                <td class="text-right">{{purchaseData.contact_email}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -211,10 +211,20 @@
                                     <router-link :to="'/app/purchase/payment/' + sp.id + '/detail'">Payment Receive #{{ sp.id }}</router-link></td>
                                 <td>{{ sp.coa.account_name }}</td>
                                 <td>{{ sp.payment_method ? sp.payment_method.name : '' }}</td>
-                                <td>Paid</td>
+                                <td>{{ sp.status ? 'Paid' : '-' }}</td>
                                 <td class="text-right">{{ sp.payment_amount | formatPrice }}</td>
                                 <td class="text-right">
-                                    <button v-if="handleStatus(salesData).label !== 'Paid'" type="button" @click="handleDelete(sp.id)" class="btn btn-danger">
+                                    <router-link :to="'/app/purchase/payment/' + sp.id + '/detail'">
+                                        <button type="button" class="btn btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </router-link>
+                                    <router-link v-if="!sp.status" :to="'/app/purchase/payment/'+sp.purchase_id+'/'+sp.id+'/form'">
+                                        <button type="button" class="btn btn-warning">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                    </router-link>
+                                    <button v-if="!sp.status" type="button" @click="handleDelete(sp.id)" class="btn btn-danger">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
@@ -387,7 +397,7 @@
                 }).then((result)=>{
                     if(result.isConfirmed == true){
                         this.$vs.loading()
-                        this.$axios.delete(`api/purchase/payment/${id}/${this.salesData.id}/delete`).then((response)=>{
+                        this.$axios.delete(`api/purchase/payment/${id}/${this.purchaseData.id}/delete`).then((response)=>{
                             this.$vs.loading.close()
                             if(response.status){
                                 Swal.fire({

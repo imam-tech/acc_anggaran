@@ -22,6 +22,7 @@ import purchaseRouter from './purchaseRouter';
 import productRouter from './productRouter';
 import budgetRouter from './budgetRouter';
 import manufactureRouter from './manufactureRouter';
+import contactRouter from './contactRouter';
 
 Vue.use(Router)
 
@@ -122,6 +123,11 @@ const router = new Router({
                     path: 'manufacture',
                     component: MenuLayout,
                     children: manufactureRouter
+                },
+                {
+                    path: 'contact',
+                    component: MenuLayout,
+                    children: contactRouter
                 },
             ]
         },

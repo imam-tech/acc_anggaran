@@ -9,12 +9,18 @@
                         <p class="ml-3 text-success">{{ transactionData.current_status.toUpperCase()  }}</p>
                     </div>
                     <div class="col-6 text-right">
+                        <router-link v-if="transactionData.current_status === 'requested'" :to="'/app/transaction/'+transactionData.id+'/form'"  type="button" class="btn btn-warning mt-3">
+                            <i class="fa fa-pencil"></i> Edit
+                        </router-link>
+                        <button v-if="transactionData.current_status === 'requested'" @click="handlePublish()" class="btn btn-primary mt-3">
+                            <i class="fa fa-check"></i> Publish
+                        </button>
+                        <button v-if="transactionData.current_status === 'requested'" @click="handleDelete()" class="btn btn-danger mt-3">
+                            <i class="fa fa-trash"></i> Delete
+                        </button>
                         <router-link to="/app/transaction" class="btn btn-success mt-3 mr-3">
                             <i class="fa fa-arrow-left"></i> Back
                         </router-link>
-                        <button v-if="transactionData.current_status === 'requested'" @click="handlePublish()" class="btn btn-primary mt-3 mr-3">
-                            <i class="fa fa-check"></i> Publish
-                        </button>
                         <p class="mr-3 mt-2">Transaction #{{ transactionData.transaction_number }}</p>
                     </div>
                 </div>
@@ -621,7 +627,7 @@
         data() {
             return {
                 status: {
-                    published: true,
+                    published: false,
                     coa: false,
                     tax:  false,
                     method: false,
@@ -1115,7 +1121,47 @@
                         timer: 2500
                     })
                 }
-            }
+            },
+
+            async handleDelete() {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are You Sure Want To Delete This Transaction?',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.delete(`api/transaction/${this.$route.params.id}/delete`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) this.$router.push('/app/transaction');
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Delete Transaction : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            },
         }
     }
 </script>

@@ -4,7 +4,7 @@
             <div class="card-title">
                 <div class="row">
                     <div class="col-6">
-                        <h1 class="h3 mt-3 ml-3 text-primary">Detail Manufacture Product</h1>
+                        <h1 class="h3 mt-3 ml-3 text-primary">Detail Finished Good</h1>
                     </div>
                     <div class="col-6 text-right">
                         <button :disabled="manufactureProduct.status !== 'DRAFT'" type="button" class="mr-3 mt-3 btn btn-primary" @click="handleApprove()">
@@ -49,8 +49,8 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <td class="text-center"><b>Semi Finished Material Name</b></td>
-                            <td class="text-center"><b>Semi Finished Material Price Total</b></td>
+                            <td class="text-center"><b>Semi Finished Goods Name</b></td>
+                            <td class="text-center"><b>Semi Finished Goods Price Total</b></td>
                             <td class="text-center"><b>Material Name</b></td>
                             <td class="text-center"><b>Material Dose</b></td>
                             <td></td>
@@ -91,7 +91,7 @@
             async handleApprove() {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Are You Sure Want To Approve this Manufacture Product?',
+                    title: 'Are You Sure Want To Approve this Finished Good?',
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     allowEnterKey: false,

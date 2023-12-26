@@ -3,10 +3,10 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <div class="mt-3 d-flex justify-content-between">
-                    <h1 class="h3 ml-3 text-gray-800 float-left">Manufacture Product</h1>
+                    <h1 class="h3 ml-3 text-gray-800 float-left">Finished Good</h1>
                     <router-link to="/app/manufacture/product/create/form">
                         <button type="button" class="btn btn-primary float-right mr-3">
-                            <i class="fa fa-plus-circle"></i> Create New Manufacture Product
+                            <i class="fa fa-plus-circle"></i> Create New Finished Good
                         </button>
                     </router-link>
                 </div>
@@ -68,14 +68,14 @@
                             <th class="text-center"><b>Name</b></th>
                             <th class="text-center"><b>Grand Total</b></th>
                             <th class="text-center"><b>Description</b></th>
-                            <th class="text-center"><b>Semi Finished Material</b></th>
+                            <th class="text-center"><b>Semi Finished Goods</b></th>
                             <th class="text-center">#</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr v-if="manufactureProducts.length == 0">
                             <td colspan="7" class="text-center">
-                                Manufacture Product Not Found
+                                Finished Good Not Found
                             </td>
                         </tr>
                         <tr v-else v-for="(p, pI) in manufactureProducts" :key="pI">

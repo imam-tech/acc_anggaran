@@ -16,30 +16,13 @@ class SalesController extends Controller {
         $this->salesRepo = new SalesRepository();
     }
 
-    public function storeCustomer(Request $request) {
-        return response()->json($this->salesRepo->storeCustomer($request, $request->header('company_id')));
-    }
-
-    public function indexCustomer(Request $request) {
-        $filters = $request->only([]);
-        $customers = Customer::with([]);
-
-        $customers = $customers->where('company_id', $request->header('company_id'));
-        $customers = $customers->orderByDesc('id')->get();
-        return response()->json($customers);
-    }
-
-    public function detailCustomer($id) {
-        return response()->json($this->salesRepo->detailCustomer($id));
-    }
-
     public function store(Request $request) {
         return response()->json($this->salesRepo->store($request, $request->header('company_id')));
     }
 
     public function index(Request $request) {
         $filters = $request->only(['status']);
-        $sales = Sales::with(['sales_products', 'sales_attachments', 'customer', 'sales_payments']);
+        $sales = Sales::with(['sales_products', 'sales_attachments', 'contact', 'sales_payments']);
 
         if (!empty($filters['status'])) {
             $dateNow = date("Y-m-d");
@@ -79,5 +62,9 @@ class SalesController extends Controller {
 
     public function summarizeCount(Request $request) {
         return response()->json($this->salesRepo->summarizeCount($request->header('company_id')));
+    }
+
+    public function approvePayment($id) {
+        return response()->json($this->salesRepo->approvePayment($id));
     }
 }

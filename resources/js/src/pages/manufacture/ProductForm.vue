@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-title">
-                <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Manufacture Product Form</h1>
+                <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Finished Goods Form</h1>
                 <router-link to="/app/manufacture/product" class="btn btn-success float-right mt-3 mr-3">
                     <i class="fa fa-arrow-left"></i> Back
                 </router-link>
@@ -34,7 +34,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                                <label>Semi Finished Material Name<span style="
+                                <label>Semi Finished Goods Name<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
@@ -55,7 +55,7 @@
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
-                                    <th>Semi Finished Material Name</th>
+                                    <th>Semi Finished Goods Name</th>
                                     <th>Items</th>
                                     <th></th>
                                 </tr>
@@ -171,8 +171,12 @@
                                 </table>
                             </div>
                             <div class="modal-footer flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                    <i class="fas fa-times"></i> Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -355,7 +359,6 @@
                 try {
                     this.$vs.loading()
                     const manufactureProductLocal = await this.$axios.get(`api/manufacture/product/${this.$route.params.type}/detail`)
-                    console.log("purchase loca", manufactureProductLocal)
                     this.$vs.loading.close()
                     if (!manufactureProductLocal.status) {
                         Swal.fire({
@@ -371,7 +374,7 @@
                         Swal.fire({
                             position: 'top',
                             icon: 'warning',
-                            title: "Manufacture Product can't be editable, the status  is not draft",
+                            title: "Finished Goods can't be editable, the status  is not draft",
                             showConfirmButton: false,
                             timer: 2500
                         }).then(()=>{

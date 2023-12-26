@@ -30,6 +30,10 @@ class TransactionController extends Controller {
         return response()->json($this->transactionRepo->detail($id));
     }
 
+    public function delete($id = null) {
+        return response()->json($this->transactionRepo->delete($id));
+    }
+
     public function index(Request $request) {
         $filters = $request->only(['company_id', 'status', 'transaction_number', 'all']);
         $transactions = Transaction::with(['project.company', 'userCreatedBy', 'transactionApprovalNulls.user']);

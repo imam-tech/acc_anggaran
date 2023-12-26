@@ -55,59 +55,36 @@
             </router-link>
         </li>
         <li class="nav-item">
-            <a class="nav-link" :class="handleShowMenu('sales').col" href="#" data-toggle="collapse" data-target="#collapseTwo"
+            <a class="nav-link" :class="handleShowMenu('sales-and-purchase').col" href="#" data-toggle="collapse" data-target="#collapseTwo"
                aria-expanded="true" aria-controls="collapseTwo">
                 <i class="fas fa-cart-plus"></i>
-                <span>Sales</span>
+                <span>Sales & Purchase</span>
             </a>
-            <div id="collapseTwo" class="collapse" :class="handleShowMenu('sales').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseTwo" class="collapse" :class="handleShowMenu('sales-and-purchase').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <router-link class="collapse-item" to="/app/sales">
                         <span>Sales Invoice</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/sales/create/form">
-                        <span>Create Sales Invoice</span>
-                    </router-link>
-                    <router-link class="collapse-item" to="/app/sales/customer">
-                        <span>Customer</span>
-                    </router-link>
-                </div>
-            </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" :class="handleShowMenu('purchase').col" href="#" data-toggle="collapse" data-target="#collapsePurchase"
-               aria-expanded="true" aria-controls="collapsePurchase">
-                <i class="fas fa-clipboard-list"></i>
-                <span>Purchase</span>
-            </a>
-            <div id="collapsePurchase" class="collapse" :class="handleShowMenu('purchase').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
                     <router-link class="collapse-item" to="/app/purchase">
                         <span>Purchase Bill</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/purchase/create/form">
-                        <span>Create Purchase Bill</span>
+                    <router-link class="collapse-item" to="/app/contact">
+                        <span>Contact</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/purchase/supplier">
-                        <span>Supplier</span>
+                    <router-link class="collapse-item" to="/app/product">
+                        <span>Product</span>
                     </router-link>
                 </div>
             </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link" :class="handleShowMenu('product').col" href="#" data-toggle="collapse" data-target="#collapseInventory"
+            <a class="nav-link" :class="handleShowMenu('other-list').col" href="#" data-toggle="collapse" data-target="#collapseInventory"
                aria-expanded="true" aria-controls="collapseInventory">
                 <i class="fas fa-box"></i>
-                <span>Product</span>
+                <span>Other List</span>
             </a>
-            <div id="collapseInventory" class="collapse" :class="handleShowMenu('product').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseInventory" class="collapse" :class="handleShowMenu('other-list').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <router-link class="collapse-item" to="/app/product">
-                        <span>List Product</span>
-                    </router-link>
-                    <router-link class="collapse-item" to="/app/product/create/form">
-                        <span>Create Product</span>
-                    </router-link>
                     <router-link class="collapse-item" to="/app/product/category">
                         <span>Category</span>
                     </router-link>
@@ -126,22 +103,16 @@
             <div id="collapseManufacture" class="collapse" :class="handleShowMenu('manufacture').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <router-link class="collapse-item" to="/app/manufacture/product">
-                        <span>Products</span>
+                        <span>Finished Goods</span>
                     </router-link>
                     <router-link class="collapse-item" to="/app/manufacture/semi-finished-material">
-                        <span>Semi Finished Material</span>
+                        <span>Semi Finished Goods</span>
                     </router-link>
                     <router-link class="collapse-item" to="/app/manufacture/material">
                         <span>Material</span>
                     </router-link>
                 </div>
             </div>
-        </li>
-        <li class="nav-item">
-            <router-link class="nav-link" :class="handleBgMenu('budget')" to="/app/budget">
-                <i class="fas fa-money-bill"></i>
-                <span>Budget</span>
-            </router-link>
         </li>
         <li class="nav-item">
             <a class="nav-link" :class="handleShowMenu('accounting').col" href="#" data-toggle="collapse" data-target="#collapseAccounting"
@@ -160,14 +131,14 @@
                     <router-link class="collapse-item" to="/app/tax">
                         <span>Tax</span>
                     </router-link>
+                    <router-link class="collapse-item" to="/app/budget">
+                        <span>Budget</span>
+                    </router-link>
+                    <router-link class="collapse-item" to="/app/report">
+                        <span>Report</span>
+                    </router-link>
                 </div>
             </div>
-        </li>
-        <li class="nav-item">
-            <router-link class="nav-link" :class="handleBgMenu('report')" to="/app/report">
-                <i class="fas fa-newspaper"></i>
-                <span>Report</span>
-            </router-link>
         </li>
 
         <!-- Divider -->
@@ -211,7 +182,6 @@
             },
             async getData() {
                 try {
-
                     this.$vs.loading()
                     this.companies = await this.$axios.get('api/company')
                     this.$vs.loading.close()
@@ -223,15 +193,27 @@
                             Cookies.set('current_company_title', this.companies[0].title, {expires: 1})
                         }
                     } else {
-                        Swal.fire({
-                            position: 'top',
-                            icon: 'error',
-                            title: 'Please create a company first to use this platform',
-                            showConfirmButton: false,
-                            timer: 3000
-                        }).then(async ()=>{
-                            this.$router.push('/app/company/')
-                        })
+                        if (this.$store.state.roles === 'administrator') {
+                            Swal.fire({
+                                position: 'top',
+                                icon: 'error',
+                                title: 'Please create a company first to use this platform',
+                                showConfirmButton: false,
+                                timer: 3000
+                            }).then(async () => {
+                                this.$router.push('/app/company?show_create=yes')
+                            })
+                        } else {
+                            Swal.fire({
+                                position: 'top',
+                                icon: 'error',
+                                title: "You don't have any company to use this platform, please tell your administrator.",
+                                showConfirmButton: false,
+                                timer: 3000
+                            }).then(async () => {
+                                this.$router.push('/app')
+                            })
+                        }
                     }
                 } catch (e) {
                     this.$vs.loading.close()

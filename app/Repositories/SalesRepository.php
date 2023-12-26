@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Coa;
+use App\Models\Contact;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sales;
@@ -18,53 +19,11 @@ use Illuminate\Support\Facades\DB;
 
 class SalesRepository {
 
-    public function storeCustomer($data, $companyId) {
-        try {
-            $validator = \Validator::make($data, [
-                "name" => 'required',
-            ]);
-
-            if ($validator->fails()) return resultFunction("Err code SR-SC: " . collect($validator->errors()->all())->implode(" , "));
-
-            $message = "Creating";
-            if ($data['id']) {
-                $customer = Customer::find($data['id']);
-                if (!$customer) return resultFunction("Err code SR-SC: customer not found for ID " . $data['id']);
-                $message = 'Updating';
-            } else {
-                $customer = new Customer();
-                $customer->company_id = $companyId;
-            }
-            $customer->name = $data['name'];
-            $customer->email = $data['email'];
-            $customer->phone = $data['phone'];
-            $customer->identity_number = $data['identity_number'];
-            $customer->npwp_number = $data['npwp_number'];
-            $customer->address = $data['address'];
-            $customer->save();
-
-            return resultFunction($message . " customer is successfully", true);
-        } catch (\Exception $e) {
-            return resultFunction("Err code SR-SC: catch " . $e->getMessage());
-        }
-    }
-
-    public function detailCustomer($id) {
-        try {
-            $customer = Customer::find($id);
-            if (!$customer) return resultFunction("Err code SR-DU: customer not found");
-
-            return resultFunction("", true, $customer);
-        } catch (\Exception $e) {
-            return resultFunction("Err code SR-DU: catch " . $e->getMessage());
-        }
-    }
-
     public function store($request, $companyId) {
         try {
             $data = $request->all();
             $validator = \Validator::make($data, [
-                "customer_id" => 'required',
+                "contact_id" => 'required',
                 "transaction_date" => 'required',
                 'due_date' => 'required',
                 "products" => 'required',
@@ -75,8 +34,8 @@ class SalesRepository {
 
             DB::beginTransaction();
 
-            $customer = Customer::find($data['customer_id']);
-            if (!$customer) return resultFunction("Err code SR-S: customer not found for ID " . $data['customer_id']);
+            $contact = Contact::find($data['contact_id']);
+            if (!$contact) return resultFunction("Err code SR-S: customer not found for ID " . $data['contact_id']);
 
             $message = "Creating";
             if ($data['id']) {
@@ -92,8 +51,8 @@ class SalesRepository {
                 $sales->transaction_number = '';
                 $sales->payment_amount_total = 0;
             }
-            $sales->customer_id = $customer->id;
-            $sales->customer_email = $data['customer_email'];
+            $sales->contact_id = $contact->id;
+            $sales->contact_email = $data['contact_email'];
             $sales->billing_address = $data['billing_address'];
             $sales->transaction_date = $data['transaction_date'];
             $sales->due_date = $data['due_date'];
@@ -112,7 +71,7 @@ class SalesRepository {
             $salesJournalData = [];
             $salesJournalData[] = [
                 'sales_id' => $sales->id,
-                'account_id' => 2388,  // sementara account payable
+                'account_id' => $contact->sale_account_id,
                 'debit' => 0,
                 'credit' => 0,
                 'created_at' => date("Y-m-d H:i:s"),
@@ -263,7 +222,7 @@ class SalesRepository {
 
     public function detail($id) {
         try {
-            $sales = Sales::with(['sales_products.product', 'sales_products.tax', 'sales_attachments', 'customer',
+            $sales = Sales::with(['sales_products.product', 'sales_products.tax', 'sales_attachments', 'contact',
             'sales_journals.coa', 'sales_payments.coa'])->find($id);
             if (!$sales) return resultFunction("Err code SR-D: sales not found");
 
@@ -301,6 +260,12 @@ class SalesRepository {
                 $salesPayment = new SalesPayment();
                 $salesPayment->sales_id = $data['sales_id'];
             }
+
+            $sales = Sales::find($salesPayment->sales_id);
+            if (!$sales) return resultFunction("Err code SR-SP: sales not found for ID " . $salesPayment->sales_id);
+
+            $contact = Contact::find($sales->contact_id);
+
             $salesPayment->deposit_to = $data['deposit_to'];
             $salesPayment->payment_method = $data['payment_method'];
             $salesPayment->payment_date = $data['payment_date'];
@@ -320,7 +285,7 @@ class SalesRepository {
             ];
             $salesPaymentJournals[] = [
                 'sales_payment_id' => $salesPayment->id,
-                'account_id' => 2388,  // sementara account payable
+                'account_id' => $contact->sale_account_id,
                 'debit' => 0,
                 'credit' => $data['payment_amount'],
                 'created_at' => date("Y-m-d H:i:s"),
@@ -369,8 +334,6 @@ class SalesRepository {
                 SalesPaymentAttachment::insert($salesAttachments);
             }
 
-            $this->adjustPaymentAmount($salesPayment->sales_id);
-
             DB::commit();
             return resultFunction($message . " sales payment is successfully", true, $salesPayment);
         } catch (\Exception $e) {
@@ -391,8 +354,23 @@ class SalesRepository {
 
     public function detailPayment($id) {
         try {
-            $salesPayment = SalesPayment::with(['sales.customer', 'coa', 'payment_method', 'sales_payment_attachments', 'sales_payment_journals.coa'])->find($id);
+            $salesPayment = SalesPayment::with(['sales.contact', 'coa', 'payment_method', 'sales_payment_attachments', 'sales_payment_journals.coa'])->find($id);
             if (!$salesPayment) return resultFunction("Err code SR-D: sales payment not found");
+
+            return resultFunction("", true, $salesPayment);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function approvePayment($id) {
+        try {
+            $salesPayment = SalesPayment::with([])->find($id);
+            if (!$salesPayment) return resultFunction("Err code SR-D: sales payment not found");
+
+            $salesPayment->status = 'approved';
+            $salesPayment->save();
+            $this->adjustPaymentAmount($salesPayment->sales_id);
 
             return resultFunction("", true, $salesPayment);
         } catch (\Exception $e) {
@@ -402,14 +380,13 @@ class SalesRepository {
 
     public function deletePayment($id, $salesId) {
         try {
-            $salesPayment = SalesPayment::with(['sales.customer', 'coa', 'payment_method', 'sales_payment_attachments', 'sales_payment_journals.coa'])->find($id);
+            $salesPayment = SalesPayment::with(['sales_payment_attachments', 'sales_payment_journals.coa'])->find($id);
             if (!$salesPayment) return resultFunction("Err code SR-D: sales payment not found");
 
             $salesPayment->delete();
             SalesPaymentJournal::where('sales_payment_id', $id)->delete();
             SalesPaymentAttachment::where('sales_payment_id', $id)->delete();
 
-            $this->adjustPaymentAmount($salesId);
             return resultFunction("Delete payment is successfully", true);
         } catch (\Exception $e) {
             return resultFunction("Err code SR-D: catch " . $e->getMessage());

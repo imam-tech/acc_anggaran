@@ -10,12 +10,14 @@ Route:: group(['prefix' => 'manufacture', 'middleware' => 'auth:sanctum'], funct
         Route::get('/', [ManufactureController::class, 'indexMaterial']);
         Route::post('/', [ManufactureController::class, 'storeMaterial']);
         Route::delete('/{id}/delete', [ManufactureController::class, 'deleteMaterial']);
+        Route::get('/{id}/archive', [ManufactureController::class, 'archiveMaterial']);
     });
 
     Route::group(['prefix' => 'semi-finished-material'], function () {
         Route::get('/', [ManufactureController::class, 'indexSemiFinishedMaterial']);
         Route::post('/', [ManufactureController::class, 'storeSemiFinishedMaterial']);
         Route::delete('/{id}/delete', [ManufactureController::class, 'deleteSemiFinishedMaterial']);
+        Route::get('/{id}/archive', [ManufactureController::class, 'archiveSemiFinishedMaterial']);
     });
 
     Route::group(['prefix' => 'product'], function () {

@@ -12,16 +12,16 @@
                     <div class="row">
                         <div class="col-lg-6 col-xl-3">
                             <div class="form-group">
-                                <label>Supplier<span style="
+                                <label>Vendor<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <v-select :disabled="true" v-model="purchaseData.supplier_id" :options="suppliers" :reduce="p => p.id" style="width: 100%" label="name">
+                                <v-select :disabled="true" v-model="purchaseData.contact_id" :options="suppliers" :reduce="p => p.id" style="width: 100%" label="name">
                                     <template #search="{attributes, events}">
                                         <input
                                                 class="vs__search"
-                                                :required="!purchaseData.supplier_id"
+                                                :required="!purchaseData.contact_id"
                                                 v-bind="attributes"
                                                 v-on="events"
                                         />
@@ -213,7 +213,7 @@
             return {
                 purchaseData: {
                     id: "",
-                    supplier_id: "",
+                    contact_id: "",
                     due_date: "",
                     transaction_number: '',
                     description: '',
@@ -222,7 +222,7 @@
                 },
                 formData: {
                     id: "",
-                    supplier_id: "",
+                    contact_id: "",
                     pay_from: "",
                     payment_method: "",
                     payment_date: (new Date()).toISOString().split('T')[0],
@@ -266,7 +266,7 @@
             async getDataOther() {
                 try {
                     this.$vs.loading()
-                    this.suppliers = await this.$axios.get(`api/purchase/supplier`)
+                    this.suppliers = await this.$axios.get(`api/contact?type=vendor`)
                     this.payFroms = await this.$axios.get(`api/coa?is_active=1&coa_name=KAS`)
                     const bankDeposits = await this.$axios.get(`api/coa?is_active=1&coa_name=BANK`)
                     bankDeposits.forEach((x) => this.payFroms.push(x))
@@ -343,7 +343,7 @@
                     this.purchaseData.id = purchaseLocal.data.id
                     this.purchaseData.transaction_number = purchaseLocal.data.transaction_number
                     this.purchaseData.description = purchaseLocal.data.description
-                    this.purchaseData.supplier_id = purchaseLocal.data.supplier_id
+                    this.purchaseData.contact_id = purchaseLocal.data.contact_id
                     this.purchaseData.due_date = purchaseLocal.data.due_date
                     this.purchaseData.total = purchaseLocal.data.grand_total
                     this.purchaseData.balance_due = this.handleShowBalanceDue(purchaseLocal.data)
@@ -367,10 +367,23 @@
                     const paymentLocal = await this.$axios.get(`api/purchase/payment/${this.$route.params.type}/detail`)
                     this.$vs.loading.close()
                     if (paymentLocal.status) {
+                        if (paymentLocal.data.status) {
+                            Swal.fire({
+                                position: 'top',
+                                icon: 'error',
+                                title: 'The payment is not editable because the status is approved',
+                                showConfirmButton: false,
+                                timer: 3000
+                            }).then(async ()=>{
+                                this.$router.push('/app/purchase/'+this.$route.params.id+'/detail')
+                            })
+                            return
+                        }
+
                         this.formData.id = paymentLocal.data.id
                         this.formData.pay_from = paymentLocal.data.pay_from
-                        this.formData.payment_method = paymentLocal.data.payment_method ?? ''
-                        this.formData.supplier_id = paymentLocal.data.purchase.supplier_id
+                        this.formData.payment_method = paymentLocal.data.payment_method ? paymentLocal.data.payment_method.id :  ''
+                        this.formData.contact_id = paymentLocal.data.purchase.contact_id
                         this.formData.payment_date = paymentLocal.data.payment_date
                         this.formData.due_date = paymentLocal.data.due_date ?? ''
                         this.formData.payment_amount = paymentLocal.data.payment_amount

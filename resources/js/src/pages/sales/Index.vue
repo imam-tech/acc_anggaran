@@ -108,7 +108,7 @@
                             <td>
                                 <router-link :to="'sales/' + s.id + '/detail'">{{ s.transaction_number }}</router-link>
                             </td>
-                            <td>{{ s.customer.name }}</td>
+                            <td>{{ s.contact.name }}</td>
                             <td>{{ s.due_date }}</td>
                             <td><span :class="handleStatus(s).class">{{ handleStatus(s).label }}</span></td>
                             <td class="text-right">{{ handleShowBalanceDue(s) | formatPrice }}</td>

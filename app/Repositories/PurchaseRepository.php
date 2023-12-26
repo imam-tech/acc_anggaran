@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Coa;
+use App\Models\Contact;
 use App\Models\Material;
 use App\Models\MaterialHistory;
 use App\Models\Product;
@@ -20,53 +21,11 @@ use Illuminate\Support\Facades\DB;
 
 class PurchaseRepository {
 
-    public function storeSupplier($data, $companyId) {
-        try {
-            $validator = \Validator::make($data, [
-                "name" => 'required',
-            ]);
-
-            if ($validator->fails()) return resultFunction("Err code SR-SC: " . collect($validator->errors()->all())->implode(" , "));
-
-            $message = "Creating";
-            if ($data['id']) {
-                $productUnit = Supplier::find($data['id']);
-                if (!$productUnit) return resultFunction("Err code SR-SC: supplier not found for ID " . $data['id']);
-                $message = 'Updating';
-            } else {
-                $productUnit = new Supplier();
-                $productUnit->company_id = $companyId;
-            }
-            $productUnit->name = $data['name'];
-            $productUnit->email = $data['email'];
-            $productUnit->phone = $data['phone'];
-            $productUnit->identity_number = $data['identity_number'];
-            $productUnit->npwp_number = $data['npwp_number'];
-            $productUnit->address = $data['address'];
-            $productUnit->save();
-
-            return resultFunction($message . " supplier is successfully", true);
-        } catch (\Exception $e) {
-            return resultFunction("Err code SR-SC: catch " . $e->getMessage());
-        }
-    }
-
-    public function detailSupplier($id) {
-        try {
-            $supplier = Supplier::find($id);
-            if (!$supplier) return resultFunction("Err code SR-DU: supplier not found");
-
-            return resultFunction("", true, $supplier);
-        } catch (\Exception $e) {
-            return resultFunction("Err code SR-DU: catch " . $e->getMessage());
-        }
-    }
-
     public function store($request, $companyId) {
         try {
             $data = $request->all();
             $validator = \Validator::make($data, [
-                "supplier_id" => 'required',
+                "contact_id" => 'required',
                 "transaction_date" => 'required',
                 'due_date' => 'required',
                 "products" => 'required',
@@ -76,8 +35,8 @@ class PurchaseRepository {
 
             DB::beginTransaction();
 
-            $supplier = Supplier::find($data['supplier_id']);
-            if (!$supplier) return resultFunction("Err code SR-S: supplier not found for ID " . $data['supplier_id']);
+            $contact = Contact::find($data['contact_id']);
+            if (!$contact) return resultFunction("Err code SR-S: supplier not found for ID " . $data['contact_id']);
 
             $message = "Creating";
             if ($data['id']) {
@@ -93,8 +52,8 @@ class PurchaseRepository {
                 $purchase->transaction_number = '';
                 $purchase->payment_amount_total = 0;
             }
-            $purchase->supplier_id = $supplier->id;
-            $purchase->supplier_email = $data['supplier_email'];
+            $purchase->contact_id = $contact->id;
+            $purchase->contact_email = $data['contact_email'];
             $purchase->billing_address = $data['billing_address'];
             $purchase->transaction_date = $data['transaction_date'];
             $purchase->due_date = $data['due_date'];
@@ -113,7 +72,7 @@ class PurchaseRepository {
             $purchaseJournalData = [];
             $purchaseJournalData[] = [
                 'purchase_id' => $purchase->id,
-                'account_id' => 2388,  // sementara account payable
+                'account_id' => $contact->purchase_account_id,
                 'debit' => 0,
                 'credit' => 0,
                 'created_at' => date("Y-m-d H:i:s"),
@@ -254,7 +213,7 @@ class PurchaseRepository {
 
     public function detail($id) {
         try {
-            $purchase = Purchase::with(['purchase_products.product', 'purchase_products.tax', 'purchase_attachments', 'supplier',
+            $purchase = Purchase::with(['purchase_products.product', 'purchase_products.tax', 'purchase_attachments', 'contact',
                 'purchase_journals.coa', 'purchase_payments.coa'])->find($id);
             if (!$purchase) return resultFunction("Err code SR-D: purchase not found");
 
@@ -292,6 +251,12 @@ class PurchaseRepository {
                 $purchasePayment = new PurchasePayment();
                 $purchasePayment->purchase_id = $data['purchase_id'];
             }
+
+            $purchase = Purchase::find($purchasePayment->purchase_id);
+            if (!$purchase) return resultFunction("Err code SR-SP: purchase not found for ID " . $purchasePayment->purchase_id);
+
+            $contact = Contact::find($purchase->contact_id);
+
             $purchasePayment->pay_from = $data['pay_from'];
             $purchasePayment->payment_method = $data['payment_method'];
             $purchasePayment->payment_date = $data['payment_date'];
@@ -303,7 +268,7 @@ class PurchaseRepository {
             $purchasePaymentJournals = [];
             $purchasePaymentJournals[] = [
                 'purchase_payment_id' => $purchasePayment->id,
-                'account_id' => 2388,  // sementara account payable
+                'account_id' => $contact->purchase_account_id,
                 'debit' => $data['payment_amount'],
                 'credit' => 0,
                 'created_at' => date("Y-m-d H:i:s"),
@@ -360,8 +325,6 @@ class PurchaseRepository {
                 PurchasePaymentAttachment::insert($purchaseAttachments);
             }
 
-            $this->adjustPaymentAmount($purchasePayment->purchase_id);
-
             DB::commit();
             return resultFunction($message . " purchase payment is successfully", true, $purchasePayment);
         } catch (\Exception $e) {
@@ -372,6 +335,7 @@ class PurchaseRepository {
     public function adjustPaymentAmount($purchaseId) {
         $paymentAmount = PurchasePayment::with([])
             ->where('purchase_id', $purchaseId)
+            ->whereNotNull('status')
             ->sum('payment_amount');
 
         $purchase = Purchase::find($purchaseId);
@@ -382,8 +346,23 @@ class PurchaseRepository {
 
     public function detailPayment($id) {
         try {
-            $purchasePayment = PurchasePayment::with(['purchase.supplier', 'coa', 'payment_method', 'purchase_payment_attachments', 'purchase_payment_journals.coa'])->find($id);
+            $purchasePayment = PurchasePayment::with(['purchase.contact', 'coa', 'payment_method', 'purchase_payment_attachments', 'purchase_payment_journals.coa'])->find($id);
             if (!$purchasePayment) return resultFunction("Err code SR-D: purchase payment not found");
+
+            return resultFunction("", true, $purchasePayment);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function approvePayment($id) {
+        try {
+            $purchasePayment = PurchasePayment::with([])->find($id);
+            if (!$purchasePayment) return resultFunction("Err code SR-D: purchase payment not found");
+
+            $purchasePayment->status = 'approved';
+            $purchasePayment->save();
+            $this->adjustPaymentAmount($purchasePayment->purchase_id);
 
             return resultFunction("", true, $purchasePayment);
         } catch (\Exception $e) {
@@ -393,14 +372,13 @@ class PurchaseRepository {
 
     public function deletePayment($id, $purchaseId) {
         try {
-            $purchasePayment = PurchasePayment::with(['purchase.supplier', 'coa', 'payment_method', 'purchase_payment_attachments', 'purchase_payment_journals.coa'])->find($id);
+            $purchasePayment = PurchasePayment::with(['purchase_payment_attachments', 'purchase_payment_journals'])->find($id);
             if (!$purchasePayment) return resultFunction("Err code SR-D: purchase payment not found");
 
             $purchasePayment->delete();
             PurchasePaymentJournal::where('purchase_payment_id', $id)->delete();
             PurchasePaymentAttachment::where('purchase_payment_id', $id)->delete();
 
-            $this->adjustPaymentAmount($purchaseId);
             return resultFunction("Delete payment is successfully", true);
         } catch (\Exception $e) {
             return resultFunction("Err code SR-D: catch " . $e->getMessage());

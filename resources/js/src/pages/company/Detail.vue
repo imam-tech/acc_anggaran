@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid">
+    <div v-if="companyData" class="container-fluid">
         <div class="card">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Company Detail</h1>
@@ -9,10 +9,10 @@
                 <button v-if="$store.state.permissions.includes('company_set_admin')" type="button" class="btn btn-primary  float-right mt-3 mr-3" @click="changeAdminApproval()">
                     <i class="fa fa-reply-all"></i> Change Admin Approval
                 </button>
-                <router-link :to="'/app/company/'+$route.params.id+'/admin'" v-if="$store.state.permissions.includes('transaction_push_plugin')" type="button" class="btn btn-success  float-right mt-3 mr-3" @click="changeAdminApproval()">
+                <router-link :to="'/app/company/'+$route.params.id+'/admin'" v-if="$store.state.permissions.includes('transaction_push_plugin')" type="button" class="btn btn-success  float-right mt-3 mr-3">
                     <i class="fa fa-eye"></i> View Transaction
                 </router-link>
-                <router-link :to="'/app/transaction/'+$route.params.id+'/form'" type="button" class="btn btn-warning  float-right mt-3 mr-3">
+                <router-link :to="`/app/transaction/create/form?companyId=${$route.params.id}`" type="button" class="btn btn-warning  float-right mt-3 mr-3">
                     <i class="fa fa-plus-circle"></i> Add Transaction
                 </router-link>
             </div>
@@ -176,7 +176,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Change Admin Approval</h5>
+                                <h5 class="modal-title" >Change Admin Approval</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -194,7 +194,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>Finance Staf<span style="
+                                        <label>Finance Staff<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
@@ -240,7 +240,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Add Setting</h5>
+                                <h5 class="modal-title">Add Setting</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -281,7 +281,7 @@
         name:'Detail',
         data() {
             return {
-                companyData: {},
+                companyData: "",
                 formData: {
                     id: "",
                     company_id: this.$route.params.id,

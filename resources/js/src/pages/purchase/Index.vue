@@ -89,7 +89,7 @@
                         <tr>
                             <th class="text-center"><b>Transaction Date</b></th>
                             <th class="text-center"><b>Transaction Number</b></th>
-                            <th class="text-center"><b>Customer</b></th>
+                            <th class="text-center"><b>Vendor</b></th>
                             <th class="text-center"><b>Due Date</b></th>
                             <th class="text-center"><b>Status</b></th>
                             <th class="text-center"><b>Balance Due</b></th>
@@ -110,7 +110,7 @@
                                     {{ s.transaction_number }}
                                 </router-link>
                             </td>
-                            <td>{{ s.supplier.name }}</td>
+                            <td>{{ s.contact.name }}</td>
                             <td>{{ s.due_date }}</td>
                             <td><span :class="handleStatus(s).class">{{ handleStatus(s).label }}</span></td>
                             <td class="text-right">{{ handleShowBalanceDue(s) | formatPrice }}</td>
