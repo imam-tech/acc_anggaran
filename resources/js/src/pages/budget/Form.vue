@@ -133,7 +133,7 @@
                     description: ""
                 },
                 selectedProduct: "",
-                currentCompany: Cookies.get('current_company_title'),
+                currentCompany: Cookies.get('current_company_title_fat'),
                 months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                 coaList: [],
                 dataReports: [],

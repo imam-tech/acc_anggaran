@@ -108,7 +108,7 @@
             return {
                 formData: {
                     id: "",
-                    company_id: Cookies.get('current_company'),
+                    company_id: Cookies.get('current_company_fat'),
                     project_id: "",
                     transaction_no: "",
                     transaction_date: "",

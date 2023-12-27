@@ -17,10 +17,10 @@ const _axios = axios.create(config)
 
 _axios.interceptors.request.use(
   function (config) {
-    const accessToken = Cookies.get('access_token')
+    const accessToken = Cookies.get('access_token_fat')
     if(accessToken){
       config.headers['Authorization'] = `Bearer ${ accessToken }`;
-      config.headers['Company-Id'] = Cookies.get('current_company');
+      config.headers['Company-Id'] = Cookies.get('current_company_fat');
     }
 
     return config
@@ -44,7 +44,7 @@ _axios.interceptors.response.use(
       // return window.location.href = '/error/error-404'
     }
     else if(error.response.status===401){
-      Cookies.remove('access_token')
+      Cookies.remove('access_token_fat')
 
       return window.location.href = '/auth/login'
     }

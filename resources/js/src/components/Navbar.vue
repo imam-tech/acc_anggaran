@@ -162,7 +162,7 @@
         data() {
             return {
                 companies: [],
-                currentCompany: Cookies.get('current_company')
+                currentCompany: Cookies.get('current_company_fat')
             }
         },
         created() {
@@ -179,8 +179,8 @@
 
             changeCompany(e) {
                 const comp = this.companies.find((x) => x.id == e.target.value)
-                Cookies.set('current_company', comp.id, { expires: 1 })
-                Cookies.set('current_company_title', comp.title, { expires: 1 })
+                Cookies.set('current_company_fat', comp.id, { expires: 1 })
+                Cookies.set('current_company_title_fat', comp.title, { expires: 1 })
                 window.location.reload();
             },
             async getData() {
@@ -189,11 +189,11 @@
                     this.companies = await this.$axios.get('api/company')
                     this.$vs.loading.close()
                     if (this.companies.length > 0) {
-                        if (!Cookies.get("current_company")) {
-                            Cookies.set('current_company', this.companies[0].id, {expires: 1})
+                        if (!Cookies.get("current_company_fat")) {
+                            Cookies.set('current_company_fat', this.companies[0].id, {expires: 1})
                         }
-                        if (!Cookies.get("current_company_title")) {
-                            Cookies.set('current_company_title', this.companies[0].title, {expires: 1})
+                        if (!Cookies.get("current_company_title_fat")) {
+                            Cookies.set('current_company_title_fat', this.companies[0].title, {expires: 1})
                         }
                     } else {
                         if (this.$store.state.roles === 'administrator') {

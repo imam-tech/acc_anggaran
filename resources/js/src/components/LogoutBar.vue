@@ -25,7 +25,9 @@
                 let hasLogin = confirm('Are you sure you want to logout?')
                 if( hasLogin) {
                     await this.$axios.get(`api/auth/logout`)
-                    Cookies.remove('access_token', {path: ''})
+                    Cookies.remove('access_token_fat', {path: ''})
+                    Cookies.remove('current_company_fat', {path: ''})
+                    Cookies.remove('current_company_title_fat', {path: ''})
                     this.$router.push('/auth/login');
                 }
             }

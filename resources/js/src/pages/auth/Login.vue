@@ -72,7 +72,7 @@
                                 'sign_at': responseLogin.data.sign_at
                             })
                             this.$store.commit('SET_IS_LOGIN', true)
-                            Cookies.set('access_token', responseLogin.data.token, { expires: 1 })
+                            Cookies.set('access_token_fat', responseLogin.data.token, { expires: 1 })
                             this.$router.push('/app');
                         })
                     } else {

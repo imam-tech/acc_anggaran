@@ -90,7 +90,7 @@
                 coaList: [],
                 dataReports: [],
                 lastMonth: 0,
-                currentCompany: Cookies.get('current_company'),
+                currentCompany: Cookies.get('current_company_fat'),
                 selectedYear: new Date().getFullYear()
             }
         },
