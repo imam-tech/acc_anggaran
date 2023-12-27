@@ -16,7 +16,6 @@ class CreateSemiFinishedMaterialsTable extends Migration
         Schema::create('semi_finished_materials', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->decimal('', 20, 0);
             $table->decimal('price_total', 20, 0)->nullable();
             $table->tinyInteger('is_archive')->default(0);
             $table->timestamps();
