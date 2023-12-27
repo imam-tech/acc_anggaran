@@ -49,8 +49,10 @@ class CoaController extends Controller {
 
         if (!empty($filters['coa_name'])) {
             $company = Company::find($request->header('company_id'));
-            $coaCategory = CoaCategory::where('flag', $company->type)->where('name', $filters['coa_name'])->first();
-            $coas = $coas->where('category_id', $coaCategory->id);
+            if ($company) {
+                $coaCategory = CoaCategory::where('flag', $company->type)->where('name', $filters['coa_name'])->first();
+                $coas = $coas->where('category_id', $coaCategory->id);
+            }
         }
 
         $coas = $coas->where('company_id', $request->header('company_id'));
