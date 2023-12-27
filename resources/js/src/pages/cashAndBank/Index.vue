@@ -10,7 +10,7 @@
                     </div>
                     <router-link to="/app/cash-and-bank/create/form">
                         <button type="button" class="btn btn-primary float-right mr-3 mt-3">
-                            <i class="fa fa-plus-circle"></i> Create New Account
+                            <i class="fas fa-plus-circle"></i> Create New Account
                         </button>
                     </router-link>
                 </div>
@@ -50,7 +50,9 @@
                                 <span><b>111100</b></span>
                             </td>
                             <td>
-                                <span><b>Cash</b></span>
+                                <span>
+                                    <router-link :to="'/app/coa/category/' + cashId + '/detail'"><b>Cash</b></router-link>
+                                </span>
                             </td>
                             <td class="text-right"></td>
                             <td class="text-right"></td>
@@ -61,7 +63,9 @@
                                 <span class="ml-5">{{ ca.account_number }}</span>
                             </td>
                             <td>
-                                <span class="ml-5">{{ ca.account_name }}</span>
+                                <span class="ml-5">
+                                    <router-link :to="'/app/coa/' + ca.id + '/detail'">{{ ca.account_name }}</router-link>
+                                </span>
                             </td>
                             <td class="text-right">
                                 <span>{{ ca.statement_balance }}</span>
@@ -82,7 +86,9 @@
                                 <span><b>111200</b></span>
                             </td>
                             <td>
-                                <span><b>Bank</b></span>
+                                <span>
+                                    <router-link :to="'/app/coa/category/' + bankId + '/detail'"><b>Bank</b></router-link>
+                                </span>
                             </td>
                             <td class="text-right"></td>
                             <td class="text-right"></td>
@@ -93,7 +99,9 @@
                                 <span class="ml-5">{{ ca.account_number }}</span>
                             </td>
                             <td>
-                                <span class="ml-5">{{ ca.account_name }}</span>
+                                <span class="ml-5">
+                                    <router-link :to="'/app/coa/' + ca.id + '/detail'">{{ ca.account_name }}</router-link>
+                                </span>
                             </td>
                             <td class="text-right">
                                 <span>{{ ca.statement_balance }}</span>
@@ -114,7 +122,9 @@
                                 <span><b>211500</b></span>
                             </td>
                             <td>
-                                <span><b>Credit Card</b></span>
+                                <span>
+                                    <router-link :to="'/app/coa/category/' + creditCardId + '/detail'"><b>Credit Card</b></router-link>
+                                </span>
                             </td>
                             <td class="text-right"></td>
                             <td class="text-right"></td>
@@ -125,7 +135,9 @@
                                 <span class="ml-5">{{ ca.account_number }}</span>
                             </td>
                             <td>
-                                <span class="ml-5">{{ ca.account_name }}</span>
+                                <span class="ml-5">
+                                    <router-link :to="'/app/coa/' + ca.id + '/detail'">{{ ca.account_name }}</router-link>
+                                </span>
                             </td>
                             <td class="text-right">
                                 <span>{{ ca.statement_balance }}</span>
@@ -172,6 +184,9 @@
                     sum: 10000
                 }],
                 cashAndBanks: [],
+                cashId: '',
+                bankId: '',
+                creditCardId: ''
 
             }
         },
@@ -183,6 +198,9 @@
                 try {
                     this.$vs.loading()
                     this.cashAndBanks = await this.$axios.get(`api/cash-and-bank`)
+                    this.cashId = this.cashAndBanks.cash_id
+                    this.bankId = this.cashAndBanks.bank_id
+                    this.creditCardId = this.cashAndBanks.credit_card_id
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()

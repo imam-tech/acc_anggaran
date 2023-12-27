@@ -78,4 +78,6 @@ DB Seeder
 
 Note:
 - cash & bank diambil dari nama ketagori coa Kas, Bank dan Hutang Bank & Lembaga Keuangan
--  
+- default coa untuk contact, sale_account_id (account receivable) => 1.1.03 Account Receivable
+- default coa untuk contact, purchase_account_id (account payable) => 2.0.00 Account Payable
+- default coa untuk discount/komisi => 1.1.03 Account Receivable => 511100 Commission  

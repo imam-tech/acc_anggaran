@@ -21,4 +21,12 @@ class Tax extends Model
     public function buy_coa() {
         return $this->hasOne(Coa::class, 'id', 'buy_account_id');
     }
+
+    public function sale_product() {
+        return $this->hasOne(SalesProduct::class, 'tax_id', 'id');
+    }
+
+    public function purchase_product() {
+        return $this->hasOne(PurchaseProduct::class, 'tax_id', 'id');
+    }
 }

@@ -50,6 +50,10 @@ class PurchaseController extends Controller {
         return response()->json($this->purchaseRepo->detail($id));
     }
 
+    public function delete($id) {
+        return response()->json($this->purchaseRepo->delete($id));
+    }
+
     public function storePayment(Request $request) {
         return response()->json($this->purchaseRepo->storePayment($request));
     }

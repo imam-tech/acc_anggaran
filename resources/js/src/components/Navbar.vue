@@ -78,23 +78,6 @@
             </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link" :class="handleShowMenu('other-list').col" href="#" data-toggle="collapse" data-target="#collapseInventory"
-               aria-expanded="true" aria-controls="collapseInventory">
-                <i class="fas fa-box"></i>
-                <span>Other List</span>
-            </a>
-            <div id="collapseInventory" class="collapse" :class="handleShowMenu('other-list').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <router-link class="collapse-item" to="/app/product/category">
-                        <span>Category</span>
-                    </router-link>
-                    <router-link class="collapse-item" to="/app/product/unit">
-                        <span>Unit</span>
-                    </router-link>
-                </div>
-            </div>
-        </li>
-        <li class="nav-item">
             <a class="nav-link" :class="handleShowMenu('manufacture').col" href="#" data-toggle="collapse" data-target="#collapseManufacture"
                aria-expanded="true" aria-controls="collapseManufacture">
                 <i class="fas fa-tractor"></i>
@@ -110,6 +93,26 @@
                     </router-link>
                     <router-link class="collapse-item" to="/app/manufacture/material">
                         <span>Material</span>
+                    </router-link>
+                </div>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" :class="handleShowMenu('other-list').col" href="#" data-toggle="collapse" data-target="#collapseInventory"
+               aria-expanded="true" aria-controls="collapseInventory">
+                <i class="fas fa-box"></i>
+                <span>Other List</span>
+            </a>
+            <div id="collapseInventory" class="collapse" :class="handleShowMenu('other-list').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <router-link class="collapse-item" to="/app/product/category">
+                        <span>Category</span>
+                    </router-link>
+                    <router-link class="collapse-item" to="/app/product/unit">
+                        <span>Unit</span>
+                    </router-link>
+                    <router-link class="collapse-item" to="/app/setting/payment-method">
+                        <span>Payment Method</span>
                     </router-link>
                 </div>
             </div>

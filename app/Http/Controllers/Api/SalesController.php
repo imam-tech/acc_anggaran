@@ -67,4 +67,8 @@ class SalesController extends Controller {
     public function approvePayment($id) {
         return response()->json($this->salesRepo->approvePayment($id));
     }
+
+    public function delete($id) {
+        return response()->json($this->salesRepo->delete($id));
+    }
 }

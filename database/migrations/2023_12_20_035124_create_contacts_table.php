@@ -24,6 +24,7 @@ class CreateContactsTable extends Migration
             $table->string('identity_number')->nullable();
             $table->string('npwp_number')->nullable();
             $table->string('address')->nullable();
+            $table->tinyInteger('is_archive')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

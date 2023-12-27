@@ -291,7 +291,7 @@ class ManufactureRepository {
         try {
             $material = Material::with([])->find($id);
             if (!$material) return resultFunction("Err code SR-D: material not found");
-            $material->is_archive = !$material->archive;
+            $material->is_archive = !$material->is_archive;
             $material->save();
 
             return resultFunction("", true);
@@ -303,7 +303,7 @@ class ManufactureRepository {
     public function archiveSemiFinishedMaterial($id) {
         try {
             $semiFinishedMaterial = SemiFinishedMaterial::with([])->find($id);
-            $semiFinishedMaterial->is_archive = !$semiFinishedMaterial->archive;
+            $semiFinishedMaterial->is_archive = !$semiFinishedMaterial->is_archive;
             $semiFinishedMaterial->save();
 
             return resultFunction("", true);

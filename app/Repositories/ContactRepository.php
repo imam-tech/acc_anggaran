@@ -52,4 +52,17 @@ class ContactRepository {
             return resultFunction("Err code CR-D: catch " . $e->getMessage());
         }
     }
+
+    public function archive($id) {
+        try {
+            $contact = Contact::find($id);
+            if (!$contact) return resultFunction("Err code CR-D: contact not found");
+
+            $contact->is_archive = !$contact->is_archive;
+            $contact->save();
+            return resultFunction("", true, $contact);
+        } catch (\Exception $e) {
+            return resultFunction("Err code CR-D: catch " . $e->getMessage());
+        }
+    }
 }

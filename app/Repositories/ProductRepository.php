@@ -50,6 +50,20 @@ class ProductRepository {
         }
     }
 
+    public function archiveUnit($id) {
+        try {
+            $productUnit = ProductUnit::find($id);
+            if (!$productUnit) return resultFunction("Err code PR-DU: unit not found");
+
+            $productUnit->is_archive = !$productUnit->is_archive;
+            $productUnit->save();
+
+            return resultFunction("", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code PR-DU: catch " . $e->getMessage());
+        }
+    }
+
     public function storeCategory($request, $companyId) {
         try {
             $validator = \Validator::make($request->all(), [
@@ -97,6 +111,20 @@ class ProductRepository {
             $productCategory->delete();
 
             return resultFunction("Deleting product category successfully", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code PR-DU: catch " . $e->getMessage());
+        }
+    }
+
+    public function archiveCategory($id) {
+        try {
+            $productCategory = ProductCategory::find($id);
+            if (!$productCategory) return resultFunction("Err code PR-DU: product category not found");
+
+            $productCategory->is_archive = !$productCategory->is_archive;
+            $productCategory->save();
+
+            return resultFunction("", true);
         } catch (\Exception $e) {
             return resultFunction("Err code PR-DU: catch " . $e->getMessage());
         }
@@ -176,6 +204,19 @@ class ProductRepository {
 
             if ($product->company_id != $companyId) return resultFunction("Err code PR-DU: product not found");
 
+            return resultFunction("", true, $product);
+        } catch (\Exception $e) {
+            return resultFunction("Err code PR-DU: catch " . $e->getMessage());
+        }
+    }
+
+    public function archive($id) {
+        try {
+            $product = Product::with([])->find($id);
+            if (!$product) return resultFunction("Err code PR-DU: product not found");
+
+            $product->is_archive = !$product->is_archive;
+            $product->save();
             return resultFunction("", true, $product);
         } catch (\Exception $e) {
             return resultFunction("Err code PR-DU: catch " . $e->getMessage());

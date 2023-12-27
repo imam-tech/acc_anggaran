@@ -10,16 +10,16 @@
                     </div>
                     <div class="col-6 text-right">
                         <router-link v-if="transactionData.current_status === 'requested'" :to="'/app/transaction/'+transactionData.id+'/form'"  type="button" class="btn btn-warning mt-3">
-                            <i class="fa fa-pencil"></i> Edit
+                            <i class="fas fa-pencil-alt"></i> Edit
                         </router-link>
                         <button v-if="transactionData.current_status === 'requested'" @click="handlePublish()" class="btn btn-primary mt-3">
-                            <i class="fa fa-check"></i> Publish
+                            <i class="fas fa-check"></i> Publish
                         </button>
                         <button v-if="transactionData.current_status === 'requested'" @click="handleDelete()" class="btn btn-danger mt-3">
-                            <i class="fa fa-trash"></i> Delete
+                            <i class="fas fa-trash"></i> Delete
                         </button>
                         <router-link to="/app/transaction" class="btn btn-success mt-3 mr-3">
-                            <i class="fa fa-arrow-left"></i> Back
+                            <i class="fas fa-arrow-left"></i> Back
                         </router-link>
                         <p class="mr-3 mt-2">Transaction #{{ transactionData.transaction_number }}</p>
                     </div>
@@ -235,10 +235,10 @@
                                     <label v-if="transactionData.current_status === 'rejected'">Transaction Rejected</label>
                                     <label v-else>
                                         <button v-if="handleCheckApproval(transactionData, item)" @click="handleApproval(1, item.id)" class="btn btn-primary mt-3 mr-3">
-                                            <i class="fa fa-check"></i> Approve
+                                            <i class="fas fa-check"></i> Approve
                                         </button>
                                         <button v-if="handleCheckApproval(transactionData, item, 'transaction_edit_tax')" @click="handleApproval(0, item.id)" class="btn btn-danger mt-3 mr-3">
-                                            <i class="fa fa-times"></i> Reject
+                                            <i class="fas fa-times"></i> Reject
                                         </button>
                                         {{ item.approved_at ? 'Approved at ' + (item.approved_at) : (item.rejected_at ? 'Transaction rejected' : (transactionData.current_status === 'published' && item.user.email === $store.state.email ? "" : 'Waiting Action')) }}
                                     </label>

@@ -12,7 +12,7 @@
                         </button>
                         <router-link to="/app/manufacture/product">
                             <button type="button" class="mr-3 mt-3 btn btn-success">
-                                <i class="fa fa-arrow-left"></i> Back
+                                <i class="fas fa-arrow-left"></i> Back
                             </button>
                         </router-link>
                     </div>

@@ -39,22 +39,35 @@ class CashAndBankRepository {
             } else {
                 $coa = new Coa();
                 $coa->company_id = $companyId;
-                $coa->category_id = $data['category'] === 'Cash' ? $cashId : ($data['category'] === 'Bank' ? $bankId : $creditCardId);
+                $coa->category_id = "";
                 $coa->posting_id = 1;
-                $coa->account_code = $data['account_code'] . '-' . $data['account_name'];
-                $coa->account_number = $data['account_code'];
-                $coa->account_name = $data['account_name'];
-                $coa->description = $data['description'];
-                $coa->account_type = in_array($data['category'], ['Cash', 'Bank']) ? 'Debit' : 'Credit';
                 $coa->is_active = 1;
+
+                $coa->account_code = "";
+                $coa->account_number = "";
+                $coa->account_name = "";
+                $coa->description = "";
+                $coa->account_type = "";
                 $coa->save();
 
-                $newAccount = new CashAndBank();
-                $newAccount->company_id = $companyId;
-                $newAccount->type = $data['category'];
-                $newAccount->coa_id = $coa->id;
-                $newAccount->save();
+                $cashAndBank = new CashAndBank();
+                $cashAndBank->company_id = $companyId;
+                $cashAndBank->type = $data['category'];
+                $cashAndBank->coa_id = $coa->id;
+                $cashAndBank->save();
             }
+            $coa->category_id = $data['category'] === 'Cash' ? $cashId : ($data['category'] === 'Bank' ? $bankId : $creditCardId);
+            $coa->account_code = $data['account_code'] . '-' . $data['account_name'];
+            $coa->account_number = $data['account_code'];
+            $coa->account_name = $data['account_name'];
+            $coa->description = $data['description'];
+            $coa->account_type = in_array($data['category'], ['Cash', 'Bank']) ? 'Debit' : 'Credit';
+            $coa->save();
+
+            $cashAndBank->type = $data['category'];
+            $cashAndBank->bank_name = $data['bank_name'];
+            $cashAndBank->bank_account_number = $data['bank_account_number'];
+            $cashAndBank->save();
 
             DB::commit();
             return resultFunction("Successfully processing account", true);
@@ -100,7 +113,10 @@ class CashAndBankRepository {
                 'cash' => $cashs,
                 'bank' => $banks
             ],
-            "credit_card" => $creditCards
+            "credit_card" => $creditCards,
+            "cash_id" => $cashId,
+            'bank_id' => $bankId,
+            'credit_card_id' => $creditCardId
         ];
     }
 

@@ -6,7 +6,7 @@
                 <div class="mt-3 d-flex justify-content-between">
                     <h1 class="h3 ml-3 text-gray-800 float-left">Unit</h1>
                     <button @click="handleShowCrudModal()" type="button" class="btn btn-primary float-right mr-3">
-                        <i class="fa fa-plus-circle"></i> Create New Unit
+                        <i class="fas fa-plus-circle"></i> Create New Unit
                     </button>
                 </div>
             </div>
@@ -16,6 +16,7 @@
                         <thead>
                         <tr>
                             <th class="text-center"><b>Name</b></th>
+                            <th class="text-center"><b>Is Archived?</b></th>
                             <th class="text-center"><b>#</b></th>
                         </tr>
                         </thead>
@@ -27,12 +28,19 @@
                         </tr>
                         <tr v-else v-for="(p, pI) in units" :key="pI">
                             <td>{{ p.name }}</td>
+                            <td class="text-center">
+                                <span v-if="p.is_archive" class="badge badge-danger p-3">Yes</span>
+                                <span v-else class="badge badge-primary p-3">No</span>
+                            </td>
                             <td class="text-right">
                                 <button @click="handleShowCrudModal(p)" class="btn btn-warning" type="button">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <button @click="handleDelete(p.id)" class="btn btn-danger" type="button">
+                                <button v-if="p.product === null" @click="handleDelete(p.id)" class="btn btn-danger" type="button">
                                     <i class="fas fa-trash"></i>
+                                </button>
+                                <button v-else @click="handleArchive(p)" class="btn btn-secondary" type="button">
+                                    <i class="fas fa-archive"></i>
                                 </button>
                             </td>
                         </tr>
@@ -126,6 +134,46 @@
                                     icon: "error",
                                     title: "Opps...",
                                     text: "Failed To Delete Unit : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            },
+
+            async handleArchive(p) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: `Are You Sure Want To ${p.is_archive ? 'Un Archive' : 'Archive'} This Unit?`,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.get(`api/product/unit/${p.id}/archive`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.handleGetData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Archive Unit : " + response.message ,
                                     allowOutsideClick: false,
                                     allowEscapeKey: false,
                                     allowEnterKey: false,

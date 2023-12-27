@@ -13,4 +13,12 @@ class PaymentMethod extends Model
     
     protected $table = 'payment_methods';
     protected $guarded = [];
+
+    public function sales_payment() {
+        return $this->hasOne(SalesPayment::class, 'payment_method', 'id');
+    }
+
+    public function purchase_payment() {
+        return $this->hasOne(PurchasePayment::class, 'payment_method', 'id');
+    }
 }

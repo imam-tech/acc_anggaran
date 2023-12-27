@@ -3,8 +3,11 @@
         <div class="card">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Sales Form</h1>
-                <router-link to="/app/sales" class="btn btn-success float-right mt-3 mr-3">
-                    <i class="fa fa-arrow-left"></i> Back
+                <router-link v-if="formData.id === ''" to="/app/sales" class="btn btn-success float-right mt-3 mr-3">
+                    <i class="fas fa-arrow-left"></i> Back
+                </router-link>
+                <router-link v-else :to="'/app/sales/'+formData.id+'/detail'" class="btn btn-success float-right mt-3 mr-3">
+                    <i class="fas fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
@@ -586,15 +589,32 @@
             },
 
             handleChange() {
+                console.log("handle")
                 let grandTotal = 0
                 let taxAmountTotal = 0
                 let subTotal = 0
                 const prods = this.formData.products
+                let discountAmount = 0;
                 prods.forEach((x, i) => {
+                    let discountSub = 0;
                     this.formData.products[i].sub_total = x.quantity * x.unit_price
+                    let isSumDiscount = true
+                    if (this.formData.discount_amount > 0) {
+                        if (this.formData.discount_type === '%') {
+                            discountSub = this.formData.discount_amount * this.formData.products[i].sub_total / 100;
+                        }  else {
+                            discountSub = parseFloat(this.formData.discount_amount)
+                            if (i > 0) {
+                                isSumDiscount = false
+                            }
+                        }
+                    }
+                    if (isSumDiscount) {
+                        discountAmount = discountAmount + discountSub
+                    }
                     let taxAmount = 0;
                     if (x.tax_id) {
-                        taxAmount = x.tax_percentage * this.formData.products[i].sub_total / 100;
+                        taxAmount = x.tax_percentage * (this.formData.products[i].sub_total - discountSub) / 100;
                     }
                     this.formData.products[i].tax_amount = taxAmount;
                     this.formData.products[i].grand_total = this.formData.products[i].sub_total + this.formData.products[i].tax_amount;
@@ -602,14 +622,6 @@
                     grandTotal = grandTotal + this.formData.products[i].grand_total
                     taxAmountTotal = taxAmountTotal + this.formData.products[i].tax_amount
                 })
-                let discountAmount = 0;
-                if (this.formData.discount_amount > 0) {
-                    if (this.formData.discount_type === '%') {
-                        discountAmount = this.formData.discount_amount * subTotal / 100;
-                    }  else {
-                        discountAmount = this.formData.discount_amount
-                    }
-                }
                 this.subTotal = subTotal
                 this.discountAmount = discountAmount
                 this.taxAmountTotal = taxAmountTotal
@@ -643,14 +655,14 @@
             async getDataOther() {
                 try {
                     this.$vs.loading()
-                    this.customers = await this.$axios.get(`api/contact?type=customer`)
-                    const prodLocals = await this.$axios.get(`api/product?is_sale=1`)
+                    this.customers = await this.$axios.get(`api/contact?type=customer&is_archive=no`)
+                    const prodLocals = await this.$axios.get(`api/product?is_sale=1&is_archive=no`)
                     prodLocals.forEach((x) => {
                         x.disabled = true
                         console.log("prd", x)
                         this.products.push(x)
                     })
-                    this.taxes = await this.$axios.get(`api/tax`)
+                    this.taxes = await this.$axios.get(`api/tax?is_archive=no`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()

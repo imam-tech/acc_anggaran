@@ -5,7 +5,7 @@
                 <div class="mt-3 d-flex justify-content-between">
                     <h1 class="h3 ml-3 text-gray-800 float-left">Semi Finished Goods</h1>
                     <button @click="handleShowAddNewMaterial()" type="button" class="btn btn-primary float-right mr-3">
-                        <i class="fa fa-plus-circle"></i> Create New Semi Finished Goods
+                        <i class="fas fa-plus-circle"></i> Create New Semi Finished Goods
                     </button>
                 </div>
             </div>
@@ -63,7 +63,6 @@
                         <tr>
                             <td class="text-center"><b>ID</b></td>
                             <td class="text-center"><b>Name</b></td>
-                            <td class="text-center"><b>Is Archive</b></td>
                             <td class="text-center"><b>Price Total</b></td>
                             <td class="text-center"><b>Material Name</b></td>
                             <td class="text-center"><b>Material Image</b></td>
@@ -72,6 +71,7 @@
                             <td class="text-center"><b>Material Price per Unit</b></td>
                             <td></td>
                             <td class="text-center"><b>Price Dose</b></td>
+                            <td class="text-center"><b>Is Archive?</b></td>
                             <td class="text-center"><b>#</b></td>
                         </tr>
                         </thead>
@@ -79,10 +79,6 @@
                         <tr v-for="(sf, sfI) in p.semi_finished_material_items">
                             <td :rowspan="p.semi_finished_material_items.length" v-if="sfI === 0">{{ (pI+1) }}</td>
                             <td :rowspan="p.semi_finished_material_items.length" v-if="sfI === 0">{{ p.name }}</td>
-                            <td class="text-center">
-                                <span v-if="p.is_archive" class="badge badge-danger p-2">Yes</span>
-                                <span v-else class="badge badge-primary p-2 rounded-pill">No</span>
-                            </td>
                             <td :rowspan="p.semi_finished_material_items.length" v-if="sfI === 0" class="text-right">{{ p.price_total | formatPrice }}</td>
                             <td>{{ sf.material ? sf.material.name : '-' }}</td>
                             <td>
@@ -93,6 +89,10 @@
                             <td class="text-right"><span v-if="sf.material">{{ sf.material.price_per_unit | formatPrice }}</span></td>
                             <td>/{{  sf.material ? sf.material.unit : '-' }}</td>
                             <td class="text-right">{{ sf.price | formatPrice }}</td>
+                            <td :rowspan="p.semi_finished_material_items.length" v-if="sfI === 0" class="text-center">
+                                <span v-if="p.is_archive" class="badge badge-danger p-2">Yes</span>
+                                <span v-else class="badge badge-primary p-2 rounded-pill">No</span>
+                            </td>
                             <td :rowspan="p.semi_finished_material_items.length" v-if="sfI === 0" class="text-right">
                                 <button class="btn btn-warning" type="button" @click="handleShowAddNewMaterial(p)">
                                     <i class="fas fa-pencil-alt"></i>

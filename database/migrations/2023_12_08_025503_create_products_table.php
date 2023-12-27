@@ -30,6 +30,7 @@ class CreateProductsTable extends Migration
             $table->decimal('unit_purchase_price', 20, 0)->nullable();
             $table->integer('purchase_account_id')->nullable();
             $table->integer('purchase_tax_id')->nullable();
+            $table->tinyInteger('is_archive')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

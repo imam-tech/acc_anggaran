@@ -100,4 +100,18 @@ class SettingRepository {
             return resultFunction("Err code PR-Dl: catch " . $e->getMessage());
         }
     }
+
+    public function archivePm($id) {
+        try {
+            $pm = PaymentMethod::find($id);
+            if (!$pm) return resultFunction("Err code PR-Dl: payment method not found for ID " .$id);
+
+            $pm->is_archive = !$pm->is_archive;
+            $pm->save();
+
+            return resultFunction("", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code PR-Dl: catch " . $e->getMessage());
+        }
+    }
 }

@@ -45,4 +45,12 @@ class Product extends Model
     public function purchase_products() {
         return $this->hasMany(PurchaseProduct::class, 'product_id', 'id');
     }
+
+    public function sale_product() {
+        return $this->hasOne(SalesProduct::class, 'product_id', 'id');
+    }
+
+    public function purchase_product() {
+        return $this->hasOne(PurchaseProduct::class, 'product_id', 'id');
+    }
 }

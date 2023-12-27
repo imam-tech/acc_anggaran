@@ -14,4 +14,8 @@ class ProductCategory extends Model
     protected $guarded = [];
 
     public $timestamps = false;
+
+    public function product() {
+        return $this->hasOne(Product::class, 'product_category_id', 'id');
+    }
 }

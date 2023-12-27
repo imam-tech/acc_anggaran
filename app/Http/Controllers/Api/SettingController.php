@@ -49,8 +49,11 @@ class SettingController extends Controller {
     }
 
     public function indexPm(Request $request) {
-        $filters = $request->only([]);
-        $pms = PaymentMethod::with([]);
+        $filters = $request->only(['is_archive']);
+        $pms = PaymentMethod::with(['sales_payment', 'purchase_payment']);
+        if (!empty($filters['is_archive'])) {
+            $pms = $pms->where('is_archive', $filters['is_archive'] === 'yes' ? 1 : 0);
+        }
         $pms = $pms->orderBy('id', 'desc')->get();
         return response()->json($pms);
     }
@@ -61,5 +64,9 @@ class SettingController extends Controller {
 
     public function deletePm($id = null) {
         return response()->json($this->settingRepo->deletePm($id));
+    }
+
+    public function archivePm($id = null) {
+        return response()->json($this->settingRepo->archivePm($id));
     }
 }

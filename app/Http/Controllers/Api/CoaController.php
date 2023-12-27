@@ -96,6 +96,11 @@ class CoaController extends Controller {
         $filters = $request->only(['flag']);
         $coaCategories = CoaCategory::with(['childrens.childrens.childrens']);
 
+        $company = Company::find($request->header('company_id'));
+        if ($company) {
+            $filters['flag'] = $company->type;
+        }
+
         if (!empty($filters['flag'])) {
             $coaCategories = $coaCategories->where('flag', $filters['flag']);
         }

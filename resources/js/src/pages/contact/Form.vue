@@ -4,7 +4,7 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Contact Form</h1>
                 <router-link to="/app/sales/customer" class="btn btn-success float-right mt-3 mr-3">
-                    <i class="fa fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">

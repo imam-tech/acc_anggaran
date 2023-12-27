@@ -110,12 +110,12 @@
                                 </router-link>
                                 <router-link v-if="journal.approved_at === null && journal.rejected_at === null" :to="'/app/journal/form/' + journal.id">
                                     <button type="button" class="btn btn-warning">
-                                        <i class="fa fa-pencil"></i>
+                                        <i class="fas fa-pencil-alt"></i>
                                     </button>
                                 </router-link>
 
                                 <button @click="handleDelete(journal.id)" v-if="journal.approved_at === null && journal.rejected_at === null" type="button" class="btn btn-danger">
-                                    <i class="fa fa-trash"></i>
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>

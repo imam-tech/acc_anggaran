@@ -7,7 +7,7 @@
                     <h1 class="h3 ml-3 text-gray-800 float-left">Budget Management</h1>
                     <router-link to="/app/budget/create/form">
                         <button type="button" class="btn btn-primary float-right mr-3">
-                            <i class="fa fa-plus-circle"></i> Create New Budget
+                            <i class="fas fa-plus-circle"></i> Create New Budget
                         </button>
                     </router-link>
                 </div>

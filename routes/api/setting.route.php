@@ -15,5 +15,6 @@ Route:: group(['prefix' => 'setting', 'middleware' => 'auth:sanctum'], function 
         Route::get('/', [SettingController::class, 'indexPM']);
         Route::post('/', [SettingController::class, 'storePM']);
         Route::delete('/{id?}/delete', [SettingController::class, 'deletePM']);
+        Route::get('/{id?}/archive', [SettingController::class, 'archivePM']);
     });
 });

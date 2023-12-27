@@ -89,3 +89,9 @@ Vue.filter('labelByStatus', val => {
     if (val === 'completed') return "badge badge-info rounded-pill p-2";
     if (val === 'processed') return "badge badge-secondary rounded-pill p-2";
 })
+
+Vue.filter('methodByStatus', val => {
+    if (val === null) return "badge badge-warning rounded-pill p-2";
+    if (val === 'manual') return "badge badge-primary rounded-pill p-2";
+    if (val === 'flip') return "badge badge-success rounded-pill p-2";
+})

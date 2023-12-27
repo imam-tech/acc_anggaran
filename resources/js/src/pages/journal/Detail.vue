@@ -4,7 +4,7 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Journal Detail</h1>
                 <router-link to="/app/journal" class="btn btn-success float-right mt-3 mr-3">
-                    <i class="fa fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
@@ -89,10 +89,10 @@
                             <tr v-if="journal.approved_at === null && journal.rejected_at === null && $store.state.permissions.includes('transaction_edit_coa')">
                                 <td colspan="6" class="text-right">
                                     <button @click="handleApproveReject('approved')" type="button" class="btn btn-primary">
-                                        <i class="fa fa-check"></i> Approved
+                                        <i class="fas fa-check"></i> Approved
                                     </button>
                                     <button type="button" @click="handleRejectShow()" class="btn btn-danger">
-                                        <i class="fa fa-times"></i> Rejected
+                                        <i class="fas fa-times"></i> Rejected
                                     </button>
                                 </td>
                             </tr>

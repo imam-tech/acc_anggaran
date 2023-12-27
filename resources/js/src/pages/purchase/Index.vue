@@ -7,7 +7,7 @@
                     <h1 class="h3 ml-3 text-gray-800 float-left">Purchase</h1>
                     <router-link to="/app/purchase/create/form">
                         <button type="button" class="btn btn-primary float-right mr-3">
-                            <i class="fa fa-plus-circle"></i> Create New Purchase
+                            <i class="fas fa-plus-circle"></i> Create New Purchase
                         </button>
                     </router-link>
                 </div>
@@ -116,11 +116,6 @@
                             <td class="text-right">{{ handleShowBalanceDue(s) | formatPrice }}</td>
                             <td class="text-right">{{ parseFloat(s.grand_total) | formatPrice }}</td>
                             <td class="text-right">
-                                <router-link v-if="!s.paid_date" :to="'purchase/' + s.id + '/form'">
-                                    <button type="button" class="btn btn-warning">
-                                        <i class="fas fa-pencil-alt"></i>
-                                    </button>
-                                </router-link>
                                 <router-link :to="'purchase/' + s.id + '/detail'">
                                     <button type="button" class="btn btn-primary">
                                         <i class="fas fa-eye"></i>

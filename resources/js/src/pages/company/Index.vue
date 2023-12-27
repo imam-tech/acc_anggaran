@@ -5,7 +5,7 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Company List</h1>
                 <button v-if="$store.state.permissions.includes('company_create')" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddCompany()">
-                    <i class="fa fa-plus-circle"></i> Company
+                    <i class="fas fa-plus-circle"></i> Company
                 </button>
             </div>
             <div class="card-body">

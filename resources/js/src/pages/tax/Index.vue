@@ -5,7 +5,7 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Tax List</h1>
                 <button v-if="$store.state.permissions.includes('tax_create')" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddTax()">
-                    <i class="fa fa-plus-circle"></i> Tax
+                    <i class="fas fa-plus-circle"></i> Tax
                 </button>
             </div>
             <div class="row ml-3">
@@ -44,6 +44,7 @@
                             <th class="text-center">Sell Account</th>
                             <th class="text-center">Buy Account</th>
                             <th class="text-center">Created At</th>
+                            <th class="text-center"><b>Is Archived?</b></th>
                             <th v-if="$store.state.permissions.includes('tax_create')" class="text-center">#</th>
                         </tr>
                         </thead>
@@ -55,12 +56,19 @@
                             <td>{{ tax.sell_coa ? tax.sell_coa.account_code : "-"}}</td>
                             <td>{{ tax.buy_coa ? tax.buy_coa.account_code : "-"}}</td>
                             <td>{{ tax.created_at | formatDate }}</td>
+                            <td class="text-center">
+                                <span v-if="tax.is_archive" class="badge badge-danger p-3">Yes</span>
+                                <span v-else class="badge badge-primary p-3">No</span>
+                            </td>
                             <td v-if="$store.state.permissions.includes('tax_edit')" class="text-right">
                                 <button type="button" class="btn btn-warning" @click="showEditTax(tax)">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <button class="btn btn-danger" type="button" @click="handleDelete(tax.id)">
-                                    <i class="fa fa-trash"></i>
+                                <button v-if="tax.sale_product === null && tax.purchase_product === null" class="btn btn-danger" type="button" @click="handleDelete(tax.id)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button v-else @click="handleArchive(tax)" class="btn btn-secondary" type="button">
+                                    <i class="fas fa-archive"></i>
                                 </button>
                             </td>
                         </tr>
@@ -286,6 +294,46 @@
                                     icon: "error",
                                     title: "Opps...",
                                     text: "Failed To Delete Tax : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            },
+
+            async handleArchive(p) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: `Are You Sure Want To ${p.is_archive ? 'Un Archive' : 'Archive'} This Tax?`,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.get(`api/tax/${p.id}/archive`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.getData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Archive Tax : " + response.message ,
                                     allowOutsideClick: false,
                                     allowEscapeKey: false,
                                     allowEnterKey: false,

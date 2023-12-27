@@ -4,7 +4,7 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Purchase Form</h1>
                 <router-link to="/app/purchase" class="btn btn-success float-right mt-3 mr-3">
-                    <i class="fa fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
@@ -611,7 +611,7 @@
                     this.$vs.loading()
                     this.suppliers = await this.$axios.get(`api/contact?type=vendor`)
                     this.products = await this.$axios.get(`api/product?is_purchase=1`)
-                    this.taxes = await this.$axios.get(`api/tax`)
+                    this.taxes = await this.$axios.get(`api/tax?is_archive=no`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()

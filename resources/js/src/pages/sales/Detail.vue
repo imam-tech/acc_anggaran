@@ -17,14 +17,23 @@
                     <div class="col-6 text-right d-flex align-items-center justify-content-end">
                         <div class="d-flex flex-column">
                             <div>
-                                <router-link v-if="handleStatus(salesData).label !== 'Paid'" :to="'/app/sales/payment/'+salesData.id+'/create/form'">
-                                    <button type="button" class="mr-3 mt-3 btn btn-primary">
-                                        <i class="fa fa-dollar"></i> Receive Payment
+                                <router-link v-if="handleStatus(salesData).label !== 'Paid'" to="form">
+                                    <button type="button" class="btn btn-warning mt-3">
+                                        <i class="fas fa-pencil-alt"></i> Edit
                                     </button>
                                 </router-link>
+                                <button v-if="handleStatus(salesData).label === 'Open'" type="button" @click="handleDeleteSales()" class="btn btn-danger mt-3">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                                <router-link v-if="handleStatus(salesData).label !== 'Paid'" :to="'/app/sales/payment/'+salesData.id+'/create/form'">
+                                    <button type="button" class="mt-3 btn btn-primary">
+                                        <i class="fas fa-dollar"></i> Receive Payment
+                                    </button>
+                                </router-link>
+
                                 <router-link to="/app/sales">
                                     <button type="button" class="mr-3 mt-3 btn btn-success">
-                                        <i class="fa fa-arrow-left"></i> Back
+                                        <i class="fas fa-arrow-left"></i> Back
                                     </button>
                                 </router-link>
                             </div>
@@ -164,13 +173,13 @@
                             <tr>
                                 <td>Discount ({{ salesData.discount_type }})</td>
                                 <td class="text-danger text-right">
-                                    ({{ salesData.discount_amount | formatPrice }})
+                                    ({{ ((parseFloat(salesData.sub_total) + parseFloat(salesData.tax_total_amount)) - parseFloat(salesData.grand_total))  | formatPrice }})
                                 </td>
                             </tr>
                             <tr>
                                 <td>Tax Amount Total</td>
                                 <td class="text-right">
-                                    {{ salesData.tax_amount_total | formatPrice }}
+                                    {{ salesData.tax_total_amount | formatPrice }}
                                 </td>
                             </tr>
                             <tr>
@@ -229,7 +238,7 @@
                                     </router-link>
                                     <router-link  v-if="!sp.status" :to="'/app/sales/payment/'+sp.sales_id+'/'+sp.id+'/form'">
                                         <button type="button" class="btn btn-warning">
-                                            <i class="fa fa-pencil"></i>
+                                            <i class="fas fa-pencil-alt"></i>
                                         </button>
                                     </router-link>
                                     <button v-if="!sp.status" type="button" @click="handleDelete(sp.id)" class="btn btn-danger">
@@ -423,6 +432,46 @@
                                     icon: "error",
                                     title: "Opps...",
                                     text: "Failed To Delete payment : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            },
+
+            async handleDeleteSales() {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are You Sure Want To Delete This Sales?',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.delete(`api/sales/${this.salesData.id}/delete`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) this.$router.push('/app/sales')
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Delete Sales : " + response.message ,
                                     allowOutsideClick: false,
                                     allowEscapeKey: false,
                                     allowEnterKey: false,

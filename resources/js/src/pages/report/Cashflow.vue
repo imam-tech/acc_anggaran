@@ -5,10 +5,20 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Cashflow</h1>
                 <router-link to="/app/report" class="btn btn-success float-right mt-3 mr-3">
-                    <i class="fa fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-end">
+                        <div>
+                            <select class="form-control" v-model="selectedYear" @change="changeYear">
+                                <option value="2023">2023</option>
+                                <option value="2024">2024</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="row mt-3">
                     <div class="col-12">
                         <div class="row">
@@ -74,7 +84,8 @@
                 coaList: [],
                 dataReports: [],
                 initialBalance: 0,
-                lastMonth: 0
+                lastMonth: 0,
+                selectedYear: new Date().getFullYear()
             }
         },
         created() {
@@ -93,7 +104,7 @@
                 try {
                     console.log('oke')
                     this.$vs.loading()
-                    const respData = (await this.$axios.get('api/journal/report/cashflow-initial-balance?year=2023')).data
+                    const respData = (await this.$axios.get('api/journal/report/cashflow-initial-balance?year=' + this.selectedYear)).data
                     this.initialBalance = respData
                     this.$vs.loading.close()
                 } catch (e) {
@@ -111,7 +122,7 @@
                 try {
                     console.log('oke')
                     this.$vs.loading()
-                    const respData = (await this.$axios.get('api/journal/report/cashflow?month=' + month + '&year=2023')).data
+                    const respData = (await this.$axios.get('api/journal/report/cashflow?month=' + month + '&year=' + this.selectedYear)).data
                     const balances = [];
                     let totalBalance = 0;
                     respData.forEach((x) => {
@@ -165,6 +176,13 @@
                         timer: 1500
                     })
                 }
+            },
+
+            changeYear() {
+                this.coaList = []
+                const d = new Date();
+                this.lastMonth =  d.getMonth() + 1
+                this.initiateData()
             }
         }
     }

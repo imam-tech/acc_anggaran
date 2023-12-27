@@ -5,13 +5,19 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Balance Sheet</h1>
                 <router-link to="/app/report" class="btn btn-success float-right mt-3 mr-3">
-                    <i class="fa fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-12 d-flex justify-content-between">
                         <a :href="'/print/balance-sheet?company_id=' + currentCompany" target="_blank" class="btn btn-success">Export</a>
+                        <div>
+                            <select class="form-control" v-model="selectedYear" @change="changeYear">
+                                <option value="2023">2023</option>
+                                <option value="2024">2024</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-3">
@@ -82,7 +88,8 @@
                 coaList: [],
                 dataReports: [],
                 lastMonth: 0,
-                currentCompany: Cookies.get('current_company')
+                currentCompany: Cookies.get('current_company'),
+                selectedYear: new Date().getFullYear()
             }
         },
         created() {
@@ -99,7 +106,7 @@
             async getData(month) {
                 try {
                     this.$vs.loading()
-                    const respData = (await this.$axios.get('api/journal/report/balance-profit?month=' + month + '&year=2023&type=balance_sheet')).data
+                    const respData = (await this.$axios.get('api/journal/report/balance-profit?month=' + month + '&year=' + this.selectedYear + '&type=balance_sheet')).data
                     const balances = [];
                     respData.accounts.forEach((x) => {
                         let type = 'parent';
@@ -149,6 +156,13 @@
                         timer: 1500
                     })
                 }
+            },
+
+            changeYear() {
+                this.coaList = []
+                const d = new Date();
+                this.lastMonth =  d.getMonth() + 1
+                this.initiateData()
             }
         }
     }

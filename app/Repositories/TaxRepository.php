@@ -58,4 +58,18 @@ class TaxRepository {
             return resultFunction("Err code CR-Dl: catch " . $e->getMessage());
         }
     }
+
+    public function archive($id) {
+        try {
+            $tax = Tax::find($id);
+            if (!$tax) return resultFunction("Err code PR-Dl: tax not found for ID " .$id);
+
+            $tax->is_archive = !$tax->is_archive;
+            $tax->save();
+
+            return resultFunction("", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code PR-Dl: catch " . $e->getMessage());
+        }
+    }
 }

@@ -6,14 +6,14 @@
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Coa List</h1>
                 <router-link to="/app/coa/category">
                     <button type="button" class="btn btn-success float-right mr-3 mt-3">
-                        <i class="fa fa-address-book"></i> Coa Category
+                        <i class="fas fa-address-book"></i> Coa Category
                     </button>
                 </router-link>
                 <button type="button" class="btn btn-warning float-right mr-3 mt-3" @click="handleShowUploadCoaBulk()">
-                    <i class="fa fa-upload"></i> Bulk Coa
+                    <i class="fas fa-upload"></i> Bulk Coa
                 </button>
                 <button v-if="$store.state.permissions.includes('coa_create_edit')" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddCoa()">
-                    <i class="fa fa-plus-circle"></i> Coa
+                    <i class="fas fa-plus-circle"></i> Coa
                 </button>
             </div>
             <div class="card-body">
@@ -40,7 +40,8 @@
                         <tr v-else v-for="(coa, index) in coas" :key="index">
                             <td>{{ coa.account_number }}</td>
                             <td>
-                                <router-link :to="'/app/coa/' + coa.id + '/detail'">{{ coa.account_name }}
+                                <router-link :to="'/app/coa/' + coa.id + '/detail'">
+                                    {{ coa.account_name }}
                                 </router-link>
                             </td>
                             <td>{{ coa.coa_category.name }} </td>
@@ -55,13 +56,13 @@
                             </td>
                             <td v-if="$store.state.permissions.includes('coa_create_edit')" class="text-right">
                                 <button type="button" class="btn btn-warning" @click="showEditCoa(coa)">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="fas fa-pencil-alt"></i>
                                 </button>
                                 <button v-if="coa.journal_item === null" type="button" class="btn btn-danger" @click="handleDelete(coa.id)">
-                                    <i class="fa fa-remove"></i>
+                                    <i class="fas fa-trash"></i>
                                 </button>
                                 <button v-if="coa.coa_category.label === 'balance_sheet'" type="button" class="btn btn-success" @click="handleInitialBalance(coa)">
-                                    <i class="fa fa-dollar"></i>
+                                    <i class="fas fa-dollar"></i>
                                 </button>
                             </td>
                         </tr>
@@ -88,7 +89,7 @@
                                 <label  class="text-danger font-weight-bold font-italic">Template Upload File</label>
                                 <label for="">
                                     <a href="https://stage-accounting.sgp1.cdn.digitaloceanspaces.com/Coa%20bulk.xlsx">
-                                        <i class="fa fa-link"></i>
+                                        <i class="fas fa-link"></i>
                                     </a>
                                 </label>
                             </div>
@@ -363,7 +364,7 @@
             async getDataCategory() {
                 try {
                     this.$vs.loading()
-                    const cats = await this.$axios.get('api/coa/category?flag=pt')
+                    const cats = await this.$axios.get('api/coa/category')
                     cats.forEach((x) => {
                         this.categories.push({
                             id: x.id,

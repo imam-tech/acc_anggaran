@@ -9,18 +9,13 @@
                         <i class="fas fa-gear"></i> Role
                     </button>
                 </router-link>
-                <router-link to="/app/setting/payment-method">
-                    <button type="button" class="btn btn-warning float-right mr-3 mt-3">
-                        <i class="fas fa-dollar-sign"></i> Payment Methods
-                    </button>
-                </router-link>
                 <router-link to="/app/setting/permission">
                     <button type="button" class="btn btn-warning float-right mr-3 mt-3">
                         <i class="fas fa-deaf"></i> Permission
                     </button>
                 </router-link>
                 <button v-if="$store.state.permissions.includes('transaction_push_plugin')" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddSetting()">
-                    <i class="fa fa-plus-circle"></i> Setting
+                    <i class="fas fa-plus-circle"></i> Setting
                 </button>
             </div>
             <div class="card-body">
@@ -43,10 +38,10 @@
                             <td>{{ flip.created_at | formatDate }}</td>
                             <td v-if="$store.state.permissions.includes('transaction_push_plugin')" class="text-right">
                                 <button type="button" class="btn btn-warning" @click="showEditSetting(flip)">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="fas fa-pencil-alt"></i>
                                 </button>
                                 <button class="btn btn-danger" type="button" @click="handleDelete(flip.id)">
-                                    <i class="fa fa-minus"></i>
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -67,16 +62,15 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-
-                        <form>
+                    <form @submit.prevent="submitSetting">
+                        <div class="modal-body">
                             <div class="form-group">
                                 <label>Title<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.flip_name" placeholder="Ex: imamflip30">
+                                <input type="text" class="form-control" v-model="formData.flip_name" placeholder="Ex: imamflip30" required>
                             </div>
                             <div class="form-group">
                                 <label>Flip Key<span v-if="formData.id === ''" style="
@@ -84,7 +78,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="password" class="form-control" v-model="formData.flip_key" placeholder="Your secret key, please paste it">
+                                <input type="password" class="form-control" v-model="formData.flip_key" placeholder="Your secret key, please paste it" :required="formData.id == ''">
                             </div>
                             <div class="form-group">
                                 <label>Is Active<span style="
@@ -92,17 +86,21 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select class="form-control" v-model="formData.is_active">
+                                <select class="form-control" v-model="formData.is_active" required>
                                     <option value="1">Active</option>
                                     <option value="0">In Active</option>
                                 </select>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="submitSetting()">Save changes</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

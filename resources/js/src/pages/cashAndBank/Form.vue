@@ -4,7 +4,7 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Cash & Bank Form</h1>
                 <router-link to="/app/cash-and-bank" class="btn btn-success float-right mt-3 mr-3">
-                    <i class="fa fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
@@ -26,7 +26,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.account_code" required>
+                                <input type="text" class="form-control" v-model="formData.account_number" required>
                             </div>
                             <div class="form-group">
                                 <label>Category<span style="
@@ -34,17 +34,17 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select @change="handleChangeCategory" class="form-control" v-model="formData.category" required>
-                                    <option :value="co.value" v-for="(co, coI) in categoryOptions" :key="coI">{{ co.label }}</option>
+                                <select @change="handleChangeCategory" class="form-control" v-model="formData.type" required>
+                                    <option :value="co.value" v-for="(co, coI) in typeOptions" :key="coI">{{ co.label }}</option>
                                 </select>
                             </div>
-                            <div v-if="['Cash', 'Bank'].includes(formData.category)" class="form-group">
+                            <div v-if="['Cash', 'Bank'].includes(formData.type)" class="form-group">
                                 <label>Bank Name</label>
-                                <select @click="handleClickBank" class="form-control" v-model="formData.bank_name">
-                                    <option v-for="(bank, index) in banks" :value="bank.bank_code" :key="index">{{ bank.name }}</option>
-                                </select>
+                                <v-select v-model="formData.bank_name" :options="banks" :reduce="p => p.bank_code" style="width: 100%" label="name">
+                                    <span slot="no-options">Bank Not Found</span>
+                                </v-select>
                             </div>
-                            <div v-if="formData.bank_name !== '' && ['Cash', 'Bank'].includes(formData.category)" class="form-group">
+                            <div v-if="formData.bank_name !== '' && ['Cash', 'Bank'].includes(formData.type)" class="form-group">
                                 <label>Bank Account Number</label>
                                 <input type="text" v-model="formData.bank_account_number" class="form-control">
                             </div>
@@ -59,7 +59,7 @@
                         <div class="col-xl-4"></div>
                         <div class="col-xl-4 text-right">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Create Account
+                                <i class="fas fa-save"></i> {{ formData.id === '' ? 'Create' : 'Update' }} Account
                             </button>
                         </div>
                         <div class="col-xl-4"></div>
@@ -79,13 +79,13 @@
                 formData: {
                     id: "",
                     account_name: "",
-                    account_code: "1111",
-                    category: "Cash",
+                    account_number: "1111",
+                    type: "Cash",
                     bank_name: "",
                     bank_account_number: "",
                     description: ''
                 },
-                categoryOptions: [{
+                typeOptions: [{
                     label: 'Cash',
                     value: 'Cash'
                 },{
@@ -100,6 +100,7 @@
         },
 
         mounted() {
+            this.handleClickBank()
             if (this.$route.params.type !== 'create') {
                 this.handleGetData()
             }
@@ -120,11 +121,9 @@
                         })
                         return
                     }
-                    this.formData.id = resp.data.id
+                    this.formData = resp.data
                     this.formData.account_name = resp.data.coa.account_name
-                    this.formData.account_code = resp.data.coa.account_number
-                    this.formData.category = resp.data.type
-                    this.formData.description = resp.data.coa.description
+                    this.formData.account_number = resp.data.coa.account_number
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({
@@ -142,16 +141,16 @@
                 }
             },
             handleChangeCategory() {
-                if (this.formData.category === 'Cash') {
-                    this.formData.account_code = '1111';
+                if (this.formData.type === 'Cash') {
+                    this.formData.account_number = '1111';
                 }
 
-                if (this.formData.category === 'Bank') {
-                    this.formData.account_code = '1112';
+                if (this.formData.type === 'Bank') {
+                    this.formData.account_number = '1112';
                 }
 
-                if (this.formData.category === 'Credit Card') {
-                    this.formData.account_code = '2115';
+                if (this.formData.type === 'Credit Card') {
+                    this.formData.account_number = '2115';
                 }
             },
             async handleSubmit() {
@@ -184,14 +183,7 @@
             async getDataBank() {
                 try {
                     this.$vs.loading()
-                    this.banks.push({
-                        bank_code: "",
-                        name: "--Choose Bank--"
-                    })
-                    let banksData = (await this.$axios.get(`https://old.importir.com/api/list-bank-inquiry?token=syigdfjhagsjdf766et4wff6`)).message.banks
-                    banksData.forEach((x) => {
-                        this.banks.push(x)
-                    })
+                    this.banks = (await this.$axios.get(`https://old.importir.com/api/list-bank-inquiry?token=syigdfjhagsjdf766et4wff6`)).message.banks
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()

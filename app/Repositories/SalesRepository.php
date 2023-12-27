@@ -80,14 +80,44 @@ class SalesRepository {
             $salesJournalTaxData = [];
             $subTotalFinal = 0;
             $taxTotalFinal = 0;
-            foreach ($data['products'] as $productInput) {
+            $discountAmount = 0;
+            foreach ($data['products'] as $keyP => $productInput) {
                 $selectProduct = $products->where('id', $productInput['id'])->first();
                 if (!$selectProduct) return resultFunction("Err code SR-S: product db is not found");
 
                 $subTotal = $productInput['quantity'] * $productInput['unit_price'];
+
+                $discountSub = 0;
+                $isSumDiscount = true;
+                if ($data['discount_amount'] > 0) {
+                    if ($data['discount_type'] == '%') {
+                        $discountSub = $data['discount_amount'] * ($subTotal) / 100;
+                    } else {
+                        $discountSub = $data['discount_amount'];
+                        if ($keyP > 0) {
+                            $isSumDiscount = false;
+                        }
+                    }
+                }
+
+                if ($isSumDiscount) {
+                    $discountAmount = $discountAmount + $discountSub;
+                }
+
+                if ($discountSub > 0 && $isSumDiscount) {
+                    $salesJournalTaxData[] = [
+                        'sales_id' => $sales->id,
+                        'account_id' => 2396, // sementara
+                        'debit' => $discountSub,
+                        'credit' => 0,
+                        'created_at' => date("Y-m-d H:i:s"),
+                        'updated_at' => date("Y-m-d H:i:s")
+                    ];
+                }
+
                 $taxTotal = 0;
                 if ($productInput['tax_id']) {
-                    $taxTotal = $productInput['tax_percentage'] * $subTotal / 100;
+                    $taxTotal = $productInput['tax_percentage'] * ($subTotal - $discountSub) / 100;
                 }
                 $grandTotal = $subTotal + $taxTotal;
 
@@ -151,14 +181,6 @@ class SalesRepository {
                             'updated_at' => date("Y-m-d H:i:s")
                         ];
                     }
-                }
-            }
-            $discountAmount = 0;
-            if ($data['discount_amount'] > 0) {
-                if ($data['discount_type'] == '%') {
-                    $discountAmount = $data['discount_amount'] * $subTotalFinal / 100;
-                } else {
-                    $discountAmount = $data['discount_amount'];
                 }
             }
             $sales->sub_total = $subTotalFinal;
@@ -418,7 +440,9 @@ class SalesRepository {
             }
             $result['open_invoice']['total'] = count($salesOpenInvoice);
 
-            $salesOverdueInvoice = Sales::with([])->where('company_id', $companyId)->where('due_date', '<', $dateNow)->get();
+            $salesOverdueInvoice = Sales::with([])->where('company_id', $companyId)
+                ->whereRaw('payment_amount_total <> grand_total')
+                ->where('due_date', '<', $dateNow)->get();
             foreach ($salesOverdueInvoice as $item) {
                 $result['overdue_invoice']['amount'] = $result['overdue_invoice']['amount'] + $item->grand_total;
             }
@@ -432,6 +456,21 @@ class SalesRepository {
             $result['payment_last_month']['total'] = count($salesPaymentLastMonth);
 
             return resultFunction("", true, $result);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
+    public function delete($id) {
+        try {
+            $sales = Sales::with(['sales_payments'])->find($id);
+            if (!$sales) return resultFunction("Err code SR-D: sales not found");
+
+            if (count($sales->sales_payments) > 0) return resultFunction("Err code SR-D: sales is already has payment");
+
+            $sales->delete();
+
+            return resultFunction("", true, $sales);
         } catch (\Exception $e) {
             return resultFunction("Err code SR-D: catch " . $e->getMessage());
         }

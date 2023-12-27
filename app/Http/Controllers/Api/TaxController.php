@@ -16,11 +16,14 @@ class TaxController extends Controller {
     }
 
     public function index(Request $request) {
-        $filters = $request->only(['type', 'is_transaction']);
-        $taxes = Tax::with(['sell_coa', 'buy_coa']);
+        $filters = $request->only(['type', 'is_transaction', 'is_archive']);
+        $taxes = Tax::with(['sell_coa', 'buy_coa', 'sale_product', 'purchase_product']);
 
         if (!empty($filters['type'])) {
             $taxes = $taxes->where('type', $filters['type']);
+        }
+        if (!empty($filters['is_archive'])) {
+            $taxes = $taxes->where('is_archive', $filters['is_archive'] === 'yes' ? 1 : 0);
         }
 
         if (!empty($filters['is_transaction'])) {
@@ -43,5 +46,9 @@ class TaxController extends Controller {
 
     public function detail($id = null) {
         return response()->json($this->taxRepo->detail($id));
+    }
+
+    public function archive($id = null) {
+        return response()->json($this->taxRepo->archive($id));
     }
 }

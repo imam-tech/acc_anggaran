@@ -4,7 +4,7 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Payment Form</h1>
                 <router-link :to="'/app/purchase/'+$route.params.id+'/detail'" class="btn btn-success float-right mt-3 mr-3">
-                    <i class="fa fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
@@ -109,19 +109,6 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xl-6">
-                            <table class="table">
-                                <tr>
-                                    <td>Grand Total</td>
-                                    <td class="text-right">
-                                        {{ purchaseData.sub_total | formatPrice }}
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col-6">
                             <div class="form-group">
                                 <label>Message</label>
@@ -137,10 +124,10 @@
                                             <i :class="handleShowIconFile(f.type)"></i>
                                         </td>
                                         <td>
-                                                    <span class="d-flex flex-column">
-                                                        <span class="text-primary">{{ f.name }}</span>
-                                                        <span>{{ handleSizeFile(f.size) }}</span>
-                                                    </span>
+                                            <span class="d-flex flex-column">
+                                                <span class="text-primary">{{ f.name }}</span>
+                                                <span>{{ handleSizeFile(f.size) }}</span>
+                                            </span>
                                         </td>
                                         <td>
                                             <button @click="handleDeleteAttachment(fI)" type="button" class="btn btn-danger">
@@ -270,7 +257,7 @@
                     this.payFroms = await this.$axios.get(`api/coa?is_active=1&coa_name=KAS`)
                     const bankDeposits = await this.$axios.get(`api/coa?is_active=1&coa_name=BANK`)
                     bankDeposits.forEach((x) => this.payFroms.push(x))
-                    this.paymentMethods = await this.$axios.get(`api/setting/payment-method`)
+                    this.paymentMethods = await this.$axios.get(`api/setting/payment-method?is_archive=no`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()

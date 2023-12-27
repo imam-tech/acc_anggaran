@@ -223,6 +223,20 @@ class PurchaseRepository {
         }
     }
 
+    public function delete($id) {
+        try {
+            $purchase = Purchase::with(['purchase_payments'])->find($id);
+            if (!$purchase) return resultFunction("Err code SR-D: purchase not found");
+
+            if (count($purchase->purchase_payments) > 0) return resultFunction("Err code SR-D: purchase is already has payment");
+
+            $purchase->delete();
+            return resultFunction("", true, $purchase);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-D: catch " . $e->getMessage());
+        }
+    }
+
     public function storePayment($request) {
         try {
             $data = $request->all();
@@ -410,7 +424,9 @@ class PurchaseRepository {
             }
             $result['open_invoice']['total'] = count($purchaseOpenInvoice);
 
-            $purchaseOverdueInvoice = Purchase::with([])->where('company_id', $companyId)->where('due_date', '<', $dateNow)->get();
+            $purchaseOverdueInvoice = Purchase::with([])->where('company_id', $companyId)
+                ->whereRaw('payment_amount_total <> grand_total')
+                ->where('due_date', '<', $dateNow)->get();
             foreach ($purchaseOverdueInvoice as $item) {
                 $result['overdue_invoice']['amount'] = $result['overdue_invoice']['amount'] + $item->grand_total;
             }

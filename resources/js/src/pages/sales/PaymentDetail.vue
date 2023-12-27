@@ -23,7 +23,7 @@
                                 </button>
                                 <router-link  v-if="!salesPaymentData.status" :to="'/app/sales/payment/'+salesPaymentData.sales_id+'/'+salesPaymentData.id+'/form'">
                                     <button type="button" class="mt-3 btn btn-warning">
-                                        <i class="fa fa-pencil"></i> Edit
+                                        <i class="fas fa-pencil-alt"></i> Edit
                                     </button>
                                 </router-link>
                                 <button v-if="!salesPaymentData.status" type="button" @click="handleDelete(salesPaymentData.id)" class="btn btn-danger mt-3 ">
@@ -31,7 +31,7 @@
                                 </button>
                                 <router-link :to="'/app/sales/'+salesPaymentData.sales_id+'/detail'">
                                     <button type="button" class="mr-3 mt-3 btn btn-success">
-                                        <i class="fa fa-arrow-left"></i> Back
+                                        <i class="fas fa-arrow-left"></i> Back
                                     </button>
                                 </router-link>
                             </div>

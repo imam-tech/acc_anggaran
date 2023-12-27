@@ -14,4 +14,8 @@ class ProductUnit extends Model
     protected $guarded = [];
 
     public $timestamps = false;
+
+    public function product() {
+        return $this->hasOne(Product::class, 'product_unit_id', 'id');
+    }
 }

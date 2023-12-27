@@ -4,7 +4,7 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Journal Form</h1>
                 <router-link to="/app/journal" class="btn btn-success float-right mt-3 mr-3">
-                    <i class="fa fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
@@ -42,7 +42,7 @@
                             <div class="row mb-2">
                                 <div class="col-12">
                                     <button type="button" @click="handleAddItem()" class="btn btn-warning float-right mt-3 mr-3">
-                                        <i class="fa fa-plus"></i> Items
+                                        <i class="fas fa-plus"></i> Items
                                     </button>
                                 </div>
                             </div>
@@ -89,7 +89,7 @@
                             </div>
 
                             <button type="button" @click="submitProcess()" class="btn btn-primary float-right mt-3 mr-3">
-                                <i class="fa fa-save"></i> Submit
+                                <i class="fas fa-save"></i> Submit
                             </button>
                         </div>
                     </div>

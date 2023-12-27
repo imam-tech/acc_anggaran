@@ -5,7 +5,7 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">User List</h1>
                 <button v-if="$store.state.permissions.includes('user_create')" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddUser()">
-                    <i class="fa fa-plus-circle"></i> User
+                    <i class="fas fa-plus-circle"></i> User
                 </button>
             </div>
             <div class="row ml-3">
@@ -69,20 +69,20 @@
                             <td>{{ user.email}}</td>
                             <td>
                                 <button v-if="$store.state.permissions.includes('user_role')" type="button" class="btn btn-primary" @click="changeRole(user)">
-                                    <i class="fa fa-repeat"></i>
+                                    <i class="fas fa-repeat"></i> Change Role
                                 </button>
                                 <button type="button" class="btn btn-success" @click="showRolePermission(user.role.role_permissions)">
-                                    <i class="fa fa-eye"></i>
+                                    <i class="fas fa-eye"></i>
+                                    {{ user.role ? user.role.title : 'No Role'}}
                                 </button>
-                                {{ user.role ? user.role.title : 'No Role'}}
                             </td>
                             <td>{{ user.created_at | formatDate }}</td>
                             <td v-if="$store.state.permissions.includes('user_create')" class="text-right">
                                 <button type="button" class="btn btn-warning" @click="showEditUser(user)">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="fas fa-pencil-alt"></i> User
                                 </button>
-                                <button type="button" class="btn btn-danger" @click="showChangePasswordUser(user)">
-                                    <i class="fa fa-gear"></i>
+                                <button type="button" class="btn btn-primary" @click="showChangePasswordUser(user)">
+                                    <i class="fas fa-gear"></i> Change Password
                                 </button>
                             </td>
                         </tr>
@@ -241,7 +241,9 @@
                         </ul>
                     </div>
                     <div class="modal-footer flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">
+                            <i class="fas fa-times"></i> Close
+                        </button>
                     </div>
                 </div>
             </div>

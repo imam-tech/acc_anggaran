@@ -20,6 +20,8 @@ class CreateCashAndBalancesTable extends Migration
             $table->integer('coa_id');
             $table->decimal('statement_balance', 20, 0)->default(0);
             $table->decimal('balance_in_jurnal', 20, 0)->default(0);
+            $table->string('bank_name')->nullable();
+            $table->string('bank_account_number')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

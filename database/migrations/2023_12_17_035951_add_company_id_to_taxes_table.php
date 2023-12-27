@@ -17,6 +17,7 @@ class AddCompanyIdToTaxesTable extends Migration
             $table->integer('company_id')->nullable()->after('id');
             $table->integer('sell_account_id')->nullable()->after('amount');
             $table->integer('buy_account_id')->nullable()->after('sell_account_id');
+            $table->tinyInteger('is_archive')->default(0)->after('buy_account_id');
         });
     }
 

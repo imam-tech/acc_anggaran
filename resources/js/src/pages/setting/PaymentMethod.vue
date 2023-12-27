@@ -4,16 +4,9 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Payment Methods List</h1>
-                <div>
-                    <router-link to="/app/setting">
-                        <button type="button" class="btn btn-success float-right mr-3 mt-3">
-                            <i class="fa fa-arrow-left"></i> Back
-                        </button>
-                    </router-link>
-                    <button  type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddSetting()">
-                        <i class="fa fa-plus-circle"></i> Create New Payment Methods
-                    </button>
-                </div>
+                <button  type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddSetting()">
+                    <i class="fas fa-plus-circle"></i> Create New Payment Methods
+                </button>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -21,6 +14,7 @@
                         <thead>
                         <tr>
                             <th class="text-center">Name</th>
+                            <th class="text-center"><b>Is Archived?</b></th>
                             <th class="text-center">Created At</th>
                             <th v-if="$store.state.permissions.includes('transaction_push_plugin')" class="text-center">#</th>
                         </tr>
@@ -28,13 +22,21 @@
                         <tbody>
                         <tr v-for="(pM, index) in paymentMethods" :key="index">
                             <td>{{ pM.name }}</td>
+                            <td class="text-center">
+                                <span v-if="pM.is_archive" class="badge badge-danger p-3">Yes</span>
+                                <span v-else class="badge badge-primary p-3">No</span>
+                            </td>
                             <td>{{ pM.created_at | formatDate }}</td>
                             <td v-if="$store.state.permissions.includes('transaction_push_plugin')" class="text-right">
                                 <button type="button" class="btn btn-warning" @click="showEditSetting(pM)">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <button class="btn btn-danger" type="button" @click="handleDelete(pM.id)">
-                                    <i class="fa fa-trash"></i>
+                                <button v-if="pM.sales_payment === null && pM.purchase_payment === null"
+                                        class="btn btn-danger" type="button" @click="handleDelete(pM.id)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button v-else @click="handleArchive(pM)" class="btn btn-secondary" type="button">
+                                    <i class="fas fa-archive"></i>
                                 </button>
                             </td>
                         </tr>
@@ -50,7 +52,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">{{ labelModal }} Setting</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">{{ labelModal }} Payment Method</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -63,7 +65,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.name">
+                                <input type="text" class="form-control" v-model="formData.name" required>
                             </div>
                         </div>
                         <div class="modal-footer flex justify-content-between">
@@ -204,6 +206,46 @@
                                     icon: "error",
                                     title: "Opps...",
                                     text: "Failed To Delete Payment Method : " + response.message ,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false,
+                                });
+                            }
+                        });
+                    }
+                })
+            },
+
+            async handleArchive(p) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: `Are You Sure Want To ${p.is_archive ? 'Un Archive' : 'Archive'} This Payment Method?`,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result)=>{
+                    if(result.isConfirmed == true){
+                        this.$vs.loading()
+                        this.$axios.get(`api/setting/payment-method/${p.id}/archive`).then((response)=>{
+                            this.$vs.loading.close()
+                            if(response.status){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    allowEnterKey: false
+                                }).then(async (res)=>{
+                                    if(res.isConfirmed == true) await this.getData()
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Opps...",
+                                    text: "Failed To Archive Payment Method : " + response.message ,
                                     allowOutsideClick: false,
                                     allowEscapeKey: false,
                                     allowEnterKey: false,

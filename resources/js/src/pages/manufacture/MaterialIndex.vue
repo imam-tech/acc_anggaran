@@ -5,7 +5,7 @@
                 <div class="mt-3 d-flex justify-content-between">
                     <h1 class="h3 ml-3 text-gray-800 float-left">Material</h1>
                     <button @click="handleShowAddNewMaterial()" type="button" class="btn btn-primary float-right mr-3">
-                        <i class="fa fa-plus-circle"></i> Create New Material
+                        <i class="fas fa-plus-circle"></i> Create New Material
                     </button>
                 </div>
             </div>

@@ -7,4 +7,5 @@ Route:: group(['prefix' => 'contact', 'middleware' => 'auth:sanctum'], function 
     Route::post('/', [ContactController::class, 'store']);
     Route::get('/', [ContactController::class, 'index']);
     Route::get('/{id}/detail', [ContactController::class, 'detail']);
+    Route::get('/{id}/archive', [ContactController::class, 'archive']);
 });

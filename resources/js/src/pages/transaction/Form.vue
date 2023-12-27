@@ -3,8 +3,11 @@
         <div class="card">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Transaction Form</h1>
-                <router-link to="/app/transaction" class="btn btn-success float-right mt-3 mr-3">
-                    <i class="fa fa-arrow-left"></i> Back
+                <router-link v-if="$route.params.id === 'create'" to="/app/transaction" class="btn btn-success float-right mt-3 mr-3">
+                    <i class="fas fa-arrow-left"></i> Back
+                </router-link>
+                <router-link v-else :to="'/app/transaction/'+ $route.params.id+'/detail'" class="btn btn-success float-right mt-3 mr-3">
+                    <i class="fas fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
@@ -115,7 +118,7 @@
                                 </div>
                                 <div class="col-12 d-flex justify-content-center">
                                     <button type="button" @click="showAddInquiry()" class="btn btn-info float-right mt-3">
-                                        <i class="fa fa-plus"></i> Bank Account
+                                        <i class="fas fa-plus"></i> Bank Account
                                     </button>
                                 </div>
                             </div>
@@ -125,8 +128,8 @@
                             <hr>
                             <div class="row mb-2">
                                 <div class="col-12">
-                                    <button type="button" @click="showAddItem()" class="btn btn-primary float-right mt-3 mr-3">
-                                        <i class="fa fa-plus"></i> Items
+                                    <button type="button" @click="showAddItem()" class="btn btn-success float-right mt-3 mr-3">
+                                        <i class="fas fa-plus"></i> Items
                                     </button>
                                 </div>
                             </div>
@@ -135,10 +138,10 @@
                                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                         <thead>
                                         <tr>
-                                            <th>Title</th>
-                                            <th>Amount</th>
-                                            <th>Link</th>
-                                            <th>#</th>
+                                            <th class="text-center">Title</th>
+                                            <th class="text-center">Amount</th>
+                                            <th class="text-center">Link</th>
+                                            <th class="text-center">#</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -148,12 +151,12 @@
                                             <td>
                                                 <a :href="item.attachment" target="_blank"><i class="fas fa-link"></i></a>
                                             </td>
-                                            <td>
+                                            <td class="text-right">
                                                 <button type="button" class="btn btn-warning" @click="showEditItem(item, index)">
-                                                    <i class="fa fa-pencil"></i>
+                                                    <i class="fas fa-pencil-alt"></i>
                                                 </button>
                                                 <button class="btn btn-danger" type="button" @click="handleDeleteItem(index)">
-                                                    <i class="fa fa-minus"></i>
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -163,7 +166,7 @@
                             </div>
 
                             <button type="submit" class="btn btn-primary float-right mt-3 mr-3">
-                                <i class="fa fa-save"></i> Submit
+                                <i class="fas fa-save"></i> Submit
                             </button>
                         </form>
                     </div>
@@ -209,9 +212,17 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select v-model="formInquiry.bank" class="form-control" required>
-                                    <option v-for="(bank, index) in banks" :value="bank.bank_code" :key="index">{{ bank.name }}</option>
-                                </select>
+                                <v-select v-model="formInquiry.bank" :options="banks" :reduce="p => p.id" style="width: 100%" label="name">
+                                    <template #search="{attributes, events}">
+                                        <input
+                                                class="vs__search"
+                                                :required="!formInquiry.bank"
+                                                v-bind="attributes"
+                                                v-on="events"
+                                        />
+                                    </template>
+                                    <span slot="no-options">Bank not found</span>
+                                </v-select>
                             </div>
                             <div class="form-group">
                                 <label>Account Number<span style="
@@ -259,11 +270,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formItem.amount" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Note</label>
-                                <textarea class="form-control" v-model="formItem.note"></textarea>
+                                <input type="number" class="form-control" v-model="formItem.amount" required>
                             </div>
                             <div class="form-group">
                                 <label>Attachment<span style="
@@ -273,6 +280,10 @@
                                 ">*) required</span></label>
                                 <input type="file" class="form-control" @change="handleUploadImage">
                                 <label class="text-danger"><i><b>The size maximize of image is 800 pixel</b></i></label>
+                            </div>
+                            <div class="form-group">
+                                <label>Note</label>
+                                <textarea class="form-control" v-model="formItem.note"></textarea>
                             </div>
                         </div>
                         <div class="modal-footer flex justify-content-between">
@@ -542,6 +553,8 @@
                             title: "The finance approval is  not available, please contact your administrator.",
                             showConfirmButton: false,
                             timer: 2000
+                        }).then(()=>{
+                            this.$router.push(`/app/company/${this.selectedCompany}/detail`);
                         })
                     }
                 } catch (e) {

@@ -6,7 +6,7 @@
                     <h1 class="h3 ml-3 text-gray-800 float-left">Finished Good</h1>
                     <router-link to="/app/manufacture/product/create/form">
                         <button type="button" class="btn btn-primary float-right mr-3">
-                            <i class="fa fa-plus-circle"></i> Create New Finished Good
+                            <i class="fas fa-plus-circle"></i> Create New Finished Good
                         </button>
                     </router-link>
                 </div>

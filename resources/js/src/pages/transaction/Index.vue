@@ -66,7 +66,7 @@
                             <td>{{ transaction.user_created_by.name }}</td>
                             <td>{{ transaction.project.company.title }}</td>
                             <td>
-                                <span class="badge  rounded-pill text-bg-primary p-2">{{ transaction.method ?? "-" }}</span>
+                                <span :class="transaction.method | methodByStatus">{{ transaction.method ?? "-" }}</span>
                             </td>
                             <td><span class="badge  rounded-pill text-bg-warning p-2">{{ transaction.project.title }}</span></td>
                             <td>{{ transaction.title }}</td>

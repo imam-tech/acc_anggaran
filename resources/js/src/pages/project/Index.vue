@@ -54,7 +54,7 @@
                             <td>{{ project.created_at | formatDate }}</td>
                             <td class="text-right">
                                 <router-link :to="'/app/project/'+project.id+'/detail'" class="btn btn-info">
-                                    <i class="fa fa-eye"></i>
+                                    <i class="fas fa-eye"></i>
                                 </router-link>
                             </td>
                         </tr>

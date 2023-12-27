@@ -4,7 +4,7 @@
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Project Detail</h1>
                 <router-link :to="'/app/company/'+$route.params.companyId+'/detail'" class="btn btn-success float-right mt-3 mr-3">
-                    <i class="fa fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> Back
                 </router-link>
             </div>
             <div class="card-body">
@@ -33,7 +33,7 @@
                     <div class="col-lg-12">
                         <h3 class="h3 text-gray-800 float-left">User List</h3>
                         <button v-if="$store.state.permissions.includes('project_add_user')" type="button" class="btn btn-primary float-right mb-2" @click="showAssignModal()">
-                            <i class="fa fa-plus-circle"></i> Add User
+                            <i class="fas fa-plus-circle"></i> Add User
                         </button>
                     </div>
                 </div>
@@ -59,7 +59,7 @@
                             <td>{{ project.created_at | formatDate }}</td>
                             <td>
                                 <button class="btn btn-danger" type="button" @click="handleDelete(project.id)">
-                                    <i class="fa fa-minus"></i>
+                                    <i class="fas fa-minus"></i>
                                 </button>
                             </td>
                         </tr>
