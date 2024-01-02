@@ -101,6 +101,8 @@
         },
         methods: {
             initiateData() {
+                const d = new Date();
+                this.lastMonth =  this.selectedYear < new Date().getFullYear() ? 12 : d.getMonth() + 1
                 for (let i = 1; i <= this.lastMonth; i++) {
                     this.getData(i < 10 ? "0" + i : i)
                 }

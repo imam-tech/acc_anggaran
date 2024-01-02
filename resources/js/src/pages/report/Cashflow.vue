@@ -96,6 +96,8 @@
         },
         methods: {
             initiateData() {
+                const d = new Date();
+                this.lastMonth =  this.selectedYear < new Date().getFullYear() ? 12 : d.getMonth() + 1
                 for (let i = 1; i <= this.lastMonth; i++) {
                     this.getData(i < 10 ? "0" + i : i)
                 }
@@ -104,8 +106,8 @@
                 try {
                     console.log('oke')
                     this.$vs.loading()
-                    const respData = (await this.$axios.get('api/journal/report/cashflow-initial-balance?year=' + this.selectedYear)).data
-                    this.initialBalance = respData
+                    const respDataI = (await this.$axios.get('api/journal/report/cashflow-initial-balance?year=' + this.selectedYear)).data
+                    this.initialBalance = respDataI
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
