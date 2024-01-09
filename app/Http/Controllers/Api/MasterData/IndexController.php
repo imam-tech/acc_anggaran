@@ -23,6 +23,7 @@ class IndexController extends Controller {
         if (!empty($filters['is_archive'])) {
             $pms = $pms->where('is_archive', $filters['is_archive'] === 'yes' ? 1 : 0);
         }
+        $pms = $pms->where('company_id', $request->header('company_id'));
         $pms = $pms->orderBy('id', 'desc')->get();
         return response()->json($pms);
     }

@@ -120,11 +120,22 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formAdd.name" required>
+                                <input type="text" class="form-control" v-model="formAdd.name" placeholder="Example: egg, flour" required>
                             </div>
                             <div class="form-group">
-                                <label>Price per Unit</label>
-                                <input type="text" class="form-control" v-model="formAdd.price_per_unit">
+                                <label>Unit</label>
+                                <div class="d-flex justify-content-between">
+                                    <v-select v-model="formAdd.unit" :options="units" :reduce="p => p.name" style="width: 100%" label="name">
+                                        <span slot="no-options">Unit not found, use + to add</span>
+                                    </v-select>
+                                    <button @click="handleShowAddNewUnit()" class="btn btn-warning ml-2" type="button">
+                                        <i class="fas fa-plus-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Price / {{ formAdd.unit }}</label>
+                                <input type="text" class="form-control" v-model="formAdd.price_per_unit" placeholder="Example: 10000">
                             </div>
                             <div class="form-group">
                                 <label>Image</label>
@@ -132,17 +143,6 @@
                             </div>
                             <img :src="formAdd.image" width="100" alt="" class="rounded">
 
-                            <div class="form-group">
-                                <label>Unit</label>
-                                <div class="d-flex justify-content-between">
-                                    <select v-model="formAdd.unit" class="form-control">
-                                        <option v-for="(u, uI) in units" :key="uI" :value="u.name">{{ u.name }}</option>
-                                    </select>
-                                    <button @click="handleShowAddNewUnit()" class="btn btn-warning ml-2" type="button">
-                                        <i class="fas fa-plus-circle"></i>
-                                    </button>
-                                </div>
-                            </div>
                         </div>
                         <div class="modal-footer flex justify-content-between">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">

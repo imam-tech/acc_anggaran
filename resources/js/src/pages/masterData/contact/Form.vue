@@ -17,37 +17,37 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.name" required>
+                                <input type="text" class="form-control" v-model="formData.name" placeholder="Type the name of contact" required>
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="text" class="form-control" v-model="formData.email">
+                                <input type="text" class="form-control" v-model="formData.email" placeholder="Must be email format">
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
                                 <label>Phone</label>
-                                <input type="text" class="form-control" v-model="formData.phone">
+                                <input type="text" class="form-control" v-model="formData.phone" placeholder="Phone Number Here">
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
                                 <label>Identity Number</label>
-                                <input type="text" class="form-control" v-model="formData.identity_number">
+                                <input type="text" class="form-control" v-model="formData.identity_number" placeholder="Example: 123456789">
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
                                 <label>NPWP Number</label>
-                                <input type="text" class="form-control" v-model="formData.npwp_number">
+                                <input type="text" class="form-control" v-model="formData.npwp_number" placeholder="123456789">
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
                                 <label>Address</label>
-                                <input type="text" class="form-control" v-model="formData.address">
+                                <input type="text" class="form-control" v-model="formData.address" placeholder="The contact address">
                             </div>
                         </div>
                     </div>

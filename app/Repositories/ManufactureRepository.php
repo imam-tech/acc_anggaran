@@ -195,44 +195,6 @@ class ManufactureRepository {
 
             if ($manufactureProduct->status !== 'DRAFT') return resultFunction("Err code MR-AP: status is not draft");
 
-            $materialIds = [];
-            $doses = [];
-            // Check existing stock
-            foreach ($manufactureProduct->manufacture_product_details as $manufacture_product_detail) {
-                foreach ($manufacture_product_detail->semi_finished_material->semi_finished_material_items as $item) {
-                    if (!in_array($item->material_id, $materialIds)) {
-                        $materialIds[] = $item->material_id;
-                    }
-                    if (isset($doses[$item->material_id])) {
-                        $doses[$item->material_id] = $doses[$item->material_id] + $item['dose'];
-                    } else {
-                        $doses[$item->material_id] = $item['dose'];
-                    }
-                }
-            }
-
-            $materials = Material::whereIn('id', $materialIds)->get();
-            foreach ($materials as $key => $material) {
-                if ($doses[$material->id] > $material->stock) {
-                    return resultFunction("Err code MR-AP: stock is not enough");
-                }
-            }
-
-            $manufactureProduct->status = "approve";
-            $manufactureProduct->save();
-
-            foreach ($materials as $key => $material) {
-                $materialHistory = new MaterialHistory();
-                $materialHistory->material_id = $material->id;
-                $materialHistory->type_history = 'manufacture product';
-                $materialHistory->stock = -1 * $doses[$material->id];
-                $materialHistory->note = "Manufacture product #" . $manufactureProduct->id;
-                $materialHistory->price_per_unit = 0;
-                $materialHistory->save();
-
-                $material->stock = $material->stock -  $doses[$material->id];
-                $material->save();
-            }
 
             DB::commit();
             return resultFunction("Updating manufacture product is successfully", true, $manufactureProduct);

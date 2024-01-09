@@ -35,16 +35,16 @@
             return {
                 companies: [],
                 features: [{
-                    link: 'app/sales/create/form',
+                    link: 'app/input-data/sales/create/form',
                     label: 'Create Sales Invoices',
                     image: ''
                 },{
-                    link: 'app/purchase/create/form',
-                    label: 'Create Purchase Invoice',
+                    link: 'app/input-data/purchase/create/form',
+                    label: 'Create Purchase Bill',
                     image: ''
                 },{
-                    link: 'app/product/create/form',
-                    label: 'Add New Product',
+                    link: 'app/input-data/journal/form/create',
+                    label: 'Add New Journal',
                     image: ''
                 }]
             }

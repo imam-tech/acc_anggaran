@@ -16,7 +16,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                            <input type="text" class="form-control" v-model="formData.name" required>
+                            <input type="text" class="form-control" v-model="formData.name" placeholder="Example: sport" required>
                         </div>
                         <div class="form-group">
                             <label>Image</label>

@@ -65,7 +65,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.name" required>
+                                <input type="text" class="form-control" v-model="formData.name" placeholder="Cash" required>
                             </div>
                         </div>
                         <div class="modal-footer flex justify-content-between">

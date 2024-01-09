@@ -4,7 +4,7 @@
             <div class="modal-content">
                 <form @submit.prevent="handleSubmit">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">{{ formData === '' ? 'Add New' : "Update" }} a Semi Finished Good</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">{{ labelModal === 'Add' ? 'Add New' : "Update" }} a Semi Finished Good</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -16,7 +16,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                            <input type="text" class="form-control" v-model="formData.name" required>
+                            <input type="text" class="form-control" v-model="formData.name" placeholder="Example: cake dough, cake cream" required>
                         </div>
                         <div class="form-group">
                             <label>Material<span  v-if="formData.items.length === 0 ? !selectedMaterial : false" style="
@@ -40,7 +40,7 @@
                             <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Dose</th>
+                                <th>Dose (use dot (.) to comma)</th>
                                 <th>Unit</th>
                                 <th>#</th>
                             </tr>
@@ -49,7 +49,7 @@
                             <tr v-for="(m, mI) in formData.items" :key="mI">
                                 <td>{{ m.name }}</td>
                                 <td class="d-flex flex-row justify-content-between align-items-center">
-                                    <input type="number" class="form-control" v-model="formData.items[mI].dose" :max="m.stock" step="0.1" required>
+                                    <input type="number" class="form-control" v-model="formData.items[mI].dose" :max="m.stock" step="0.1" placeholder="Example: 1.5" required>
                                 </td>
                                 <td>{{ m.unit }}</td>
                                 <td class="text-right">

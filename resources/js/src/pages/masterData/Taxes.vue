@@ -97,7 +97,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.title" placeholder="Title of Tax" required>
+                                <input type="text" class="form-control" v-model="formData.title" placeholder="Example: PPN 11" required>
                             </div>
                             <div class="form-group">
                                 <label>Type<span style="
@@ -112,7 +112,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Amount<span style="
+                                <label>Amount (in %)<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;

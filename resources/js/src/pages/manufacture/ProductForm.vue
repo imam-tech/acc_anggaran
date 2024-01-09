@@ -27,7 +27,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.name" required>
+                                <input type="text" class="form-control" v-model="formData.name" placeholder="Example: Cake" required>
                             </div>
                         </div>
                     </div>
@@ -122,67 +122,7 @@
                     </div>
                 </form>
             </div>
-            <div class="modal fade" id="addNewMaterial" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <form @submit.prevent="handleSubmitAddNew">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Add New a {{ formData.type }}</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label>{{ formData.type }} Name<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                    <input type="text" class="form-control" v-model="formAdd.name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Material<span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    font-style: italic;
-                                ">*) required</span></label>
-                                    <v-select v-model="selectedMaterial" :options="materials" :reduce="p => p" style="width: 100%" label="name" @input="handleChangeMaterial">
-                                        <span slot="no-options">Material Not Found</span>
-                                    </v-select>
-                                </div>
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Dose</th>
-                                        <th>Stock</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr v-for="(m, mI) in formAdd.items" :key="mI">
-                                        <td>{{ m.name }}</td>
-                                        <td class="d-flex flex-row justify-content-between align-items-center">
-                                            <input type="number" class="form-control" v-model="formAdd.items[mI].dose" :max="m.stock" step="0.1" required> <span>{{ m.unit }}</span>
-                                        </td>
-                                        <td>{{ m.stock }} {{ m.unit }}</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="modal-footer flex justify-content-between">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">
-                                    <i class="fas fa-times"></i> Close
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Save
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <SemiFinishedMaterialCrud :get-data="getData" :materials="materials" :form-data="formAdd" :label-modal="labelModal"></SemiFinishedMaterialCrud>
+            <SemiFinishedMaterialCrud :get-data="handleChangeType" :materials="materials" :form-data="formAdd" :label-modal="labelModal"></SemiFinishedMaterialCrud>
         </div>
     </div>
 </template>
@@ -268,7 +208,7 @@
                 try {
                     if (this.materials.length === 0) {
                         this.$vs.loading()
-                        this.materials = await this.$axios.get(`api/manufacture/material`)
+                        this.materials = await this.$axios.get(`api/manufacture/material?is_archive=no`)
                         this.$vs.loading.close()
                     }
                 } catch (e) {
@@ -284,7 +224,14 @@
             },
 
             async handleShowAddNewMaterial() {
+                console.log("oke")
                 await this.handleGetMaterial()
+                this.labelModal = "Add"
+                this.formAdd = {
+                    id: "",
+                    name: "",
+                    items: []
+                }
                 $("#addNewMaterial").modal("show")
             },
 
