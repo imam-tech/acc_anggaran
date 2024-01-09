@@ -33,4 +33,8 @@ class Sales extends Model
     public function sales_payments() {
         return $this->hasMany(SalesPayment::class, 'sales_id', 'id');
     }
+
+    public function tag_details() {
+        return $this->hasMany(TagDetail::class, 'transaction_id', 'id')->where('type', 'sales');
+    }
 }

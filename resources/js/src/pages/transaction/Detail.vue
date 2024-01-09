@@ -9,13 +9,13 @@
                         <p class="ml-3 text-success">{{ transactionData.current_status.toUpperCase()  }}</p>
                     </div>
                     <div class="col-6 text-right">
-                        <router-link v-if="transactionData.current_status === 'requested'" :to="'/app/transaction/'+transactionData.id+'/form'"  type="button" class="btn btn-warning mt-3">
+                        <router-link v-if="transactionData.current_status === 'requested' && $store.state.email === transactionData.user_created_by.email" :to="'/app/transaction/'+transactionData.id+'/form'"  type="button" class="btn btn-warning mt-3">
                             <i class="fas fa-pencil-alt"></i> Edit
                         </router-link>
-                        <button v-if="transactionData.current_status === 'requested'" @click="handlePublish()" class="btn btn-primary mt-3">
+                        <button v-if="transactionData.current_status === 'requested' && $store.state.email === transactionData.user_created_by.email" @click="handlePublish()" class="btn btn-primary mt-3">
                             <i class="fas fa-check"></i> Publish
                         </button>
-                        <button v-if="transactionData.current_status === 'requested'" @click="handleDelete()" class="btn btn-danger mt-3">
+                        <button v-if="transactionData.current_status === 'requested' && $store.state.email === transactionData.user_created_by.email" @click="handleDelete()" class="btn btn-danger mt-3">
                             <i class="fas fa-trash"></i> Delete
                         </button>
                         <router-link to="/app/transaction" class="btn btn-success mt-3 mr-3">
@@ -64,16 +64,18 @@
                         </div>
                     </div>
                     <div class="col-xl-2 d-flex align-items-center">
-                        <h5><span :class="status.processed ? 'badge badge-primary p-3' : 'badge badge-light p-3'">
-                            <i v-if="status.processed" class="fas fa-check-circle text-dark"></i>
-                            <i v-else class="fas fa-times text-dark"></i>
-                        </span></h5>
+                        <h5>
+                            <span :class="transactionData.current_status === 'rejected' ? 'badge badge-danger p-3' : (status.processed ? 'badge badge-primary p-3' : 'badge badge-light p-3')">
+                                <i v-if="status.processed" class="fas fa-check-circle text-dark"></i>
+                                <i v-else class="fas fa-times text-dark"></i>
+                            </span>
+                        </h5>
                         <div class="ml-2">
                             <span>Processed</span>
                         </div>
                     </div>
                     <div class="col-xl-2 d-flex align-items-center">
-                        <h5><span :class="status.completed ? 'badge badge-primary p-3' : 'badge badge-light p-3'">
+                        <h5><span :class="transactionData.current_status === 'rejected' ? 'badge badge-danger p-3' : (status.completed ? 'badge badge-primary p-3' : 'badge badge-light p-3')">
                             <i v-if="status.completed" class="fas fa-check-circle text-dark"></i>
                             <i v-else class="fas fa-times text-dark"></i>
                         </span></h5>
@@ -134,7 +136,7 @@
                                 <th>Transaction Method</th>
                                 <td class="text-right">
                                     {{ transactionData.method }} - {{ transactionData.transaction_date }}</span>
-                                    <button type="button" @click="handleShowMethod()" class="btn-success"  v-if="$store.state.permissions.includes('transaction_cancel_approval')">
+                                    <button type="button" @click="handleShowMethod()" class="btn-success"  v-if="$store.state.permissions.includes('transaction_cancel_approval') && transactionData.current_status !== 'requested'">
                                         <i class="fas fa-pen-alt"></i>
                                     </button>
                                 </td>
@@ -202,7 +204,7 @@
                             <td class="text-right">Rp. {{ item.total_amount | formatPriceWithDecimal }}</td>
                             <td class="text-right">
                                 <button :disabled="!handleCheckSet(transactionData, 'transaction_edit_tax')" type="button" class="btn btn-warning mt-2" @click="handleSetTax(item)">
-                                    <i class="fas fa-taxi"></i> Set Tax
+                                    <i class="fas fa-balance-scale"></i> Set Tax
                                 </button>
                                 <button :disabled="!handleCheckSet(transactionData, 'transaction_edit_coa')"  type="button" class="btn btn-secondary mt-2" @click="handleSetCoa(item)">
                                     <i class="fas fa-dollar-sign"></i> Set Coa
@@ -264,9 +266,8 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
-
-                                <form>
+                            <form @submit.prevent="handleSubmitEditMethod()">
+                                <div class="modal-body">
                                     <div class="row mt-3">
                                         <div class="col-4">
                                             <label>Transaction Method<span style="
@@ -276,7 +277,7 @@
                                 ">*) required</span></label>
                                         </div>
                                         <div class="col-8">
-                                            <select v-model="formDataMethod.method" class="form-control">
+                                            <select v-model="formDataMethod.method" class="form-control" required>
                                                 <option value="" selected>--Select Method--</option>
                                                 <option value="flip">Flip</option>
                                                 <option value="manual">Manual</option>
@@ -292,15 +293,19 @@
                                 ">*) required</span></label>
                                         </div>
                                         <div class="col-8">
-                                            <input type="date" class="form-control" v-model="formDataMethod.transaction_date" />
+                                            <input type="date" class="form-control" v-model="formDataMethod.transaction_date" required />
                                         </div>
                                     </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" @click="handleSubmitEditMethod()">Save changes</button>
-                            </div>
+                                </div>
+                                <div class="modal-footer flex justify-content-between">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                        <i class="fas fa-times"></i> Close
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -730,7 +735,6 @@
                 return false
             },
             handleCheckApproval(transactionData, item) {
-                console.log("oke")
                 if (!this.$store.state.permissions.includes('transaction_approval')) {
                     return false
                 }
@@ -765,8 +769,8 @@
             async getDataCoa() {
                 try {
                     this.$vs.loading()
-                    this.coas = await this.$axios.get(`api/coa/by-company?is_active=1&transaction_id=${this.$route.params.id}`)
-                    this.cashflows = await this.$axios.get('api/coa/cashflow')
+                    this.coas = await this.$axios.get(`api/master-data/coa/by-company?is_active=1&transaction_id=${this.$route.params.id}`)
+                    this.cashflows = await this.$axios.get('api/master-data/coa/cashflow')
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
@@ -966,13 +970,20 @@
                 if (item.transaction_item_coas.length > 0) {
                     coaItems = [];
                     item.transaction_item_coas.forEach((itemCoa, index) => {
-                        coaItems.push({coa: parseInt(itemCoa.account_id), debit: itemCoa.debit, credit: itemCoa.credit, cashflow: itemCoa.cashflow_id ? parseInt(itemCoa.cashflow_id) : ""})
+                        coaItems.push({
+                            coa: parseInt(itemCoa.account_id),
+                            debit: itemCoa.debit,
+                            credit: itemCoa.credit,
+                            cashflow: itemCoa.cashflow_id ? parseInt(itemCoa.cashflow_id) : ""
+                        })
                     })
                 }
+                console.log("handle", item)
                 this.formDataCoa = {
                     id: item.id,
                     title:item.title,
                     attachment: item.attachment,
+                    input_amount: item.input_amount,
                     tax_type: item.tax_type,
                     ppn_type: item.ppn_label,
                     pph_type: item.pph_label,
@@ -1067,6 +1078,20 @@
                         })
                     } else {
                         this.transactionData = respDe.data
+                        if (this.$store.state.roles === 'staff' || this.$store.state.roles === 'admin') {
+                            if (this.$store.state.email !== respDe.data.user_created_by.email) {
+                                Swal.fire({
+                                    position: 'top',
+                                    icon: 'error',
+                                    title: 'You don\'t have an access this page',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                }).then(async ()=>{
+                                    this.$router.push('/app/transaction')
+                                })
+                                return
+                            }
+                        }
                         if (this.transactionData.transaction_statuses.find(x => x.title === 'published')) {
                             this.status.published = true;
                         }
@@ -1107,7 +1132,7 @@
             async getTax() {
                 try {
                     this.$vs.loading()
-                    const respDe = await this.$axios.get(`api/tax?is_transaction=${this.transactionData.company_id}`)
+                    const respDe = await this.$axios.get(`api/master-data/taxes?is_transaction=${this.transactionData.company_id}`)
                     this.$vs.loading.close()
                     this.pphs = respDe.filter(x => x.type === 'pph')
                     this.ppns = respDe.filter(x => x.type === 'ppn')

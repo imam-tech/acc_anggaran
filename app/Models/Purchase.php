@@ -33,4 +33,8 @@ class Purchase extends Model
     public function purchase_payments() {
         return $this->hasMany(PurchasePayment::class, 'purchase_id', 'id');
     }
+
+    public function tag_details() {
+        return $this->hasMany(TagDetail::class, 'transaction_id', 'id')->where('type', 'purchase');
+    }
 }

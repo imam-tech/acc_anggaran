@@ -61,7 +61,7 @@
                                     font-weight: bold;
                                     font-size: 21px;
                                     color: black;
-                                ">Copyright &copy; Acc Anggaran {{ new Date().getFullYear() }}</span>
+                                ">Copyright &copy; Finance Accounting and Tax System {{ new Date().getFullYear() }}</span>
                             </div>
                         </div>
                     </div>

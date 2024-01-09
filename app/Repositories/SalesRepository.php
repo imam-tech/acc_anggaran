@@ -13,6 +13,7 @@ use App\Models\SalesPayment;
 use App\Models\SalesPaymentAttachment;
 use App\Models\SalesPaymentJournal;
 use App\Models\SalesProduct;
+use App\Models\TagDetail;
 use App\Models\Tax;
 use App\Services\DigitalOceanService;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +46,7 @@ class SalesRepository {
 
                 SalesProduct::where('sales_id', $sales->id)->delete();
                 SalesJournal::where('sales_id', $sales->id)->delete();
+                TagDetail::where('transaction_id', $sales->id)->where('type', 'sales')->delete();
             } else {
                 $sales = new Sales();
                 $sales->company_id = $companyId;
@@ -229,6 +231,19 @@ class SalesRepository {
                 SalesAttachment::where('sales_id', $sales->id)->delete();
             }
 
+            $tagData = json_decode($data['tags'], true);
+            $tagInsert = [];
+            foreach ($tagData as $datum) {
+                $tagInsert[] = [
+                    'tag_id' => $datum,
+                    'type' => 'sales',
+                    'transaction_id' => $sales->id
+                ];
+            }
+            if (count($tagInsert) > 0) {
+                TagDetail::insert($tagInsert);
+            }
+
             SalesProduct::insert($salesProductInput);
             SalesJournal::insert(array_merge($salesJournalData, $salesJournalTaxData));
             if (count($salesAttachments) > 0) {
@@ -245,7 +260,7 @@ class SalesRepository {
     public function detail($id) {
         try {
             $sales = Sales::with(['sales_products.product', 'sales_products.tax', 'sales_attachments', 'contact',
-            'sales_journals.coa', 'sales_payments.coa'])->find($id);
+            'sales_journals.coa', 'sales_payments.coa', 'tag_details.tag'])->find($id);
             if (!$sales) return resultFunction("Err code SR-D: sales not found");
 
             return resultFunction("", true, $sales);

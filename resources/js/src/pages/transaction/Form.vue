@@ -212,7 +212,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <v-select v-model="formInquiry.bank" :options="banks" :reduce="p => p.id" style="width: 100%" label="name">
+                                <v-select v-model="formInquiry.bank" :options="banks" :reduce="p => p.bank_code" style="width: 100%" label="name">
                                     <template #search="{attributes, events}">
                                         <input
                                                 class="vs__search"
@@ -497,7 +497,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(async ()=>{
-                            await this.getData()
+                            this.getDataInquiry()
                         })
                     }
                 } catch (e) {
@@ -514,7 +514,7 @@
             async getListCompany() {
                 try {
                     this.$vs.loading()
-                    const compLocals = await this.$axios.get(`api/company`)
+                    const compLocals = await this.$axios.get(`api/configuration/company`)
                     compLocals.forEach((x) => {
                         this.companies.push(x)
                     })
@@ -533,7 +533,7 @@
             async getDataCompany() {
                 try {
                     this.$vs.loading()
-                    const respCompany = await this.$axios.get(`api/company/${this.selectedCompany}/detail`)
+                    const respCompany = await this.$axios.get(`api/configuration/company/${this.selectedCompany}/detail`)
                     this.$vs.loading.close()
                     if (!respCompany.status) {
                         Swal.fire({
@@ -554,7 +554,7 @@
                             showConfirmButton: false,
                             timer: 2000
                         }).then(()=>{
-                            this.$router.push(`/app/company/${this.selectedCompany}/detail`);
+                            this.$router.push(`/app/configuration/company/${this.selectedCompany}/detail`);
                         })
                     }
                 } catch (e) {
@@ -609,11 +609,24 @@
                         })
                         return
                     }
+                    if (!resp.data.current_status !== 'requested') {
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'error',
+                            title: "This transaction is not editable,the status is not requested",
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then(async ()=>{
+                            this.$router.push('/app/transaction')
+                        })
+                        return
+                    }
                     this.selectedCompany = resp.data.company_id
-                    this.handleChangeCompany()
+                    await this.handleChangeCompany()
                     this.formData.id = resp.data.id
                     this.formData.title = resp.data.title
                     this.formData.project_id = resp.data.project_id
+                    await this.getDataProject()
                     this.formData.description = resp.data.description
                     this.formData.bank = resp.data.bank
                     this.formData.inquiry_id = resp.data.account_number
@@ -643,7 +656,7 @@
             async getDataProject() {
                 try {
                     this.$vs.loading()
-                    this.projects = await this.$axios.get(`api/project?company_id=${this.selectedCompany}`)
+                    this.projects = await this.$axios.get(`api/project?company_id=${this.selectedCompany}&project_user=1`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()

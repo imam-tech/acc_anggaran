@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Coa;
 use App\Models\Product;
 use App\Models\ProductBrand;
 use App\Models\ProductCategory;
@@ -10,59 +11,6 @@ use App\Models\ProductUnit;
 use App\Services\DigitalOceanService;
 
 class ProductRepository {
-    public function storeUnit($data, $companyId) {
-        try {
-            $validator = \Validator::make($data, [
-                "name" => "required",
-            ]);
-
-            if ($validator->fails()) return resultFunction("Err code PR-SU: " . collect($validator->errors()->all())->implode(" , "));
-
-
-            $message = "Creating";
-            if ($data['id']) {
-                $productUnit = ProductUnit::find($data['id']);
-                if (!$productUnit) return resultFunction("Err code PR-SU: unit not found for ID " . $data['id']);
-                $message = 'Updating';
-            } else {
-                $productUnit = new ProductUnit();
-                $productUnit->company_id = $companyId;
-            }
-            $productUnit->name = $data['name'];
-            $productUnit->save();
-
-            return resultFunction($message . " unit is successfully", true);
-        } catch (\Exception $e) {
-            return resultFunction("Err code PR-SU: catch " . $e->getMessage());
-        }
-    }
-
-    public function deleteUnit($id) {
-        try {
-            $productUnit = ProductUnit::find($id);
-            if (!$productUnit) return resultFunction("Err code PR-DU: unit not found");
-
-            $productUnit->delete();
-
-            return resultFunction("Deleting unit successfully", true);
-        } catch (\Exception $e) {
-            return resultFunction("Err code PR-DU: catch " . $e->getMessage());
-        }
-    }
-
-    public function archiveUnit($id) {
-        try {
-            $productUnit = ProductUnit::find($id);
-            if (!$productUnit) return resultFunction("Err code PR-DU: unit not found");
-
-            $productUnit->is_archive = !$productUnit->is_archive;
-            $productUnit->save();
-
-            return resultFunction("", true);
-        } catch (\Exception $e) {
-            return resultFunction("Err code PR-DU: catch " . $e->getMessage());
-        }
-    }
 
     public function storeCategory($request, $companyId) {
         try {
@@ -168,6 +116,15 @@ class ProductRepository {
             } else {
                 $product = new Product();
                 $product->company_id = $companyId;
+                if ($data['sale_account_id'] === null) {
+                    $coaSale = Coa::with([])->where('account_number', 400001)->where('company_id', $companyId)->first();
+                    $data['sale_account_id'] = $coaSale->id;
+                }
+
+                if ($data['purchase_account_id'] === null) {
+                    $coaPurchase = Coa::with([])->where('account_number', 500001)->where('company_id', $companyId)  ->first();
+                    $data['purchase_account_id'] = $coaPurchase->id;
+                }
             }
 
 

@@ -11,8 +11,7 @@ class InquiryRepository {
         try {
             $validator = \Validator::make($data, [
                 "bank" => "required",
-                "account_number" => "required",
-                "company_id" => "required"
+                "account_number" => "required"
             ]);
 
             if ($validator->fails()) return resultFunction("Err code IR-St: " . collect($validator->errors()->all())->implode(" , "));

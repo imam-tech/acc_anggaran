@@ -161,7 +161,7 @@
 </template>
 
 <script>
-    import UnitCrud from '../product/components/UnitCrud'
+    import UnitCrud from '../masterData/product/components/UnitCrud'
     export default {
         name: "Index.vue",
         components: {UnitCrud},
@@ -255,7 +255,7 @@
                     }
                     if (this.units.length === 0) {
                         this.$vs.loading()
-                        this.units = await this.$axios.get(`api/product/unit`)
+                        this.units = await this.$axios.get(`api/master-data/unit`)
                         this.$vs.loading.close()
                     }
                 } catch (e) {

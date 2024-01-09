@@ -7,6 +7,7 @@ use App\Models\CompanyUser;
 use App\Models\Project;
 use App\Models\ProjectUser;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class ProjectRepository {
     public function store($data) {
@@ -62,6 +63,7 @@ class ProjectRepository {
     }
     public function assignUserToProject($data) {
         try {
+            DB::beginTransaction();
             $validator = \Validator::make($data, [
                 "user_id" => "required",
                 "project_id" => "required",
@@ -72,18 +74,25 @@ class ProjectRepository {
             $project = Project::with(['company'])->find($data['project_id']);
             if (!$project) return resultFunction("Err code PR-St: company not found for ID " . $data['company_id']);
 
-            $user = User::find($data['user_id']);
-            if (!$user) return resultFunction("Err code PR-St: user not found for ID " . $data['user_id']);
+            foreach ($data['user_id'] as $datum) {
+                $user = User::find($datum);
+                if (!$user) return resultFunction("Err code PR-St: user not found for ID " . $datum);
+            }
 
-            $projectUserHistory = ProjectUser::where('project_id', $data['project_id'])->where('user_id', $data['user_id'])
+            /*$projectUserHistory = ProjectUser::where('project_id', $data['project_id'])->where('user_id', $data['user_id'])
                 ->first();
-            if ($projectUserHistory) return resultFunction("Err code PR-St: the user is already assigning to project " . $project->title);
+            if ($projectUserHistory) return resultFunction("Err code PR-St: the user is already assigning to project " . $project->title);*/
 
-            $projectUser = new ProjectUser();
-            $projectUser->project_id = $data['project_id'];
-            $projectUser->user_id = $data['user_id'];
-            $projectUser->save();
+            ProjectUser::where('project_id', $data['project_id'])->whereIn('user_id', $data['user_id'])->delete();
 
+            foreach ($data['user_id'] as $datum) {
+                $projectUser = new ProjectUser();
+                $projectUser->project_id = $data['project_id'];
+                $projectUser->user_id = $datum;
+                $projectUser->save();
+            }
+
+            DB::commit();
             return resultFunction("Assigning User to Project successfully", true, $projectUser);
         } catch (\Exception $e) {
             return resultFunction("Err code PR-St: catch " . $e->getMessage());

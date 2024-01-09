@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Coa;
 use App\Models\Contact;
 
 class ContactRepository {
@@ -23,6 +24,15 @@ class ContactRepository {
             } else {
                 $contact = new Contact();
                 $contact->company_id = $companyId;
+                if (isset($data['type'])) {
+                    if ($data['type'] === 'customer') {
+                        $coaSale = Coa::with([])->where('account_number', 100001)->where('company_id', $companyId)->first();
+                        $data['sale_account_id'] = $coaSale->id;
+                    } elseif ($data['type'] === 'vendor') {
+                        $coaSale = Coa::with([])->where('account_number', 200001)->where('company_id', $companyId)->first();
+                        $data['purchase_account_id'] = $coaSale->id;
+                    }
+                }
             }
             $contact->sale_account_id = $data['sale_account_id'];
             $contact->purchase_account_id = $data['purchase_account_id'];
@@ -36,7 +46,7 @@ class ContactRepository {
             $contact->purchase_account_id = $data['purchase_account_id'];
             $contact->save();
 
-            return resultFunction($message . " customer is successfully", true);
+            return resultFunction($message . " contact is successfully", true);
         } catch (\Exception $e) {
             return resultFunction("Err code CR-S: catch " . $e->getMessage());
         }

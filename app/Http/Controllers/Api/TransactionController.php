@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller {
     protected $transactionRepo;
@@ -30,6 +31,10 @@ class TransactionController extends Controller {
         return response()->json($this->transactionRepo->detail($id));
     }
 
+    public function reject($id = null) {
+        return response()->json($this->transactionRepo->reject($id));
+    }
+
     public function delete($id = null) {
         return response()->json($this->transactionRepo->delete($id));
     }
@@ -47,9 +52,15 @@ class TransactionController extends Controller {
         if (!empty($filters['transaction_number'])) {
             $transactions = $transactions->where('transaction_number', 'LIKE', "%" . $filters['transaction_number'] . '%');
         }
+
         if (isset($filters['all'])) {
             $transactions = $transactions->orderBy('id', 'desc')->get();
         } else {
+
+            if (in_array(Auth::user()->role_id, [2, 6])) {
+                $transactions = $transactions->where('created_by', Auth::user()->id);
+            }
+
             $transactions = $transactions->orderBy('id', 'desc')->paginate(25);
         }
         return response()->json($transactions);

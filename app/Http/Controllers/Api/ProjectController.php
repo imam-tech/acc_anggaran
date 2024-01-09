@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Repositories\ProjectRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller {
     protected $projectRepo;
@@ -16,12 +17,19 @@ class ProjectController extends Controller {
     }
 
     public function index(Request $request) {
-        $filters = $request->only(['company_id']);
+        $filters = $request->only(['company_id', 'project_user']);
 
         $projects = Project::with(['company', 'projectUsers']);
 
         if (!empty($filters['company_id'])) {
             $projects = $projects->where('company_id', $filters['company_id']);
+        }
+
+        if (!empty($filters['project_user'])) {
+            $userId = Auth::user()->id;
+            $projects = $projects->whereHas('projectUsers', function ($query) use($userId) {
+                $query->where('user_id', $userId);
+            });
         }
 
         $projects = $projects->orderBy('id', 'desc')->get();

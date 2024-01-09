@@ -63,10 +63,11 @@ class FlipService {
             $payloads = [
                 "account_number" => $transaction->account_number,
                 "bank_code" => $transaction->bank,
-                "amount" => (int) $transaction->dpp
+                "amount" => (int) $transaction->dpp,
+                "remark" => "test"
             ];
             $url = 'disbursement';
-            $idempotencyKey = 'demo-anggaran-' . $transaction->id;
+            $idempotencyKey = 'demo-anggaran-' . $transaction->id . '-' . date("His");
 
             return $this->_callPost($url, $payloads, $idempotencyKey);
         } catch (\Exception $e) {

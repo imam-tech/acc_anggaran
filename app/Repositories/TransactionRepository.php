@@ -124,6 +124,30 @@ class TransactionRepository {
         }
     }
 
+    public function reject($id) {
+        try {
+            $transaction = Transaction::with(['transactionStatuses'])
+                ->find($id);
+            if (!$transaction) return resultFunction("Err code CR-Dl: transaction not found for ID " .$id);
+
+            DB::beginTransaction();
+
+            $transactionStatus = new TransactionStatus();
+            $transactionStatus->transaction_id = $transaction->id;
+            $transactionStatus->title = 'rejected';
+            $transactionStatus->save();
+
+            $transaction->current_status = 'rejected';
+            $transaction->save();
+
+            DB::commit();
+
+            return resultFunction("Successfully rejecting", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code CR-Dl: catch " . $e->getMessage());
+        }
+    }
+
     public function delete($id) {
         try {
             DB::beginTransaction();

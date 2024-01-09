@@ -15,6 +15,7 @@ use App\Models\PurchasePaymentAttachment;
 use App\Models\PurchasePaymentJournal;
 use App\Models\PurchaseProduct;
 use App\Models\Supplier;
+use App\Models\TagDetail;
 use App\Models\Tax;
 use App\Services\DigitalOceanService;
 use Illuminate\Support\Facades\DB;
@@ -46,6 +47,7 @@ class PurchaseRepository {
 
                 PurchaseProduct::where('purchase_id', $purchase->id)->delete();
                 PurchaseJournal::where('purchase_id', $purchase->id)->delete();
+                TagDetail::where('transaction_id', $purchase->id)->where('type', 'purchase')->delete();
             } else {
                 $purchase = new Purchase();
                 $purchase->company_id = $companyId;
@@ -198,6 +200,19 @@ class PurchaseRepository {
                 PurchaseAttachment::where('purchase_id', $purchase->id)->delete();
             }
 
+            $tagData = json_decode($data['tags'], true);
+            $tagInsert = [];
+            foreach ($tagData as $datum) {
+                $tagInsert[] = [
+                    'tag_id' => $datum,
+                    'type' => 'purchase',
+                    'transaction_id' => $purchase->id
+                ];
+            }
+            if (count($tagInsert) > 0) {
+                TagDetail::insert($tagInsert);
+            }
+
             PurchaseProduct::insert($purchaseProductInput);
             PurchaseJournal::insert(array_merge($purchaseJournalData, $purchaseJournalTaxData));
             if (count($purchaseAttachments) > 0) {
@@ -214,7 +229,7 @@ class PurchaseRepository {
     public function detail($id) {
         try {
             $purchase = Purchase::with(['purchase_products.product', 'purchase_products.tax', 'purchase_attachments', 'contact',
-                'purchase_journals.coa', 'purchase_payments.coa'])->find($id);
+                'purchase_journals.coa', 'purchase_payments.coa', 'tag_details.tag'])->find($id);
             if (!$purchase) return resultFunction("Err code SR-D: purchase not found");
 
             return resultFunction("", true, $purchase);
