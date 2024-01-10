@@ -155,20 +155,11 @@ class CompanyRepository {
                 $coaPurchaseTax->save();
 
                 Tax::insert([
-                   [
-                       'company_id' => $company->id,
-                       'title' => 'PPN',
-                       'type' => 'ppn',
-                       'amount' => 10,
-                       'sell_account_id' => $coaSalesTax->id,
-                       'buy_account_id' => $coaPurchaseTax->id,
-                       'is_archive' => 0
-                   ],
                     [
                         'company_id' => $company->id,
-                        'title' => 'PPN 11',
+                        'title' => 'PPN',
                         'type' => 'ppn',
-                        'amount' => 11,
+                        'amount' => 10,
                         'sell_account_id' => $coaSalesTax->id,
                         'buy_account_id' => $coaPurchaseTax->id,
                         'is_archive' => 0
@@ -178,6 +169,24 @@ class CompanyRepository {
                         'title' => 'PPH',
                         'type' => 'pph',
                         'amount' => 10,
+                        'sell_account_id' => $coaSalesTax->id,
+                        'buy_account_id' => $coaPurchaseTax->id,
+                        'is_archive' => 0
+                    ],
+                    [
+                        'company_id' => $company->id,
+                        'title' => 'No PPN',
+                        'type' => 'ppn',
+                        'amount' => 0,
+                        'sell_account_id' => $coaSalesTax->id,
+                        'buy_account_id' => $coaPurchaseTax->id,
+                        'is_archive' => 0
+                    ],
+                    [
+                        'company_id' => $company->id,
+                        'title' => 'No PPH',
+                        'type' => 'pph',
+                        'amount' => 0,
                         'sell_account_id' => $coaSalesTax->id,
                         'buy_account_id' => $coaPurchaseTax->id,
                         'is_archive' => 0

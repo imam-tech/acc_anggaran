@@ -339,7 +339,6 @@
                                         </div>
                                         <div class="col-8">
                                             <select v-model="formData.tax_type" class="form-control" @change="handleCalculate" required>
-                                                <option value="" selected>--Select Tax Type--</option>
                                                 <option value="ppn_gross">Include PPN gross up pph</option>
                                                 <option value="ppn_reduce">Include PPN reduce pph</option>
                                                 <option value="exclude">Exclude</option>
@@ -356,7 +355,6 @@
                                         </div>
                                         <div class="col-8">
                                             <select v-model="formData.ppn" class="form-control" @change="handleCalculate" required>
-                                                <option value="">--Choose PPn--</option>
                                                 <option v-for="(ppn, index) in ppns" :key="index" :value="{label: ppn.title + ' ' + parseFloat(ppn.amount) + '%', value: parseFloat(ppn.amount)}">{{ ppn.title }} - {{ ppn.amount }}%</option>
                                             </select>
                                         </div>
@@ -371,7 +369,6 @@
                                         </div>
                                         <div class="col-8">
                                             <select v-model="formData.pph" class="form-control" @change="handleCalculate" required>
-                                                <option value="" selected>--No PPH--</option>
                                                 <option v-for="(pph, index) in pphs" :key="index" :value="{label: pph.title, value: pph.amount}">{{ pph.title }} - {{ pph.amount }}%</option>
                                             </select>
                                         </div>
@@ -460,7 +457,7 @@
                     <div class="modal-dialog modal-xl" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel"> {{ formDataCoa.type === 'edit' ? "Edit" : "View" }} Item</h5>
+                                <h5 class="modal-title"> {{ formDataCoa.type === 'edit' ? "Edit" : "View" }} Item</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
