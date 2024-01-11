@@ -67,9 +67,9 @@
             </a>
             <div id="collapseOutputData" class="collapse" :class="handleShowMenu('output-data').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <router-link class="collapse-item" to="/app/output-data/business-overview">
-                        <i class="fas fa-chart-area"></i><span class="ml-2">Business Overview</span>
-                    </router-link>
+                    <!--<router-link class="collapse-item" to="/app/output-data/business-overview">-->
+                        <!--<i class="fas fa-chart-area"></i><span class="ml-2">Business Overview</span>-->
+                    <!--</router-link>-->
                     <router-link class="collapse-item" to="/app/output-data/report">
                         <i class="fas fa-file-archive"></i><span class="ml-2">Report</span>
                     </router-link>

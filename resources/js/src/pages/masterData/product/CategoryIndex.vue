@@ -4,9 +4,9 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <div class="mt-3 d-flex justify-content-between">
-                    <h1 class="h3 ml-3 text-gray-800 float-left">Category</h1>
+                    <h1 class="h3 ml-3 text-gray-800 float-left">Product Category</h1>
                     <button @click="handleShowCrudModal()" type="button" class="btn btn-primary float-right mr-3">
-                        <i class="fas fa-plus-circle"></i> Create New Category
+                        <i class="fas fa-plus-circle"></i> Create New Product Category
                     </button>
                 </div>
             </div>
@@ -23,8 +23,8 @@
                         </thead>
                         <tbody>
                         <tr v-if="categories.length == 0">
-                            <td colspan="3" class="text-center">
-                                Category Not Found
+                            <td colspan="4" class="text-center">
+                                Product Category Not Found
                             </td>
                         </tr>
                         <tr v-else v-for="(p, pI) in categories" :key="pI">

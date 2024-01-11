@@ -37,7 +37,7 @@
                     <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th><b>Account Code</b></th>
+                            <th><b>Account Number</b></th>
                             <th><b>Account Name</b></th>
                             <th class="text-right"><b>Statement Balance</b></th>
                             <th class="text-right"><b>Balance in Jurnal</b></th>

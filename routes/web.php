@@ -20,3 +20,5 @@ Route::get('/app/{any?}', [AppController::class, 'index'])->where('any', '.*');
 Route::get('/auth/{any?}', [AppController::class, 'index'])->where('any', '.*');
 Route::get('/print/balance-sheet', [AppController::class, 'printBalanceSheet']);
 Route::get('/print/profit-lost', [AppController::class, 'printProfitLose']);
+Route::get('/sales/delivery-slip', [AppController::class, 'salesDeliverySlip']);
+Route::get('/print/sales/delivery-slip', [AppController::class, 'printSalesDeliverySlip']);

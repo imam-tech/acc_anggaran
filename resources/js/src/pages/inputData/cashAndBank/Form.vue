@@ -21,7 +21,7 @@
                                 <input type="text" class="form-control" v-model="formData.account_name" required>
                             </div>
                             <div class="form-group">
-                                <label>Account Code<span style="
+                                <label>Account Number<span style="
                                     color: red;
                                     font-weight: bold;
                                     font-style: italic;

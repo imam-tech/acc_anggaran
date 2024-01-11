@@ -21,7 +21,7 @@
                     <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th class="text-center">Account Code</th>
+                            <th class="text-center">Account Number</th>
                             <th class="text-center">Account Name</th>
                             <th class="text-center">Category</th>
                             <th class="text-center">Account Type</th>
@@ -188,7 +188,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.account_number" required>
+                                <input type="text" class="form-control" v-model="formData.account_number" placeholder="Example: 111111" required>
                             </div>
                             <div class="form-group">
                                 <label>Account Name<span style="
@@ -196,7 +196,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.account_name" required>
+                                <input type="text" class="form-control" v-model="formData.account_name" placeholder="Account Receivable" required>
                             </div>
                             <div class="form-group">
                                 <label>Account Type<span style="

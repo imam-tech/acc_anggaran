@@ -296,6 +296,16 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-10"></div>
+                    <div class="col-2 text-right">
+                        <select class="form-control">
+                            <option value="">--Print--</option>
+                            <option value="delivery slip">Delivery Slip / Surat Jalan</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

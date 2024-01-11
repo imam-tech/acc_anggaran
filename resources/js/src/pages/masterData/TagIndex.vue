@@ -24,7 +24,7 @@
                         </thead>
                         <tbody>
                         <tr v-if="tags.length == 0">
-                            <td colspan="3" class="text-center">
+                            <td colspan="5" class="text-center">
                                 Tag Not Found
                             </td>
                         </tr>

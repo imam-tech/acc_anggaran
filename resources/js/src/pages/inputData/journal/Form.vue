@@ -15,7 +15,7 @@
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">Transaction No</div>
                                 </div>
-                                <input type="text" class="form-control" v-model="formData.transaction_no" required />
+                                <input type="text" class="form-control" v-model="formData.transaction_no" placeholder="Example: JOUR1" required />
                             </div>
                         </div>
                         <div class="col-md-6 col-xl-4">
@@ -65,7 +65,7 @@
                                         </div>
                                         <div class="col-md-4 col-xl-3">
                                             <label>Description</label>
-                                            <input type="text" class="form-control" v-model="formData.items[index].description" />
+                                            <input type="text" class="form-control" v-model="formData.items[index].description" placeholder="Detail of your journal item" />
                                         </div>
                                         <div class="col-md-4 col-xl-2">
                                             <label>Debit</label>
