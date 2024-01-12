@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\Configuration\UserController;
 
 Route:: group(['prefix' => 'user', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/', [UserController::class, 'index']);

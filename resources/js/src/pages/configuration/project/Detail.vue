@@ -205,7 +205,7 @@
             async getDataUser() {
                 try {
                     this.$vs.loading()
-                    this.users = await this.$axios.get(`api/configuration/user/not-admin`)
+                    this.users = await this.$axios.get(`api/configuration/user`)
                     this.$vs.loading.close()
                 } catch (e) {
                     this.$vs.loading.close()
