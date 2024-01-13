@@ -109,24 +109,24 @@ class CompanyRepository {
                 // Default for product
                 $coaSales = new Coa();
                 $coaSales->company_id = $company->id;
-                $coaSales->category_id = $company->type === 'pt' ? 35 : 81;
+                $coaSales->category_id = $company->type === 'pt' ? 34 : 80;
                 $coaSales->posting_id = 1;
                 $coaSales->account_code = "500001-Beban Pokok Pendapatan";
                 $coaSales->account_number = 500001;
                 $coaSales->account_name = "Beban Pokok Pendapatan";
-                $coaSales->account_type = 'credit';
+                $coaSales->account_type = 'debit';
                 $coaSales->is_active = 1;
                 $coaSales->save();
 
                 // Default for product
                 $coaPurchase = new Coa();
                 $coaPurchase->company_id = $company->id;
-                $coaPurchase->category_id = $company->type === 'pt' ? 34 : 80;
-                $coaPurchase->posting_id = 1;
+                $coaPurchase->category_id = $company->type === 'pt' ? 32 : 78;
+                $coaPurchase->posting_id = 6;
                 $coaPurchase->account_code = "400001-Pendapatan";
                 $coaPurchase->account_number = 400001;
                 $coaPurchase->account_name = "Pendapatan";
-                $coaPurchase->account_type = 'debit';
+                $coaPurchase->account_type = 'credit';
                 $coaPurchase->is_active = 1;
                 $coaPurchase->save();
 
