@@ -110,7 +110,7 @@ class SalesRepository {
                     $coaComision = Coa::where('company_id', $companyId)->where('account_number', 511101)->first();
                     $salesJournalTaxData[] = [
                         'sales_id' => $sales->id,
-                        'account_id' => $coaComision,
+                        'account_id' => $coaComision->id    ,
                         'debit' => $discountSub,
                         'credit' => 0,
                         'created_at' => date("Y-m-d H:i:s"),
