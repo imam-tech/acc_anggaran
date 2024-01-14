@@ -12,8 +12,8 @@ class CashAndBankRepository {
         try {
             $validator = \Validator::make($data, [
                 "account_name" => "required",
-                "account_code" => "required",
-                "category" => "required"
+                "account_number" => "required",
+                "type" => "required"
             ]);
 
             if ($validator->fails()) return resultFunction("Err code CAB-S: " . collect($validator->errors()->all())->implode(" , "));
@@ -31,15 +31,15 @@ class CashAndBankRepository {
                 $coa = Coa::find($cashAndBank->coa_id);
                 if (!$coa) return resultFunction("Err code CAB-S: data coa not found");
 
-                $coa->account_code = $data['account_code'] . '-' . $data['account_name'];
-                $coa->account_number = $data['account_code'];
+                $coa->account_code = $data['account_number'] . '-' . $data['account_name'];
+                $coa->account_number = $data['account_number'];
                 $coa->account_name = $data['account_name'];
-                $coa->description = $data['description'];
+                $coa->description = $data['description'] ? $data['description'] : '';
                 $coa->save();
             } else {
                 $coa = new Coa();
                 $coa->company_id = $companyId;
-                $coa->category_id = "";
+                $coa->category_id = $data['type'] === 'Cash' ? $cashId : ($data['type'] === 'Bank' ? $bankId : $creditCardId);
                 $coa->posting_id = 1;
                 $coa->is_active = 1;
 
@@ -47,24 +47,24 @@ class CashAndBankRepository {
                 $coa->account_number = "";
                 $coa->account_name = "";
                 $coa->description = "";
-                $coa->account_type = "";
+                $coa->account_type = in_array($data['type'], ['Cash', 'Bank']) ? 'Debit' : 'Credit';
                 $coa->save();
 
                 $cashAndBank = new CashAndBank();
                 $cashAndBank->company_id = $companyId;
-                $cashAndBank->type = $data['category'];
+                $cashAndBank->type = $data['type'];
                 $cashAndBank->coa_id = $coa->id;
                 $cashAndBank->save();
             }
-            $coa->category_id = $data['category'] === 'Cash' ? $cashId : ($data['category'] === 'Bank' ? $bankId : $creditCardId);
-            $coa->account_code = $data['account_code'] . '-' . $data['account_name'];
-            $coa->account_number = $data['account_code'];
+            $coa->category_id = $data['type'] === 'Cash' ? $cashId : ($data['type'] === 'Bank' ? $bankId : $creditCardId);
+            $coa->account_code = $data['account_number'] . '-' . $data['account_name'];
+            $coa->account_number = $data['account_number'];
             $coa->account_name = $data['account_name'];
             $coa->description = $data['description'];
-            $coa->account_type = in_array($data['category'], ['Cash', 'Bank']) ? 'Debit' : 'Credit';
+            $coa->account_type = in_array($data['type'], ['Cash', 'Bank']) ? 'Debit' : 'Credit';
             $coa->save();
 
-            $cashAndBank->type = $data['category'];
+            $cashAndBank->type = $data['type'];
             $cashAndBank->bank_name = $data['bank_name'];
             $cashAndBank->bank_account_number = $data['bank_account_number'];
             $cashAndBank->save();

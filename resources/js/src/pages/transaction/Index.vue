@@ -20,7 +20,7 @@
                     </div>
                 </div>
                 <div class="col-xl-3">
-                    <div v-if="!['staff', 'admin'].includes($store.state.roles)" class="input-group mb-2">
+                    <div v-if="!['staff', 'admin'].includes($store.state.role)" class="input-group mb-2">
                         <div class="input-group-prepend">
                             <div class="input-group-text">Status</div>
                         </div>

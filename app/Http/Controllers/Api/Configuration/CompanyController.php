@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Repositories\CompanyRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller {
     protected $companyRepo;
@@ -18,7 +19,7 @@ class CompanyController extends Controller {
     public function index() {
         $companies = Company::with(['projects']);
 
-        $companies = $companies->get();
+        $companies = $companies->where('app_id', Auth::user()->app_id)->get();
         return response()->json($companies);
     }
 

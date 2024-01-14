@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex justify-content-center">
-        <router-link class="dropdown-item mt-2" to="/app/profile">
+        <router-link class="dropdown-item mt-2" to="#">
             <img src="https://png.pngtree.com/png-vector/20190114/ourlarge/pngtree-vector-avatar-icon-png-image_313572.jpg" style="width:40px" class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <h6>{{this.$store.state.email.substring(0,12)+ '...'}}</h6>
         </router-link>
@@ -24,6 +24,15 @@
             async confirmLogout() {
                 let hasLogin = confirm('Are you sure you want to logout?')
                 if( hasLogin) {
+                    this.$store.commit('SET_USER', {
+                        app: null,
+                        email: '',
+                        name: '',
+                        permissions:[],
+                        role: "",
+                        signAt: null,
+                        isLogin: false
+                    })
                     await this.$axios.get(`api/auth/logout`)
                     Cookies.remove('access_token_fat')
                     Cookies.remove('current_company_fat')

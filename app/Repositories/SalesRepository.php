@@ -107,9 +107,10 @@ class SalesRepository {
                 }
 
                 if ($discountSub > 0 && $isSumDiscount) {
+                    $coaComision = Coa::where('company_id', $companyId)->where('account_number', 511101)->first();
                     $salesJournalTaxData[] = [
                         'sales_id' => $sales->id,
-                        'account_id' => 2396, // sementara
+                        'account_id' => $coaComision,
                         'debit' => $discountSub,
                         'credit' => 0,
                         'created_at' => date("Y-m-d H:i:s"),

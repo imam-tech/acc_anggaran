@@ -38,6 +38,7 @@
                     <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
+                            <th class="text-center">Is Locked</th>
                             <th class="text-center">Title</th>
                             <th class="text-center">Type</th>
                             <th class="text-center">Amount</th>
@@ -50,6 +51,10 @@
                         </thead>
                         <tbody>
                         <tr v-for="(tax, index) in taxes" :key="index">
+                            <td class="text-center">
+                                <i v-if="tax.is_locked" class="fas fa-lock"></i>
+                                <i v-else class="fas fa-lock-open"></i>
+                            </td>
                             <td>{{ tax.title }}</td>
                             <td>{{ tax.type}}</td>
                             <td class="text-right">{{ tax.amount }}</td>
@@ -61,13 +66,13 @@
                                 <span v-else class="badge badge-primary p-3">No</span>
                             </td>
                             <td v-if="$store.state.permissions.includes('tax_edit')" class="text-right">
-                                <button type="button" class="btn btn-warning" @click="showEditTax(tax)">
+                                <button v-if="!tax.is_locked" type="button" class="btn btn-warning" @click="showEditTax(tax)">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <button v-if="tax.sale_product === null && tax.purchase_product === null" class="btn btn-danger" type="button" @click="handleDelete(tax.id)">
+                                <button v-if="tax.sale_product === null && tax.purchase_product === null && !tax.is_locked" class="btn btn-danger" type="button" @click="handleDelete(tax.id)">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                <button v-else @click="handleArchive(tax)" class="btn btn-secondary" type="button">
+                                <button v-else-if="!tax.is_locked" @click="handleArchive(tax)" class="btn btn-secondary" type="button">
                                     <i class="fas fa-archive"></i>
                                 </button>
                             </td>

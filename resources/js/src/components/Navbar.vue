@@ -1,5 +1,5 @@
 <template>
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <ul class="navbar-nav sidebar sidebar-dark accordion" :class="$store.state.app.is_multiple_company === 1 ? ' bg-gradient-primary' : ' bg-gradient-success'" id="accordionSidebar">
 
         <!-- Sidebar - Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
@@ -54,7 +54,7 @@
                 </div>
             </div>
         </li>
-        <li class="nav-item bg-warning rounded">
+        <li v-if="$store.state.app.is_multiple_company === 1" class="nav-item bg-warning rounded">
             <select class="nav-link text-dark font-weight-bold" @change="changeCompany">
                 <option v-for="(company, cI) in companies" :value="company.id" :key="cI" :selected="currentCompany == company.id">{{ company.title }}</option>
             </select>
@@ -205,14 +205,14 @@
                             Cookies.set('current_company_title_fat', this.companies[this.companies.length-1].title, {expires: 1})
                             this.currentCompany = Cookies.get('current_company_fat')
                         }
-                        if (!Cookies.get("current_company_fat")) {
+                        if (!Cookies.get("current_company_fat") || Cookies.get('current_company_fat') === undefined) {
                             Cookies.set('current_company_fat', this.companies[0].id, {expires: 1})
                         }
-                        if (!Cookies.get("current_company_title_fat")) {
+                        if (!Cookies.get("current_company_title_fat") || Cookies.get('current_company_title_fat') === undefined) {
                             Cookies.set('current_company_title_fat', this.companies[0].title, {expires: 1})
                         }
                     } else {
-                        if (this.$store.state.roles === 'administrator') {
+                        if (this.$store.state.role === 'administrator') {
                             Swal.fire({
                                 position: 'top',
                                 icon: 'error',

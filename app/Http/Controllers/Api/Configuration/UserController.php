@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller {
     protected $userRepo;
@@ -13,14 +14,6 @@ class UserController extends Controller {
     public function __construct()
     {
         $this->userRepo = new UserRepository();
-    }
-
-    public function notAdmin() {
-        $user = User::with(['role']);
-
-        $user = $user->where('role_id', "<>", 1);
-        $user = $user->orderBy('id', 'desc')->get();
-        return response()->json($user);
     }
 
     public function index(Request $request) {
@@ -41,7 +34,7 @@ class UserController extends Controller {
             });
         }
 
-        $user = $user->orderBy('id', 'desc')->get();
+        $user = $user->orderBy('id', 'desc')->where('app_id', Auth::user()->app_id)->get();
         return response()->json($user);
     }
 

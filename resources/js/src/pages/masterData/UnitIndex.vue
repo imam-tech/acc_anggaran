@@ -15,6 +15,7 @@
                     <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
+                            <th class="text-center">Is Locked</th>
                             <th class="text-center"><b>Name</b></th>
                             <th class="text-center"><b>Is Archived?</b></th>
                             <th class="text-center"><b>#</b></th>
@@ -22,24 +23,28 @@
                         </thead>
                         <tbody>
                         <tr v-if="units.length == 0">
-                            <td colspan="3" class="text-center">
+                            <td colspan="4" class="text-center">
                                 Unit Not Found
                             </td>
                         </tr>
                         <tr v-else v-for="(p, pI) in units" :key="pI">
+                            <td class="text-center">
+                                <i v-if="p.is_locked" class="fas fa-lock"></i>
+                                <i v-else class="fas fa-lock-open"></i>
+                            </td>
                             <td>{{ p.name }}</td>
                             <td class="text-center">
                                 <span v-if="p.is_archive" class="badge badge-danger p-3">Yes</span>
                                 <span v-else class="badge badge-primary p-3">No</span>
                             </td>
                             <td class="text-right">
-                                <button @click="handleShowCrudModal(p)" class="btn btn-warning" type="button">
+                                <button v-if="!p.is_locked" @click="handleShowCrudModal(p)" class="btn btn-warning" type="button">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <button v-if="p.product === null" @click="handleDelete(p.id)" class="btn btn-danger" type="button">
+                                <button v-if="p.product === null && !p.is_locked" @click="handleDelete(p.id)" class="btn btn-danger" type="button">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                <button v-else @click="handleArchive(p)" class="btn btn-secondary" type="button">
+                                <button v-else-if="!p.is_locked" @click="handleArchive(p)" class="btn btn-secondary" type="button">
                                     <i class="fas fa-archive"></i>
                                 </button>
                             </td>

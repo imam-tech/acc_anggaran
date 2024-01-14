@@ -43,7 +43,15 @@ class InitiateSeeder extends Seeder
             \App\Models\RolePermission::create($rolePermission);
         }
 
-        $users = json_decode('[{"id":1,"name":"staff administrator","email":"staff+administrator@gmail.com","password":"$2y$10$r/BxNgWRGLKrMbCrRDVvU.yGLciUzNEcpytxnFZhaCs9BHtCm4nta","email_verified_at":null,"role_id":"1","created_at":"2023-11-12T06:00:00.000000Z","updated_at":"2023-11-12T06:00:00.000000Z"},{"id":2,"name":"staff tax","email":"staff+tax@gmail.com","email_verified_at":null,"role_id":"4","password":"$2y$10$r/BxNgWRGLKrMbCrRDVvU.yGLciUzNEcpytxnFZhaCs9BHtCm4nta","created_at":"2023-11-12T06:00:00.000000Z","updated_at":"2023-11-22T23:19:05.000000Z"},{"id":3,"name":"staff accounting","email":"staff+accounting@gmail.com","email_verified_at":null,"password":"$2y$10$r/BxNgWRGLKrMbCrRDVvU.yGLciUzNEcpytxnFZhaCs9BHtCm4nta","role_id":"5","created_at":"2023-11-13T00:42:20.000000Z","updated_at":"2023-11-13T01:50:39.000000Z"},{"id":4,"name":"staff finance","email":"staff+finance@gmail.com","email_verified_at":null,"role_id":"3","password":"$2y$10$r/BxNgWRGLKrMbCrRDVvU.yGLciUzNEcpytxnFZhaCs9BHtCm4nta","created_at":"2023-11-13T00:42:20.000000Z","updated_at":"2023-11-13T01:50:39.000000Z"},{"id":5,"name":"staff admin","email":"staff+admin@gmail.com","email_verified_at":null,"password":"$2y$10$r/BxNgWRGLKrMbCrRDVvU.yGLciUzNEcpytxnFZhaCs9BHtCm4nta","role_id":"2","created_at":"2023-11-12T06:00:00.000000Z","updated_at":"2023-11-12T06:00:00.000000Z"}]', true);
+        \App\Models\App::create([
+            "id" => 1,
+            "domain" => null,
+            "is_multiple_company" => 1,
+            "created_at" => date("Y-m-d H:i:s"),
+            "updated_at" => date("Y-m-d H:i:s")
+        ]);
+
+        $users = json_decode('[{"id":1,"app_id":1,"name":"staff administrator","email":"staff+administrator@gmail.com","password":"$2y$10$r/BxNgWRGLKrMbCrRDVvU.yGLciUzNEcpytxnFZhaCs9BHtCm4nta","email_verified_at":null,"role_id":"1","created_at":"2023-11-12T06:00:00.000000Z","updated_at":"2023-11-12T06:00:00.000000Z"},{"id":2,"app_id":1,"name":"staff tax","email":"staff+tax@gmail.com","email_verified_at":null,"role_id":"4","password":"$2y$10$r/BxNgWRGLKrMbCrRDVvU.yGLciUzNEcpytxnFZhaCs9BHtCm4nta","created_at":"2023-11-12T06:00:00.000000Z","updated_at":"2023-11-22T23:19:05.000000Z"},{"id":3,"app_id":1,"name":"staff accounting","email":"staff+accounting@gmail.com","email_verified_at":null,"password":"$2y$10$r/BxNgWRGLKrMbCrRDVvU.yGLciUzNEcpytxnFZhaCs9BHtCm4nta","role_id":"5","created_at":"2023-11-13T00:42:20.000000Z","updated_at":"2023-11-13T01:50:39.000000Z"},{"id":4,"app_id":1,"name":"staff finance","email":"staff+finance@gmail.com","email_verified_at":null,"role_id":"3","password":"$2y$10$r/BxNgWRGLKrMbCrRDVvU.yGLciUzNEcpytxnFZhaCs9BHtCm4nta","created_at":"2023-11-13T00:42:20.000000Z","updated_at":"2023-11-13T01:50:39.000000Z"},{"id":5,"app_id":1,"name":"staff admin","email":"staff+admin@gmail.com","email_verified_at":null,"password":"$2y$10$r/BxNgWRGLKrMbCrRDVvU.yGLciUzNEcpytxnFZhaCs9BHtCm4nta","role_id":"2","created_at":"2023-11-12T06:00:00.000000Z","updated_at":"2023-11-12T06:00:00.000000Z"}]', true);
         foreach ($users as $user) {
             \App\Models\User::create($user);
         }

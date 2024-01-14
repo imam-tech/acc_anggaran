@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserRepository {
@@ -30,10 +31,14 @@ class UserRepository {
                 if (!$user) return resultFunction("Err code UR-St: user not found for ID " . $data['id']);
             } else {
                 $userHistory = User::where('email', $data['email'])->first();
-                if ($userHistory) return resultFunction("Err code UR-St: user is already exist for email " . $data['email']);
+                if ($userHistory AND $userHistory->app_id === Auth::user()->app_id) return resultFunction("Err code UR-St: user is already exist for email " . $data['email']);
+
+                if ($userHistory AND $userHistory->app_id !== Auth::user()->app_id) return resultFunction("Err code UR-St: user is already exist for email " . $data['email'] . ' on other company');
 
                 if ($data['password'] !== $data['password_confirmation'])  return resultFunction("Err code UR-St: password and password confirmation is not same");
                 $user = new User();
+                $user->app_id = Auth::user()->app_id;
+                $user->is_locked = 0;
             }
             $user->name = $data['name'];
             $user->email = $data['email'];
@@ -52,9 +57,11 @@ class UserRepository {
             $user = User::find($id);
             if (!$user) return resultFunction("Err code PR-Dl: user not found for ID " .$id);
 
+            if ($user->is_locked) return resultFunction("Err code PR-Dl: user is locked, you can't delete this user for ID " .$id);
+
             $user->delete();
 
-            return resultFunction("Deleting Tax successfully", true);
+            return resultFunction("Deleting User successfully", true);
         } catch (\Exception $e) {
             return resultFunction("Err code PR-Dl: catch " . $e->getMessage());
         }

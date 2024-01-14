@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\PaymentMethod;
 use App\Models\SettingFlip;
 use App\Services\FlipService;
+use Illuminate\Support\Facades\Auth;
 
 class SettingRepository {
     public function storeFlip($data) {
@@ -26,6 +27,7 @@ class SettingRepository {
                 $flipKey = decrypt($settingFlip->flip_key);
             } else {
                 $settingFlip = new SettingFlip();
+                $settingFlip->app_id = Auth::user()->app_id;
                 $settingFlip->flip_key = encrypt($data['flip_key']);
                 $flipKey = $data['flip_key'];
             }

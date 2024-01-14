@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 class AuthRepository {
     public function login($data) {
         try {
-            $user = User::with(['role.rolePermissions.permission'])->where('email', $data['email'])->first();
+            $user = User::with(['role.rolePermissions.permission', 'app'])->where('email', $data['email'])->first();
             if (!$user) return resultFunction("Err code AR-L: user " . $data['email'] . ' is not found');
 
             if (!Hash::check($data['password'], $user['password'])) {

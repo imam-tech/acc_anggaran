@@ -168,7 +168,7 @@
                         })
                         return
                     }
-                    this.$router.push('/app/cash-and-bank')
+                    this.$router.push('/app/input-data/cash-and-bank')
                 } catch (e) {
                     this.$vs.loading.close()
                     Swal.fire({

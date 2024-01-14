@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Models\SettingFlip;
 use App\Repositories\SettingRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SettingController extends Controller {
     protected $settingRepo;
@@ -26,7 +27,7 @@ class SettingController extends Controller {
             $settingFlips = $settingFlips->where('type', $filters['type']);
         }
 
-        $settingFlips = $settingFlips->orderBy('id', 'desc')->get();
+        $settingFlips = $settingFlips->where('app_id', Auth::user()->app_id)->orderBy('id', 'desc')->get();
         return response()->json($settingFlips);
     }
 

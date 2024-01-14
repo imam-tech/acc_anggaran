@@ -1,9 +1,11 @@
 const getters = {
+    app: state => state.app,
     email: state => state.email,
     name:state => state.name,
-    sign_at:state => state.sign_at,
-    isLogin:state => state.isLogin,
-    permissions:state => state.permissions
+    permissions:state => state.permissions,
+    role:state => state.role,
+    signAt:state => state.signAt,
+    isLogin:state => state.isLogin
   }
 
 export default getters

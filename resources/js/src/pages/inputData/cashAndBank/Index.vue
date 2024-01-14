@@ -60,6 +60,8 @@
                         </tr>
                         <tr v-for="(ca, caI) in cashAndBanks.cash_and_bank.cash" :key="caI">
                             <td>
+                                <i v-if="ca.is_locked" class="fas fa-lock"></i>
+                                <i v-else class="fas fa-lock-open"></i>
                                 <span class="ml-5">{{ ca.account_number }}</span>
                             </td>
                             <td>
@@ -74,7 +76,7 @@
                                 <span>{{ ca.balance_in_jurnal }}</span>
                             </td>
                             <td class="d-flex justify-content-end">
-                                <router-link :to="'/app/input-data/cash-and-bank/' + ca.cash_and_bank_id + '/form'">
+                                <router-link v-if="!ca.is_locked" :to="'/app/input-data/cash-and-bank/' + ca.cash_and_bank_id + '/form'">
                                     <button type="button" class="btn btn-warning">
                                         <i class="fas fa-pencil-alt"></i>
                                     </button>
@@ -96,6 +98,8 @@
                         </tr>
                         <tr v-for="(ca, caI) in cashAndBanks.cash_and_bank.bank" :key="caI">
                             <td>
+                                <i v-if="ca.is_locked" class="fas fa-lock"></i>
+                                <i v-else class="fas fa-lock-open"></i>
                                 <span class="ml-5">{{ ca.account_number }}</span>
                             </td>
                             <td>
@@ -132,6 +136,8 @@
                         </tr>
                         <tr v-for="(ca, caI) in cashAndBanks.credit_card" :key="caI">
                             <td>
+                                <i v-if="ca.is_locked" class="fas fa-lock"></i>
+                                <i v-else class="fas fa-lock-open"></i>
                                 <span class="ml-5">{{ ca.account_number }}</span>
                             </td>
                             <td>

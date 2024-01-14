@@ -21,6 +21,7 @@
                     <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
+                            <th class="text-center">Is Locked</th>
                             <th class="text-center">Account Number</th>
                             <th class="text-center">Account Name</th>
                             <th class="text-center">Category</th>
@@ -33,11 +34,15 @@
                         </thead>
                         <tbody>
                         <tr v-if="coas.length == 0">
-                            <td colspan="8" class="text-center">
-                                COA Not Found
+                            <td colspan="9" class="text-center">
+                                Chart of Account Not Found
                             </td>
                         </tr>
                         <tr v-else v-for="(coa, index) in coas" :key="index">
+                            <td class="text-center">
+                                <i v-if="coa.is_locked" class="fas fa-lock"></i>
+                                <i v-else class="fas fa-lock-open"></i>
+                            </td>
                             <td>{{ coa.account_number }}</td>
                             <td>
                                 <router-link :to="'/app/master-data/coa/' + coa.id + '/detail'">
@@ -55,10 +60,10 @@
                                 <span :class="coa.is_active === 1 ? 'badge badge-primary' : 'badge badge-danger'">{{ coa.is_active === 1 ? 'Active' : "In Active" }}</span>
                             </td>
                             <td v-if="$store.state.permissions.includes('coa_create_edit')" class="text-right">
-                                <button type="button" class="btn btn-warning" @click="showEditCoa(coa)">
+                                <button v-if="!coa.is_locked" type="button" class="btn btn-warning" @click="showEditCoa(coa)">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <button v-if="coa.journal_item === null" type="button" class="btn btn-danger" @click="handleDelete(coa.id)">
+                                <button v-if="coa.journal_item === null && !coa.is_locked" type="button" class="btn btn-danger" @click="handleDelete(coa.id)">
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 <button v-if="coa.coa_category.label === 'balance_sheet'" type="button" class="btn btn-success" @click="handleInitialBalance(coa)">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\Project;
 use App\Repositories\ProjectRepository;
 use Illuminate\Http\Request;
@@ -23,6 +24,10 @@ class ProjectController extends Controller {
 
         if (!empty($filters['company_id'])) {
             $projects = $projects->where('company_id', $filters['company_id']);
+        } else {
+            $companies = Company::where('app_id', Auth::user()->app_id)->get();
+            $companyIds = array_column($companies->toArray(), 'id');
+            $projects = $projects->whereIn('company_id', $companyIds);
         }
 
         if (!empty($filters['project_user'])) {

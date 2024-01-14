@@ -1075,7 +1075,7 @@
                         })
                     } else {
                         this.transactionData = respDe.data
-                        if (this.$store.state.roles === 'staff' || this.$store.state.roles === 'admin') {
+                        if (this.$store.state.role === 'staff' || this.$store.state.role === 'admin') {
                             if (this.$store.state.email !== respDe.data.user_created_by.email) {
                                 Swal.fire({
                                     position: 'top',

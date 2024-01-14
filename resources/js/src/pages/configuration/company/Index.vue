@@ -4,15 +4,24 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Company List</h1>
-                <button v-if="$store.state.permissions.includes('company_create')" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddCompany()">
+                <button v-if="$store.state.permissions.includes('company_create') && $store.state.app.is_multiple_company === 1" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddCompany()">
                     <i class="fas fa-plus-circle"></i> Company
                 </button>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-4 mb-3" v-for="(company, index) in companies" :key="index">
-                        <router-link :to="'/app/configuration/company/'+company.id+'/detail'">
-                            <div class="card">
+                    <div class="col-xl-4 mb-3" v-for="(company, index) in companies" :key="index">
+                        <div class="card">
+                            <div class="d-flex justify-content-between">
+                                <button v-if="$store.state.permissions.includes('company_create')" type="button" @click="showEditCompany(company)" class="btn btn-warning mt-3 ml-3 mr-3">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                                <button v-if="$store.state.permissions.includes('company_create') && !company.is_locked && companies.length > 1"
+                                        type="button" class="btn btn-danger mt-3 ml-3 mr-3" @click="handleDelete(company.id)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <router-link :to="'/app/configuration/company/'+company.id+'/detail'">
                                 <div class="card-body shadow-lg">
                                     <h5 class="card-title">{{ company.title }}</h5>
                                     <div class="d-flex">
@@ -24,8 +33,8 @@
                                         </span>
                                     </div>
                                 </div>
-                            </div>
-                        </router-link>
+                            </router-link>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -110,7 +119,7 @@
                     this.$vs.loading()
                     this.companies = await this.$axios.get('api/configuration/company')
                     if (this.companies.length === 0) {
-                        if (this.$route.query.show_create !==  undefined && this.$store.state.roles === 'administrator') {
+                        if (this.$route.query.show_create !==  undefined && this.$store.state.role === 'administrator') {
                             $("#addCompany").modal("show")
                         }
                     }

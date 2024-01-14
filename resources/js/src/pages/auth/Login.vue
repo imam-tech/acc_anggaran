@@ -48,6 +48,9 @@
                 showPassword: false
             }
         },
+        mounted() {
+            console.log("store", this.$store.state)
+        },
         methods: {
             async loginProcess() {
                 try {
@@ -63,15 +66,15 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(()=>{
-                            console.log("permissions", responseLogin.data.permissions)
                             this.$store.commit('SET_USER', {
-                                'name' : responseLogin.data.user.name,
+                                'app': responseLogin.data.user.app,
                                 'email' : responseLogin.data.user.email,
+                                'name' : responseLogin.data.user.name,
                                 'permissions' : responseLogin.data.permissions,
-                                'roles' : responseLogin.data.role,
-                                'sign_at': responseLogin.data.sign_at
+                                'role' : responseLogin.data.role,
+                                'signAt': responseLogin.data.sign_at,
+                                'isLogin': true
                             })
-                            this.$store.commit('SET_IS_LOGIN', true)
                             Cookies.set('access_token_fat', responseLogin.data.token, { expires: 1 })
                             this.$router.push('/app');
                         })

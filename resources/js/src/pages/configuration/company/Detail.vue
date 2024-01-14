@@ -15,6 +15,7 @@
                 <router-link v-if="companyData.company_admins[0].user" :to="`/app/transaction/create/form?companyId=${$route.params.id}`" type="button" class="btn btn-warning  float-right mt-3 mr-3">
                     <i class="fas fa-plus-circle"></i> Add Transaction
                 </router-link>
+
             </div>
             <div class="card-body">
                 <div class="row">
@@ -199,7 +200,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                        <select class="form-control" v-model="formAdmin.finance_staf" required>
+                                        <select class="form-control" v-model="formAdmin.finance_staff" required>
                                             <option v-for="(userData, index) in userNotStafs" :key="index" :value="userData.id">{{ userData.email }}</option>
                                         </select>
                                     </div>
@@ -291,7 +292,7 @@
                 labelModal: "Add",
                 formAdmin: {
                     finance_manager: "",
-                    finance_staf: "",
+                    finance_staff: "",
                     tax_admin: "",
                     accounting_admin:""
                 },
@@ -349,7 +350,7 @@
 
             changeAdminApproval() {
                 this.formAdmin.finance_manager = this.companyData.company_admins.find(x => x.name === 'finance_manager') ? (this.companyData.company_admins.find(x => x.name === 'finance_manager')).user_id : ""
-                this.formAdmin.finance_staf = this.companyData.company_admins.find(x => x.name === 'finance_staf') ? (this.companyData.company_admins.find(x => x.name === 'finance_staf')).user_id : ""
+                this.formAdmin.finance_staff = this.companyData.company_admins.find(x => x.name === 'finance_staff') ? (this.companyData.company_admins.find(x => x.name === 'finance_staff')).user_id : ""
                 this.formAdmin.tax_admin = this.companyData.company_admins.find(x => x.name === 'tax_admin') ? (this.companyData.company_admins.find(x => x.name === 'tax_admin')).user_id : ""
                 this.formAdmin.accounting_admin = this.companyData.company_admins.find(x => x.name === 'accounting_admin') ? (this.companyData.company_admins.find(x => x.name === 'accounting_admin')).user_id : ""
                 $("#adminApproval").modal("show")

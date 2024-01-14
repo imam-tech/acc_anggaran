@@ -13,6 +13,7 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
+                            <th class="text-center">Is Locked</th>
                             <th class="text-center">Name</th>
                             <th class="text-center"><b>Is Archived?</b></th>
                             <th class="text-center">Created At</th>
@@ -21,6 +22,10 @@
                         </thead>
                         <tbody>
                         <tr v-for="(pM, index) in paymentMethods" :key="index">
+                            <td class="text-center">
+                                <i v-if="pM.is_locked" class="fas fa-lock"></i>
+                                <i v-else class="fas fa-lock-open"></i>
+                            </td>
                             <td>{{ pM.name }}</td>
                             <td class="text-center">
                                 <span v-if="pM.is_archive" class="badge badge-danger p-3">Yes</span>
@@ -28,14 +33,14 @@
                             </td>
                             <td>{{ pM.created_at | formatDate }}</td>
                             <td v-if="$store.state.permissions.includes('transaction_push_plugin')" class="text-right">
-                                <button type="button" class="btn btn-warning" @click="showEditSetting(pM)">
+                                <button v-if="!pM.is_locked" type="button" class="btn btn-warning" @click="showEditSetting(pM)">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
-                                <button v-if="pM.sales_payment === null && pM.purchase_payment === null"
+                                <button v-if="pM.sales_payment === null && pM.purchase_payment === null && !pM.is_locked"
                                         class="btn btn-danger" type="button" @click="handleDelete(pM.id)">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                <button v-else @click="handleArchive(pM)" class="btn btn-secondary" type="button">
+                                <button v-else-if="!pM.is_locked" @click="handleArchive(pM)" class="btn btn-secondary" type="button">
                                     <i class="fas fa-archive"></i>
                                 </button>
                             </td>

@@ -51,6 +51,7 @@
                     <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
+                            <th class="text-center">Is Locked</th>
                             <th class="text-center">Name</th>
                             <th class="text-center">Email</th>
                             <th class="text-center">Role</th>
@@ -65,24 +66,34 @@
                             </td>
                         </tr>
                         <tr v-else v-for="(user, index) in users" :key="index">
+                            <td class="text-center">
+                                <i v-if="user.is_locked" class="fas fa-lock"></i>
+                                <i v-else class="fas fa-lock-open"></i>
+                            </td>
                             <td>{{ user.name }}</td>
                             <td>{{ user.email}}</td>
                             <td>
-                                <button v-if="$store.state.permissions.includes('user_role')" type="button" class="btn btn-primary" @click="changeRole(user)">
+                                <button v-if="$store.state.permissions.includes('user_role') && !user.is_locked" type="button" class="btn btn-primary" @click="changeRole(user)">
                                     <i class="fas fa-repeat"></i> Change Role
                                 </button>
-                                <button type="button" class="btn btn-success" @click="showRolePermission(user.role.role_permissions)">
+                                <button v-if="user.role" type="button" class="btn btn-success" @click="showRolePermission(user.role.role_permissions)">
                                     <i class="fas fa-eye"></i>
                                     {{ user.role ? user.role.title : 'No Role'}}
                                 </button>
                             </td>
                             <td>{{ user.created_at | formatDate }}</td>
                             <td v-if="$store.state.permissions.includes('user_create')" class="text-right">
-                                <button type="button" class="btn btn-warning" @click="showEditUser(user)">
-                                    <i class="fas fa-pencil-alt"></i> User
-                                </button>
                                 <button type="button" class="btn btn-primary" @click="showChangePasswordUser(user)">
-                                    <i class="fas fa-gear"></i> Change Password
+                                    <i class="fas fa-gear"></i> Change Password User
+                                </button>
+
+                                <button v-if="!user.is_locked" type="button" class="btn btn-warning" @click="showEditUser(user)">
+                                    <i class="fas fa-pencil-alt"></i> Edit User
+                                </button>
+
+                                <button v-if="!user.is_locked"
+                                        class="btn btn-danger" type="button" @click="handleDelete(user.id)">
+                                    <i class="fas fa-trash"></i> Delete User
                                 </button>
                             </td>
                         </tr>
@@ -289,7 +300,6 @@
         },
         methods: {
             showRolePermission(user) {
-                console.log("user", user)
                 this.userRole = user
                 $("#permissionList").modal("show")
             },

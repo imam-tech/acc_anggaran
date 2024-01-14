@@ -18,7 +18,6 @@ Route:: group(['prefix' => 'configuration', 'middleware' => 'auth:sanctum'], fun
 
     Route:: group(['prefix' => 'user'], function () {
         Route::get('/', [UserController::class, 'index']);
-        Route::get('/not-admin', [UserController::class, 'notAdmin']);
         Route::post('/', [UserController::class, 'store']);
         Route::delete('/{id?}/delete', [UserController::class, 'delete']);
         Route::get('/not-staff', [UserController::class, 'notStaff']);

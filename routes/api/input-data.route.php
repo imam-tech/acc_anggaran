@@ -11,6 +11,7 @@ Route:: group(['prefix' => 'input-data', 'middleware' => 'auth:sanctum'], functi
         Route::post('/', [CashAndBankController::class, 'store']);
         Route::get('/', [CashAndBankController::class, 'index']);
         Route::get('/{id}/detail', [CashAndBankController::class, 'detail']);
+        Route::get('/{id}/detail', [CashAndBankController::class, 'detail']);
     });
     Route:: group(['prefix' => 'sales'], function () {
         Route::post('/', [SalesController::class, 'store']);
