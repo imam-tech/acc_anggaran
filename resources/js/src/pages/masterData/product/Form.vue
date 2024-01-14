@@ -268,8 +268,8 @@
                     this.$vs.loading()
                     this.units = await this.$axios.get(`api/master-data/unit?is_archive=no`)
                     this.categories = await this.$axios.get(`api/master-data/product/category?is_archive=no`)
-                    this.accounts = await this.$axios.get(`api/master-data/coa?is_active=1&coa_name=BEBAN USAHA PERUSAHAAN`)
-                    this.accountPendapatans = await this.$axios.get(`api/master-data/coa?is_active=1&coa_name=BEBAN POKOK PENDAPATAN`)
+                    this.accounts = await this.$axios.get(`api/master-data/coa?is_active=1&coa_name=BEBAN POKOK PENDAPATAN`)
+                    this.accountPendapatans = await this.$axios.get(`api/master-data/coa?is_active=1&coa_name=PENDAPATAN`)
                     this.taxes = await this.$axios.get(`api/master-data/taxes?is_archive=no`)
                     this.$vs.loading.close()
                 } catch (e) {
