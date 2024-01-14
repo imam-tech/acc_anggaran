@@ -609,7 +609,7 @@
                         })
                         return
                     }
-                    if (!resp.data.current_status !== 'requested') {
+                    if (resp.data.current_status !== 'requested') {
                         Swal.fire({
                             position: 'top',
                             icon: 'error',
