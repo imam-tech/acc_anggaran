@@ -14,7 +14,6 @@
                         <a :href="'/print/profit-lost?company_id=' + currentCompany" target="_blank" class="btn btn-success">Export</a>
                         <div>
                             <select class="form-control" v-model="selectedYear" @change="changeYear">
-                                <option value="2023">2023</option>
                                 <option value="2024">2024</option>
                             </select>
                         </div>

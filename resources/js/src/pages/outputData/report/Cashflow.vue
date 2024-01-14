@@ -13,7 +13,6 @@
                     <div class="col-12 d-flex justify-content-end">
                         <div>
                             <select class="form-control" v-model="selectedYear" @change="changeYear">
-                                <option value="2023">2023</option>
                                 <option value="2024">2024</option>
                             </select>
                         </div>
