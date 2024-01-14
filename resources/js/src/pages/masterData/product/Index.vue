@@ -41,10 +41,10 @@
                             <td>{{ p.unit ? p.unit.name : '-' }}</td>
                             <td>{{ p.category ? p.category.name : '-' }}</td>
                             <td class="text-center">
-                                <span v-if="p.sale_account_id" class="badge badge-primary">Yes</span>
+                                <span v-if="p.is_sale" class="badge badge-primary">Yes</span>
                                 <span v-else class="badge badge-warning">No</span>
                             <td class="text-center">
-                                <span v-if="p.purchase_account_id" class="badge badge-primary">Yes</span>
+                                <span v-if="p.is_purchase" class="badge badge-primary">Yes</span>
                                 <span v-else class="badge badge-warning">No</span>
                             </td>
                             <td class="text-right">{{ p.unit_sale_price | formatPrice}}</td>
