@@ -37,4 +37,8 @@ class Sales extends Model
     public function tag_details() {
         return $this->hasMany(TagDetail::class, 'transaction_id', 'id')->where('type', 'sales');
     }
+
+    public function company() {
+        return $this->hasOne(Company::class, 'id', 'company_id');
+    }
 }

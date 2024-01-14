@@ -64,7 +64,7 @@
                                         <i class="fas fa-pencil-alt"></i>
                                     </button>
                                 </router-link>
-                                <button v-if="p.sale_product === null && p.purchase_product" @click="handleDelete(p.id)" class="btn btn-danger" type="button">
+                                <button v-if="p.sale_product === null && p.purchase_product === null" @click="handleDelete(p.id)" class="btn btn-danger" type="button">
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 <button v-else @click="handleArchive(p)" class="btn btn-secondary" type="button">

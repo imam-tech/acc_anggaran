@@ -6,9 +6,9 @@
                     <div class="col-6">
                         <h1 class="mt-3 ml-3 text-primary">
                             <div class="d-flex flex-column">
-                                <h5>Sales</h5>
+                                <h5>Purchase</h5>
                                 <h3 class="text-gray-700">
-                                    Receive Payment #{{ purchasePaymentData.id }}
+                                    Purchase Payment #{{ purchasePaymentData.id }}
                                     <span v-if="purchasePaymentData.status" class="badge badge-success rounded-pill">Paid</span>
                                     <span v-else class="badge badge-warning rounded-pill">DRAFT</span>
                                 </h3>

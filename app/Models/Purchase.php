@@ -37,4 +37,8 @@ class Purchase extends Model
     public function tag_details() {
         return $this->hasMany(TagDetail::class, 'transaction_id', 'id')->where('type', 'purchase');
     }
+
+    public function company() {
+        return $this->hasOne(Company::class, 'id', 'company_id');
+    }
 }

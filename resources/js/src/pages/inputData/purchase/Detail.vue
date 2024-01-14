@@ -222,7 +222,7 @@
                             <tr v-for="(sp, spI) in purchaseData.purchase_payments" :key="spI">
                                 <td>{{ sp.payment_date }}</td>
                                 <td>
-                                    <router-link :to="'/app/input-data/purchase/payment/' + sp.id + '/detail'">Payment Receive #{{ sp.id }}</router-link></td>
+                                    <router-link :to="'/app/input-data/purchase/payment/' + sp.id + '/detail'">Purchase Payment #{{ sp.id }}</router-link></td>
                                 <td>{{ sp.coa.account_name }}</td>
                                 <td>{{ sp.payment_method ? sp.payment_method.name : '' }}</td>
                                 <td>{{ sp.status ? 'Paid' : '-' }}</td>

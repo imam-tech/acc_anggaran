@@ -5,6 +5,8 @@ namespace App\Repositories;
 use App\Models\Coa;
 use App\Models\Contact;
 use App\Models\Customer;
+use App\Models\Journal;
+use App\Models\JournalItem;
 use App\Models\Product;
 use App\Models\Sales;
 use App\Models\SalesAttachment;
@@ -403,13 +405,44 @@ class SalesRepository {
 
     public function approvePayment($id) {
         try {
-            $salesPayment = SalesPayment::with([])->find($id);
+            DB::beginTransaction();
+            $salesPayment = SalesPayment::with(['sales_payment_journals', 'sales.company'])->find($id);
             if (!$salesPayment) return resultFunction("Err code SR-D: sales payment not found");
+
+            $transactionApproveds = Journal::where('company_id', $salesPayment->sales->company_id)->whereNotNull('approved_at')->count();
+            $voucherNo = $salesPayment->sales->company->voucher_prefix . "-" . date("y").date('m').date('d') . "-" . ($transactionApproveds + 1);
+            $journal = new Journal();
+            $journal->company_id = $salesPayment->sales->company_id;
+            $journal->transaction_uid = "Receive Payment #" . $salesPayment->id;
+            $journal->voucher_no = $voucherNo;
+            $journal->title = 'Sales Invoice #' . $salesPayment->sales->id;
+            $journal->transaction_date = $salesPayment->payment_date . ' 00:00:00';
+            $journal->save();
+
+            $salePaymentJournalInput = [];
+            foreach ($salesPayment->sales_payment_journals as $saleJournal) {
+                $salePaymentJournalInput[] = [
+                    "company_id" => $salesPayment->sales->company_id,
+                    "project_id" => null,
+                    "journal_id" => $journal->id,
+                    "account_id" => $saleJournal->account_id,
+                    "debit" => $saleJournal->debit > 0 ? $saleJournal->debit : 0,
+                    "credit" => $saleJournal->credit > 0 ? $saleJournal->credit : 0,
+                    "transaction_date" => $journal->transaction_date,
+                    "description" => '',
+                    "balance" => 0,
+                    'created_at' => date("Y-m-d H:i:s"),
+                    'updated_at' => date("Y-m-d H:i:s")
+                ];
+            }
+
+            JournalItem::insert($salePaymentJournalInput);
 
             $salesPayment->status = 'approved';
             $salesPayment->save();
             $this->adjustPaymentAmount($salesPayment->sales_id);
 
+            DB::commit();
             return resultFunction("", true, $salesPayment);
         } catch (\Exception $e) {
             return resultFunction("Err code SR-D: catch " . $e->getMessage());
