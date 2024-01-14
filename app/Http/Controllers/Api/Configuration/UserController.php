@@ -50,6 +50,7 @@ class UserController extends Controller {
         $user = User::with(['role']);
 
         $user = $user->where('role_id', "<>", 6);
+        $user = $user->where('app_id', Auth::user()->app_id);
         $user = $user->orderBy('id', 'desc')->get();
         return response()->json($user);
     }
