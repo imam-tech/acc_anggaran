@@ -59,6 +59,7 @@ class ManufactureController extends Controller {
         if (!empty($filters['status'])) {
             $manufactureProducts = $manufactureProducts->where('status', $filters['status']);
         }
+        $manufactureProducts = $manufactureProducts->where('company_id', $request->header('company_id'));
         $manufactureProducts = $manufactureProducts->orderByDesc('id')->get();
         return response()->json($manufactureProducts);
     }
@@ -67,8 +68,9 @@ class ManufactureController extends Controller {
         return response()->json($this->manufactureRepo->detailProduct($id));
     }
 
-    public function indexSemiFinishedMaterial() {
+    public function indexSemiFinishedMaterial(Request $request) {
         $semiFinishedMaterials = SemiFinishedMaterial::with(['semi_finished_material_items.material', 'manufacture_product_details']);
+        $semiFinishedMaterials = $semiFinishedMaterials->where('company_id', $request->header('company_id'));
         $semiFinishedMaterials = $semiFinishedMaterials->orderByDesc('id')->get();
         return response()->json($semiFinishedMaterials);
     }

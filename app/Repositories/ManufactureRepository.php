@@ -70,6 +70,7 @@ class ManufactureRepository {
                 SemiFinishedMaterialItem::where('semi_finished_material_id', $semiFinishedMaterial->id)->delete();
             } else {
                 $semiFinishedMaterial = new SemiFinishedMaterial();
+                $semiFinishedMaterial->company_id = $companyId;
             }
             $semiFinishedMaterial->name = $data['name'];
             $semiFinishedMaterial->save();
