@@ -105,7 +105,7 @@ class OutputDataRepository {
                     
                     // Insert a new element after the found index
                     $element['first_category'] = false;
-                    $response[$findIndex+1] = $element;
+                    array_splice($response, $findIndex+1, 0, [$element]);
                 }
             }
 
