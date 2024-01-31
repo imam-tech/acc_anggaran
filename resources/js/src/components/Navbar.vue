@@ -205,10 +205,10 @@
                             Cookies.set('current_company_title_fat', this.companies[this.companies.length-1].title, {expires: 1})
                             this.currentCompany = Cookies.get('current_company_fat')
                         }
-                        if (!Cookies.get("current_company_fat") || Cookies.get('current_company_fat') === undefined) {
+                        if ((!Cookies.get("current_company_fat") || Cookies.get('current_company_fat') === undefined) || (!Cookies.get("current_company_fat") || Cookies.get('current_company_fat') === 'undefined')) {
                             Cookies.set('current_company_fat', this.companies[0].id, {expires: 1})
                         }
-                        if (!Cookies.get("current_company_title_fat") || Cookies.get('current_company_title_fat') === undefined) {
+                        if ((!Cookies.get("current_company_title_fat") || Cookies.get('current_company_title_fat') === undefined) || (!Cookies.get("current_company_title_fat") || Cookies.get('current_company_title_fat') === 'undefined')) {
                             Cookies.set('current_company_title_fat', this.companies[0].title, {expires: 1})
                         }
                     } else {
