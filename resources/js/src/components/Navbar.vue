@@ -55,7 +55,7 @@
             </div>
         </li>
         <li v-if="$store.state.app.is_multiple_company === 1" class="nav-item bg-warning rounded">
-            <select class="nav-link text-dark font-weight-bold" @change="changeCompany">
+            <select class="nav-link text-dark font-weight-bold h4 p-1" @change="changeCompany">
                 <option v-for="(company, cI) in companies" :value="company.id" :key="cI" :selected="currentCompany == company.id">{{ company.title }}</option>
             </select>
         </li>
@@ -173,7 +173,7 @@
         data() {
             return {
                 companies: [],
-                currentCompany: Cookies.get('current_company_fat')
+                currentCompany: Cookies.get('current_company_fat'),
             }
         },
         created() {
@@ -185,7 +185,10 @@
             },
 
             handleShowMenu(menu) {
-                return this.$route.name.includes(menu) ? {'bg': 'show', 'col': ''} : {'bg': '', 'col': 'collapsed'};
+                return this.$route.name.includes(menu) ? (window.innerWidth < 768 ? {'bg': '', 'col': 'collapsed'} : {'bg': 'show', 'col': ''}) : {'bg': '', 'col': 'collapsed'};
+                // console.log('height', this.heightWindow)
+                // return {'bg': '', 'col': 'collapsed'}
+
             },
 
             changeCompany(e) {

@@ -76,7 +76,8 @@
                                 'isLogin': true
                             })
                             Cookies.set('access_token_fat', responseLogin.data.token, { expires: 1 })
-                            this.$router.push('/app');
+                            // this.$router.push('/app');
+                            return window.location.href = '/app'
                         })
                     } else {
                         Swal.fire({

@@ -57,7 +57,9 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.title" placeholder="Title of Company" required>
+                                <input type="text" class="form-control" v-model="formData.title" placeholder="Example: Your company name or division name"
+                                       maxlength="10" minlength="1" @change="handleChangeType" required>
+                                <label class="text-danger font-weight-bold font-italic">30 character max</label>
                             </div>
                             <div class="form-group">
                                 <label>Type<span style="
@@ -65,8 +67,8 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <select v-model="formData.type" class="form-control" required>
-                                    <option value="" selected>--Select type of company--</option>
+                                <select v-model="formData.type" class="form-control" required @change="handleChangeType">
+                                    <option value="" selected>--Select Company Type--</option>
                                     <option value="pt">PT</option>
                                     <option value="yayasan">Yayasan</option>
                                 </select>
@@ -77,7 +79,14 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.voucherPrefix" placeholder="Example: PTA" required>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">{{ formData.prefix }}</div>
+                                    </div>
+                                    <input type="text" class="form-control" v-model="formData.voucherPrefix" id="inlineFormInputGroup"
+                                           maxlength="4" minlength="1" placeholder="Example: PTA, input your code company / division">
+                                </div>
+                                <label class="text-danger font-weight-bold font-italic">4 character max</label>
                             </div>
                         </div>
                         <div class="modal-footer flex justify-content-between">
@@ -106,7 +115,8 @@
                     id: "",
                     title: "",
                     voucherPrefix: "",
-                    type: ""
+                    type: "",
+                    prefix: ""
                 }
             }
         },
@@ -114,6 +124,11 @@
             this.getData()
         },
         methods: {
+            handleChangeType() {
+                console.log("state", this.$store.state)
+                const typeLocal = this.formData.type
+                this.formData.prefix = typeLocal.toUpperCase() + this.$store.state.app.id + "-"
+            },
             async getData() {
                 try {
                     this.$vs.loading()
@@ -153,16 +168,7 @@
             },
             async submitCompany() {
                 try {
-                    if (this.formData.voucherPrefix.length > 4) {
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'error',
-                            title: "Maximum character of Voucher Prefix is 4",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                        return
-                    }
+                    this.formData.voucherPrefix = this.formData.prefix + this.formData.voucherPrefix
                     this.$vs.loading()
                     const respSave = await this.$axios.post('api/configuration/company', this.formData)
                     this.$vs.loading.close()

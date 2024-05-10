@@ -6,27 +6,13 @@
             <nav class="navbar navbar-expand navbar-light bg-white topbar static-top shadow ">
 
                 <!-- Sidebar Toggle (Topbar) -->
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle">
                     <i class="fas fa-bars"></i>
                 </button>
 
 
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
-
-                    <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-                    <li class="nav-item dropdown no-arrow d-sm-none">
-                    </li>
-
-                    <!-- Nav Item - Alerts -->
-                    <li class="nav-item dropdown no-arrow mx-1">
-                    </li>
-
-                    <!-- Nav Item - Messages -->
-                    <li class="nav-item dropdown no-arrow mx-1">
-                    </li>
-
-                    <div class="topbar-divider d-none d-sm-block"></div>
 
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow m-3">
@@ -43,7 +29,7 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="p-5 mb-5">
+                <div class="p-5 mb-5 min-vh-100">
                     <router-view/>
                 </div>
                 <!-- /.container-fluid -->
@@ -52,16 +38,12 @@
             <!-- End of Main Content -->
 
             <!-- Footer -->
-            <footer class="sticky-footer bg-white fixed-bottom">
+            <footer class="bg-white">
                 <div class="row">
                     <div class="col-10">
                         <div class="container my-auto">
-                            <div class="copyright text-center my-auto">
-                                <span style="
-                                    font-weight: bold;
-                                    font-size: 21px;
-                                    color: black;
-                                ">Copyright &copy; Finance Accounting and Tax System {{ new Date().getFullYear() }}</span>
+                            <div class="copyright p-2 font-weight-bold">
+                                <span class=" text-muted sm:h5 h8">Copyright &copy; Finance Accounting and Tax System {{ new Date().getFullYear() }}</span>
                             </div>
                         </div>
                     </div>

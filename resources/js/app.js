@@ -8,6 +8,8 @@ import './src/plugins/vuesax.js'
 import './src/plugins/filter.js'
 import 'vue-select/dist/vue-select.css';
 import Pagination from 'vue-pagination-2';
+import Swal from 'sweetalert2'
+import 'sweetalert2/src/sweetalert2.scss'
 
 Vue.component('v-select', vSelect)
 Vue.component('pagination', Pagination);

@@ -17,13 +17,13 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.name" placeholder="Type the name of contact" required>
+                                <input type="text" class="form-control" v-model="formData.name" placeholder="Name of person, company or other" required>
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="text" class="form-control" v-model="formData.email" placeholder="Must be email format">
+                                <input type="email" class="form-control" v-model="formData.email" placeholder="Must be email format">
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">

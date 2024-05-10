@@ -17,7 +17,7 @@
                                     font-weight: bold;
                                     font-style: italic;
                                 ">*) required</span></label>
-                                <input type="text" class="form-control" v-model="formData.name" placeholder="Viral Cake" required>
+                                <input type="text" class="form-control" v-model="formData.name" placeholder="Example: Viral Cake" required>
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">
@@ -30,7 +30,7 @@
                         <div class="col-lg-6 col-xl-4">
                             <div class="form-group">
                                 <label>SKU Code</label>
-                                <input type="text" class="form-control" v-model="formData.sku_code" placeholder="VCake1">
+                                <input type="text" class="form-control" v-model="formData.sku_code" placeholder="Example: VCake1">
                             </div>
                         </div>
                         <div class="col-lg-6 col-xl-4">

@@ -620,10 +620,10 @@
                     description: selectProdLocal.description ?? '',
                     quantity: 1,
                     unit: selectProdLocal.unit ? selectProdLocal.unit.name :  'Unit',
-                    unit_price: selectProdLocal.unit_sale_price,
+                    unit_price: selectProdLocal.unit_purchase_price,
                     sub_total: 0,
-                    tax_id: selectProdLocal.sale_tax_id,
-                    tax_percentage: selectProdLocal.sale_tax ? selectProdLocal.sale_tax.amount : 0,
+                    tax_id: selectProdLocal.purchase_tax_id,
+                    tax_percentage: selectProdLocal.purchase_tax ? selectProdLocal.purchase_tax.amount : 0,
                     tax_amount: 0,
                     grand_total: 0
                 })

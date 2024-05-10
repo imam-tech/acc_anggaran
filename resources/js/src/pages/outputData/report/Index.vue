@@ -7,7 +7,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-4" v-for="(reportMenu, index) in reportMenus" :key="index">
+                    <div class="col-12 col-md-6 col-lg-4" v-for="(reportMenu, index) in reportMenus" :key="index">
                         <div class="card mt-5">
                             <div class="card-body shadow-lg d-flex flex-column">
                                 <h5 class="card-title">{{ reportMenu.label }}</h5>
