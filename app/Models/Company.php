@@ -25,4 +25,12 @@ class Company extends Model
     public function settingFlip() {
         return $this->hasOne(SettingFlip::class, 'id', 'setting_flip_id');
     }
+
+    public function settingViews() {
+        return $this->hasMany(SettingView::class, 'app_id', 'app_id');
+    }
+
+    public function max_company() {
+        return $this->hasOne(SettingGeneral::class, 'app_id', 'app_id')->where('label', 'max_company');
+    }
 }

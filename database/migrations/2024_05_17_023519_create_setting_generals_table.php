@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAppsTable extends Migration
+class CreateSettingGeneralsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,12 @@ class CreateAppsTable extends Migration
      */
     public function up()
     {
-        Schema::create('apps', function (Blueprint $table) {
+        Schema::create('setting_generals', function (Blueprint $table) {
             $table->increments('id');
-            $table->tinyInteger('is_whitelist')->default(0);
-            $table->string('domain')->nullable();
-            $table->tinyInteger('is_multiple_company');
+            $table->integer('app_id');
+            $table->string('label');
+            $table->text('label_value');
             $table->timestamps();
-        });
-
-        Schema::table('users', function (Blueprint $table) {
-            $table->integer('app_id')->after('id');
         });
     }
 
@@ -33,6 +29,6 @@ class CreateAppsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('apps');
+        Schema::dropIfExists('setting_generals');
     }
 }

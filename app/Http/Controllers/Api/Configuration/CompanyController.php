@@ -17,7 +17,7 @@ class CompanyController extends Controller {
     }
 
     public function index() {
-        $companies = Company::with(['projects']);
+        $companies = Company::with(['projects', 'settingViews', 'max_company']);
 
         $companies = $companies->where('app_id', Auth::user()->app_id)->get();
         return response()->json($companies);

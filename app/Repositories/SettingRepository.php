@@ -2,10 +2,15 @@
 
 namespace App\Repositories;
 
+use App\Models\App;
+use App\Models\Company;
 use App\Models\PaymentMethod;
 use App\Models\SettingFlip;
+use App\Models\SettingGeneral;
+use App\Models\SettingView;
 use App\Services\FlipService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SettingRepository {
     public function storeFlip($data) {
@@ -106,14 +111,80 @@ class SettingRepository {
     public function archivePm($id) {
         try {
             $pm = PaymentMethod::find($id);
-            if (!$pm) return resultFunction("Err code PR-Dl: payment method not found for ID " .$id);
+            if (!$pm) return resultFunction("Err code SR-AP: payment method not found for ID " .$id);
 
             $pm->is_archive = !$pm->is_archive;
             $pm->save();
 
             return resultFunction("", true);
         } catch (\Exception $e) {
-            return resultFunction("Err code PR-Dl: catch " . $e->getMessage());
+            return resultFunction("Err code SR-AP: catch " . $e->getMessage());
+        }
+    }
+
+    public function storeView($data) {
+        try {
+            DB::beginTransaction();
+
+            $validator = \Validator::make($data, [
+                "id" => "required",
+                "setting_view" => "required"
+            ]);
+
+            if ($validator->fails()) return resultFunction("Err code SR-SV: " . collect($validator->errors()->all())->implode(" , "));
+
+            $app = App::find($data['id']);
+            if (!$app) return resultFunction("Err code SR: company not found");
+
+            $saveParams = [];
+            foreach ($data['setting_view'] as $view) {
+                $saveParams[] = [
+                    "app_id" => $app->id,
+                    "label" => $view['label'],
+                    "is_show" => $view['is_show'],
+                    "created_at" => date("Y-m-d H:i:s"),
+                    "updated_at" => date("Y-m-d H:i:s")
+                ];
+            }
+
+            SettingView::where('app_id', $app->id)->delete();
+            SettingView::insert($saveParams);
+
+            DB::commit();
+            return resultFunction("", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-SV: catch " . $e->getMessage());
+        }
+    }
+
+    public function setGeneral($data) {
+        try {
+            $validator = \Validator::make($data, [
+                "id" => "required",
+                "label" => "required",
+                "label_value" => "required"
+            ]);
+
+            if ($validator->fails()) return resultFunction("Err code SR-SG: " . collect($validator->errors()->all())->implode(" , "));
+
+            $app = App::find($data['id']);
+            if (!$app) return resultFunction("Err code SR: company not found");
+
+            $settingGeneral = SettingGeneral::with([])
+                ->where('app_id', $app->id)
+                ->where('label', $data['label'])
+                ->first();
+            if (!$settingGeneral) {
+                $settingGeneral = new SettingGeneral();
+                $settingGeneral->app_id = $app->id;
+                $settingGeneral->label = $data['label'];
+            }
+            $settingGeneral->label_value = $data['label_value'];
+            $settingGeneral->save();
+
+            return resultFunction("", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code SR-SG: catch " . $e->getMessage());
         }
     }
 }

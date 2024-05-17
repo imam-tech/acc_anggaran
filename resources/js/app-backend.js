@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import router from './src/routers/router.js'
 import App from './src/App.vue'
-import store from './src/store/store.js'
+import store from './src/store/backend/store.js'
 import vSelect from 'vue-select'
-import './src/plugins/axios.js'
+import './src/plugins/axios-backend.js'
 import './src/plugins/vuesax.js'
 import './src/plugins/filter.js'
 import 'vue-select/dist/vue-select.css';

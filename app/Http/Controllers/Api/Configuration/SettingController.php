@@ -7,6 +7,7 @@ use App\Models\PaymentMethod;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\SettingFlip;
+use App\Models\SettingView;
 use App\Repositories\SettingRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -69,5 +70,22 @@ class SettingController extends Controller {
 
     public function archivePm($id = null) {
         return response()->json($this->settingRepo->archivePm($id));
+    }
+
+    public function indexView(Request $request) {
+        $filters = $request->only(['app_id']);
+        $settingViews = SettingView::with([]);
+
+        $settingViews = $settingViews->where('app_id', $filters['app_id'])
+            ->orderBy('id', 'desc')->get();
+        return response()->json($settingViews);
+    }
+
+    public function storeView(Request $request) {
+        return response()->json($this->settingRepo->storeView($request->all()));
+    }
+
+    public function setGeneral(Request $request) {
+        return response()->json($this->settingRepo->setGeneral($request->all()));
     }
 }

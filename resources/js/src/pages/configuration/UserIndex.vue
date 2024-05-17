@@ -148,6 +148,17 @@
                                 ">*) required</span></label>
                                 <input type="password" class="form-control" v-model="formData.password_confirmation" placeholder="Password of User" required>
                             </div>
+                            <div v-if="!formData.id" class="form-group">
+                                <label>Role<span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    font-style: italic;
+                                ">*) required</span></label>
+                                <select class="form-control" v-model="formData.role_id" required>
+                                    <option value="">--Select Role--</option>
+                                    <option v-for="(role, index) in roles" :value="role.id" :key="index">{{ role.title }}</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="modal-footer flex justify-content-between">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">
@@ -275,7 +286,8 @@
                     name: "",
                     email: "",
                     password: "",
-                    password_confirmation: ""
+                    password_confirmation: "",
+                    role_id: "",
                 },
                 formChangePassword: {
                     id: "",
@@ -369,7 +381,7 @@
                 this.formData.name = ""
                 this.formData.password = ''
                 this.formData.password_confirmation = ''
-                this.formData.amount = ''
+                this.formData.role_id = ''
                 $("#addUser").modal("show")
             },
             async handleChangeRole() {

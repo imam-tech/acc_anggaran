@@ -16,6 +16,12 @@ import outputDataRouter from './outputDataRouter';
 import inputDataRouter from './inputDataRouter';
 import masterDataRouter from './masterDataRouter';
 
+// Backend
+import hasLoggedInBackend from "../middleware/hasLoggedInBackend";
+import ParentBackendLayout from '../layouts/ParentBackendLayout.vue'
+import authBackendRouter from './backend/authRouter';
+import appBackendRouter from './backend/appRouter';
+
 Vue.use(Router)
 
 const router = new Router({
@@ -84,7 +90,32 @@ const router = new Router({
             path: '/auth',
             component: AuthLayout,
             children: authRouter
-        }
+        },
+        {
+            path: '/backend',
+            component: ParentBackendLayout,
+            children: [
+                {
+                    path: '',
+                    component:  () => import('../pages/backend/Index'),
+                    name: 'dashboard',
+                    meta: {
+                        middleware: hasLoggedInBackend,
+                        pageTitle: 'Dashboard',
+                    }
+                },
+                {
+                    path: 'app',
+                    component: MenuLayout,
+                    children: appBackendRouter
+                },
+            ]
+        },
+        {
+            path: '/backend/auth',
+            component: AuthLayout,
+            children: authBackendRouter
+        },
     ]
 })
 

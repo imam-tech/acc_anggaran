@@ -4,7 +4,8 @@
         <div class="card shadow mb-4">
             <div class="card-title">
                 <h1 class="h3 mt-3 ml-3 text-gray-800 float-left">Company List</h1>
-                <button v-if="$store.state.permissions.includes('company_create') && $store.state.app.is_multiple_company === 1" type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddCompany()">
+                <button v-if="$store.state.permissions.includes('company_create') && $store.state.app.is_multiple_company === 1 && companies.length < maxCompany"
+                        type="button" class="btn btn-primary float-right mr-3 mt-3" @click="showAddCompany()">
                     <i class="fas fa-plus-circle"></i> Company
                 </button>
             </div>
@@ -117,7 +118,8 @@
                     voucherPrefix: "",
                     type: "",
                     prefix: ""
-                }
+                },
+                maxCompany: 1
             }
         },
         created() {
@@ -137,6 +139,10 @@
                         if (this.$route.query.show_create !==  undefined && this.$store.state.role === 'administrator') {
                             $("#addCompany").modal("show")
                         }
+                    } else {
+                        if (this.companies[0].max_company) {
+                            this.maxCompany = this.companies[0].max_company.label_value
+                        }
                     }
                     this.$vs.loading.close()
                 } catch (e) {
@@ -150,6 +156,7 @@
                     })
                 }
             },
+
             showEditCompany(company) {
                 this.labelModal = 'Edit'
                 this.formData.id = company.id
@@ -158,6 +165,7 @@
                 this.formData.voucherPrefix = company.voucher_prefix
                 $("#addCompany").modal("show")
             },
+
             showAddCompany() {
                 this.labelModal = 'Add'
                 this.formData.id = ""
@@ -166,6 +174,7 @@
                 this.formData.voucherPrefix = ''
                 $("#addCompany").modal("show")
             },
+
             async submitCompany() {
                 try {
                     this.formData.voucherPrefix = this.formData.prefix + this.formData.voucherPrefix
@@ -189,7 +198,6 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(async ()=>{
-                            // window.location.reload()
                             window.location.href = "?is_default=1";
                         })
                     }
@@ -204,6 +212,7 @@
                     })
                 }
             },
+
             async handleDelete(id) {
                 Swal.fire({
                     icon: 'warning',
@@ -226,8 +235,8 @@
                                     allowOutsideClick: false,
                                     allowEscapeKey: false,
                                     allowEnterKey: false
-                                }).then(async (res)=>{
-                                    if(res.isConfirmed == true) await this.getData()
+                                }).then((res)=>{
+                                    if(res.isConfirmed == true) window.location.reload()
                                 })
                             }else{
                                 Swal.fire({

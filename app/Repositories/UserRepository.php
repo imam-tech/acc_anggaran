@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -21,15 +22,19 @@ class UserRepository {
                     "email" => "required",
                     "password" => "required",
                     "password_confirmation" => "required",
+                    "role_id" => "required",
                 ]);
             }
 
             if ($validator->fails()) return resultFunction("Err code UR-St: " . collect($validator->errors()->all())->implode(" , "));
 
-                if ($data['id']) {
+            if ($data['id']) {
                 $user = User::find($data['id']);
                 if (!$user) return resultFunction("Err code UR-St: user not found for ID " . $data['id']);
             } else {
+                $role = Role::find($data['role_id']);
+                if (!$role) return resultFunction("Err code UR-St: role not found");
+
                 $userHistory = User::where('email', $data['email'])->first();
                 if ($userHistory AND $userHistory->app_id === Auth::user()->app_id) return resultFunction("Err code UR-St: user is already exist for email " . $data['email']);
 
@@ -39,6 +44,7 @@ class UserRepository {
                 $user = new User();
                 $user->app_id = Auth::user()->app_id;
                 $user->is_locked = 0;
+                $user->role_id = $role->id;
             }
             $user->name = $data['name'];
             $user->email = $data['email'];

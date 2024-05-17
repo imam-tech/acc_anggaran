@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\AdminUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -39,6 +40,37 @@ class AuthRepository {
     public function logout($request) {
         try {
             $request->user()->currentAccessToken()->delete();
+            return resultFunction("Success logged out", true);
+        } catch (\Exception $e) {
+            return resultFunction("Err code AR-LOg: catch " . $e->getMessage());
+        }
+    }
+
+    public function backendLogin($data) {
+        try {
+            $adminUser = AdminUser::with([])->where('email', $data['email'])->first();
+            if (!$adminUser) return resultFunction("Err code AR-BL: admin user " . $data['email'] . ' is not found');
+
+            if (!Hash::check($data['password'], $adminUser['password'])) {
+                return resultFunction("Err code AR-BL: password of admin user " . $data['email'] . ' is not correct');
+            }
+
+            Auth::login($adminUser);
+            $token = $adminUser->createToken('API Token')->plainTextToken;
+
+            return resultFunction("", true, [
+                "admin_user" => $adminUser,
+                "token" => $token,
+                "sign_at" => date("Y-m-d H:i:s")
+            ]);
+        } catch (\Exception $e) {
+            return resultFunction("Err code AR-BL: catch " . $e->getMessage());
+        }
+    }
+
+    public function backendLogout($request) {
+        try {
+            $request->user('admin')->currentAccessToken()->delete();
             return resultFunction("Success logged out", true);
         } catch (\Exception $e) {
             return resultFunction("Err code AR-LOg: catch " . $e->getMessage());

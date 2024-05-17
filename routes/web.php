@@ -22,3 +22,8 @@ Route::get('/print/balance-sheet', [AppController::class, 'printBalanceSheet']);
 Route::get('/print/profit-lost', [AppController::class, 'printProfitLose']);
 Route::get('/sales/delivery-slip', [AppController::class, 'salesDeliverySlip']);
 Route::get('/print/sales/delivery-slip', [AppController::class, 'printSalesDeliverySlip']);
+
+Route::get('/admin', function () {
+    return redirect('/backend');
+});
+Route::get('/backend/{any?}', [AppController::class, 'indexBackend'])->where('any', '.*');

@@ -20,7 +20,7 @@
             </router-link>
         </li>
         <li class="nav-item">
-            <router-link class="nav-link" :class="handleBgMenu('transaction')" to="/app/transaction">
+            <router-link v-if="handleShowMenuBySetting('transaction')" class="nav-link" :class="handleBgMenu('transaction')" to="/app/transaction">
                 <i class="fas fa-exchange-alt"></i>
                 <span>Transaction</span>
             </router-link>
@@ -60,7 +60,7 @@
             </select>
         </li>
         <li class="nav-item">
-            <a class="nav-link" :class="handleShowMenu('output-data').col" href="#" data-toggle="collapse" data-target="#collapseOutputData"
+            <a class="nav-link" v-if="handleShowMenuBySetting('output_data_report')" :class="handleShowMenu('output-data').col" href="#" data-toggle="collapse" data-target="#collapseOutputData"
                aria-expanded="true" aria-controls="collapseOutputData">
                 <i class="fas fa-upload"></i>
                 <span>Output Data</span>
@@ -84,16 +84,16 @@
             </a>
             <div id="collapseInputData" class="collapse" :class="handleShowMenu('input-data').bg" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <router-link class="collapse-item" to="/app/input-data/cash-and-bank">
+                    <router-link v-if="handleShowMenuBySetting('input-data-cash-and-bank-index')" class="collapse-item" to="/app/input-data/cash-and-bank">
                         <i class="fas fa-university"></i><span class="ml-2">Cash & Bank</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/input-data/sales">
+                    <router-link v-if="handleShowMenuBySetting('input-data-sales-index')" class="collapse-item" to="/app/input-data/sales">
                         <i class="fas fa-cart-plus"></i><span class="ml-2">Sales Invoice</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/input-data/purchase">
+                    <router-link v-if="handleShowMenuBySetting('input-data-purchase-index')" class="collapse-item" to="/app/input-data/purchase">
                         <i class="fas fa-shopping-cart"></i><span class="ml-2">Purchase Bill</span>
                     </router-link>
-                    <router-link class="collapse-item" to="/app/input-data/journal">
+                    <router-link v-if="handleShowMenuBySetting('input-data-journal-index')" class="collapse-item" to="/app/input-data/journal">
                         <i class="fas fa-list-ul"></i><span class="ml-2">Journal</span>
                     </router-link>
                 </div>
@@ -135,7 +135,7 @@
             </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link" :class="handleShowMenu('manufacture').col" href="#" data-toggle="collapse" data-target="#collapseManufacture"
+            <a class="nav-link" v-if="handleShowMenuBySetting('manufacture')" :class="handleShowMenu('manufacture').col" href="#" data-toggle="collapse" data-target="#collapseManufacture"
                aria-expanded="true" aria-controls="collapseManufacture">
                 <i class="fas fa-tractor"></i>
                 <span>Manufacture</span>
@@ -174,35 +174,56 @@
             return {
                 companies: [],
                 currentCompany: Cookies.get('current_company_fat'),
+                settingViews: []
             }
         },
         created() {
             this.getData()
         },
         methods: {
+            handleShowMenuBySetting(key) {
+                let isShowLcl = false
+                this.settingViews.forEach((x) => {
+                    if (x.label === key && x.is_show === 1) {
+                        isShowLcl = true
+                    }
+                })
+                return isShowLcl
+            },
+
             handleBgMenu(menu) {
                 return this.$route.name.includes(menu) ? 'bg-success rounded text-dark' : '';
             },
 
             handleShowMenu(menu) {
                 return this.$route.name.includes(menu) ? (window.innerWidth < 768 ? {'bg': '', 'col': 'collapsed'} : {'bg': 'show', 'col': ''}) : {'bg': '', 'col': 'collapsed'};
-                // console.log('height', this.heightWindow)
-                // return {'bg': '', 'col': 'collapsed'}
-
             },
 
             changeCompany(e) {
                 const comp = this.companies.find((x) => x.id == e.target.value)
                 Cookies.set('current_company_fat', comp.id, { expires: 1 })
                 Cookies.set('current_company_title_fat', comp.title, { expires: 1 })
-                window.location.reload();
+                console.log('change company')
+                window.location.href = '?is=1'
             },
+
             async getData() {
                 try {
                     this.$vs.loading()
                     this.companies = await this.$axios.get('api/configuration/company')
                     this.$vs.loading.close()
                     if (this.companies.length > 0) {
+                        console.log("get setting view")
+                        if (this.companies[0].setting_views.length > 0) {
+                            this.companies[0].setting_views.forEach((x) => {
+                                this.settingViews.push({
+                                    "label":  x.label,
+                                    "is_show": x.is_show
+                                })
+                            })
+                        }
+                        console.log("Fet", this.settingViews)
+                        localStorage.setItem('setting_views', JSON.stringify(this.settingViews))
                         if (this.$route.query.is_default !== undefined) {
                             Cookies.set('current_company_fat', this.companies[this.companies.length-1].id, {expires: 1})
                             Cookies.set('current_company_title_fat', this.companies[this.companies.length-1].title, {expires: 1})

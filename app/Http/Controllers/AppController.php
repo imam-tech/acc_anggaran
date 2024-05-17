@@ -314,4 +314,9 @@ class AppController extends Controller
         $writer->save("php://output");
         exit;
     }
+
+    public function indexBackend()
+    {
+        return view('app-backend');
+    }
 }

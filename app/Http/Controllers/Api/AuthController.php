@@ -24,4 +24,14 @@ class AuthController extends Controller
     {
         return response()->json($this->authRepo->logout($request));
     }
+
+    public function backendLogin(Request $request)
+    {
+        return response()->json($this->authRepo->backendLogin($request->all()));
+    }
+
+    public function backendLogout(Request $request)
+    {
+        return response()->json($this->authRepo->backendLogout($request));
+    }
 }
