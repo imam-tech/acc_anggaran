@@ -60,7 +60,7 @@
             </select>
         </li>
         <li class="nav-item">
-            <a class="nav-link" v-if="handleShowMenuBySetting('output_data_report')" :class="handleShowMenu('output-data').col" href="#" data-toggle="collapse" data-target="#collapseOutputData"
+            <a class="nav-link" v-if="handleShowMenuBySetting('output-data')" :class="handleShowMenu('output-data').col" href="#" data-toggle="collapse" data-target="#collapseOutputData"
                aria-expanded="true" aria-controls="collapseOutputData">
                 <i class="fas fa-upload"></i>
                 <span>Output Data</span>
